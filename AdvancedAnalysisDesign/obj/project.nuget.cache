@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "yk4Vw/SkWcqabhTOMUl7aqs8fQ2bTp9GT3kkdGhvxck3sildvfJ+4knpT7JecHOJECBXPkhkz83ZZdPj5HXNAA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\leonw\\source\\repos\\AdvancedAnalysisDesign\\AdvancedAnalysisDesign\\AdvancedAnalysisDesign.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\leonw\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.10.9\\microsoft.visualstudio.azure.containers.tools.targets.1.10.9.nupkg.sha512"
+  ],
+  "logs": []
+}
