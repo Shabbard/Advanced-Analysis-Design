@@ -1,6 +1,6 @@
-## Advanced Analysis & Design ##
+# **Advanced Analysis & Design** #
 
-# Members #
+## Members ##
 - Leon W 
 - Adam S
 - Alex C
