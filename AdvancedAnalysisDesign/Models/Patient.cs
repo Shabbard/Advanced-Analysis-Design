@@ -7,7 +7,7 @@ namespace AdvancedAnalysisDesign.Models
     {
         public int Id { get; set; }
         public int NhsNumber { get; set; }
-        public int UserId { get; set; }
+        public User User { get; set; }
         public byte[] VerificationImage { get; set; }
     }
 }
