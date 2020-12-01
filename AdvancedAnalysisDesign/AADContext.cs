@@ -16,7 +16,7 @@ namespace AdvancedAnalysisDesign
         public DbSet<Patient> Patients { get; set; }
         public DbSet<PatientMedication> PatientMedications { get; set; }
         public DbSet<Medication> Medications { get; set; }
-        public DbSet<Bloodwork> Bloodworks { get; set; }
-        public DbSet<BloodworkTest> BloodworkTests { get; set; }
+        public DbSet<PatientBloodwork> PatientBloodworks { get; set; }
+        public DbSet<PatientBloodworkTest> PatientBloodworkTests { get; set; }
     }
 }
