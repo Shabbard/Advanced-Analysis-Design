@@ -3,14 +3,12 @@ name: .NET Core
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
     
 env:
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
 
 jobs:
-  build:
+  publish:
 
     runs-on: ubuntu-latest
 
