@@ -8,8 +8,6 @@ namespace AdvancedAnalysisDesign.Models
     {
         public int Id { get; set; }
         public DateTimeOffset DateOfResults { get; set; }
-        
-        [ForeignKey("BloodworkTest")]
         public virtual ICollection<BloodworkTest> BloodworkTestIds { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign
@@ -31,9 +32,15 @@ namespace AdvancedAnalysisDesign
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<UserService>();
             
-            services.AddDbContext<AADContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AADDatabase")));
+            var builder = new SqlConnectionStringBuilder(
+                Configuration.GetConnectionString("AADDatabase"));
+
+            builder.Password = Configuration["DbPassword"];
+                      
+            services.AddDbContextFactory<AADContext>(options =>
+                options.UseSqlServer(builder.ConnectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
