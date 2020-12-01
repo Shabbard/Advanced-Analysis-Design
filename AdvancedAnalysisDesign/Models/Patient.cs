@@ -8,7 +8,6 @@ namespace AdvancedAnalysisDesign.Models
         public int Id { get; set; }
         public int NhsNumber { get; set; }
         public int UserId { get; set; }
-        public virtual ICollection<PatientMedication> Medications { get; set; }
         public byte[] VerificationImage { get; set; }
     }
 }
