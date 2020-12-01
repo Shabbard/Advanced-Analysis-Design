@@ -1,3 +1,5 @@
+using AdvancedAnalysisDesign.Enums;
+
 namespace AdvancedAnalysisDesign.Models
 {
     public class User

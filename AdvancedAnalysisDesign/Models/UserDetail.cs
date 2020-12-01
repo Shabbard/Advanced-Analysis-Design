@@ -1,3 +1,5 @@
+using System;
+
 namespace AdvancedAnalysisDesign.Models
 {
     public class UserDetail
@@ -7,5 +9,6 @@ namespace AdvancedAnalysisDesign.Models
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
+        public DateTimeOffset DateOfBirth { get; set; }
     }
 }

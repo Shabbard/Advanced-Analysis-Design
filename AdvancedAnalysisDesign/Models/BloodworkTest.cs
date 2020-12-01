@@ -9,6 +9,5 @@ namespace AdvancedAnalysisDesign.Models
         public string Results { get; set; }
         public DateTimeOffset DateOfTest { get; set; }
         public bool Completed { get; set; }
-        public bool RequiresPrescription { get; set; }
-    }
+      }
 }
