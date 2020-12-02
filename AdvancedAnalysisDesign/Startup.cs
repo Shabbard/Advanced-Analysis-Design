@@ -31,7 +31,6 @@ namespace AdvancedAnalysisDesign
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<UserService>();
             
             var builder = new SqlConnectionStringBuilder(
