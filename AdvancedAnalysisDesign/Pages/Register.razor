@@ -8,12 +8,14 @@
         <DataAnnotationsValidator />
         <MudCard Elevation="5" Class="RegistrationCard" Style="width:26rem">
             
-                <MudCardContent>
-                    <MudTextField Label="First name" HelperText="Max. 8 characters" @bind-Value="model.FirstName" For="@(() => model.FirstName)" />
-                    <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)" />
-                    <MudTextField Label="Password" HelperText="Choose a strong password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                    <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="PasswordComparison" For="@(() => PasswordComparison)" InputType="InputType.Password" />
-                </MudCardContent>
+            <MudCardContent>
+                <MudTextField Label="First name" @bind-Value="model.FirstName" For="@(() => model.FirstName)" />
+                <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)" />
+                <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="PasswordComparison" For="@(() => PasswordComparison)" InputType="InputType.Password" />
+                <MudDatePicker Label="Date Format" InputIcon="null" @bind-Date="(model.DateOfBirth)" />
+                
+            </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:25rem">Register</MudButton>
                 </MudCardActions>
@@ -22,9 +24,9 @@
     </EditForm>
 </MudContainer>
 
+
+
 @code{
     RegistrationPayload model = new RegistrationPayload();
     string PasswordComparison;
-
-
 }
