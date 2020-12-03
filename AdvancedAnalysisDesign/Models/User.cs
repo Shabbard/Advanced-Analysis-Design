@@ -6,7 +6,7 @@ namespace AdvancedAnalysisDesign.Models
     {
         public int Id { get; set; }
         public UserType UserType { get; set; }
-        public string Username { get; set; }
+        public string EmailAddress { get; set; }
         public string Password { get; set; }
         public bool Verified { get; set; }
         public UserDetail UserDetail { get; set; }
