@@ -8,6 +8,7 @@ namespace AdvancedAnalysisDesign.Models
         public UserType UserType { get; set; }
         public string EmailAddress { get; set; }
         public string Password { get; set; }
+        public bool Verified { get; set; }
         public UserDetail UserDetail { get; set; }
     }
 }

@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20201203172707_AddingVerifiedToUserTable")]
+    partial class AddingVerifiedToUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,9 +137,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("EmailAddress")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
@@ -169,6 +168,9 @@ namespace AdvancedAnalysisDesign.Migrations
 
                     b.Property<DateTimeOffset>("DateOfBirth")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
