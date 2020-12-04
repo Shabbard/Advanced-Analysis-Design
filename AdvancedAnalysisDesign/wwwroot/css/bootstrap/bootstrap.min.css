@@ -11507,8 +11507,20 @@ body.sidebar-toggled footer.sticky-footer {
 
 /*Leon Added*/
 
+.max-width-26rem {
+    width: 26rem;
+}
+
 .center {
-    padding: 70px 0;
-    border: 3px solid green;
-    text-align: center;
+    margin: 0 auto;
+}
+
+.parent {
+    position: relative;
+}
+
+.child {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 }
