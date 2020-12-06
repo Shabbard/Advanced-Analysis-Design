@@ -1,25 +1,68 @@
 ﻿@page "/Register"
 @layout EmptyLayout
-@using System.ComponentModel.DataAnnotations
+@using AdvancedAnalysisDesign.Data
 @using AdvancedAnalysisDesign.Models
+@using AdvancedAnalysisDesign.Enums
+@using InputType = MudBlazor.InputType
+
+@inject UserService UserService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
     <EditForm Model="@model" class="max-width-26rem center mt-30">
         <DataAnnotationsValidator />
         <MudCard Elevation="5" Class="RegistrationCard" Style="width:26rem">
-            
+            <MudText Style="text-align:center; font-weight:bold; padding-top:1rem;" Typo="Typo.h4">Registration</MudText>
             <MudCardContent>
-                <MudTextField Label="First name" @bind-Value="model.FirstName" For="@(() => model.FirstName)" />
-                <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)" />
-                <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="PasswordComparison" For="@(() => PasswordComparison)" InputType="InputType.Password" />
-                <MudDatePicker Label="Date Format" InputIcon="null" @bind-Date="(model.DateOfBirth)" />
+                <MudGrid Spacing="1">
+                    <MudItem xs="6">
+                        <MudTextField Label="First name" @bind-Value="model.FirstName" For="@(() => model.FirstName)"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Surname" @bind-Value="model.LastName" For="@(() => model.LastName)"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Phone Number" @bind-Value="model.PhoneNumber" For="@(() => model.PhoneNumber)"/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@model.DateOfBirth"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                         <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="PasswordComparison" For="@(() => PasswordComparison)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+                    </MudItem>
+                </MudGrid>
+
+                <MudForm>
+                    <MudSelect Label="User Account Type" Dense="true" OffsetY="true" @bind-Value="model.UserType" Placeholder="Select culture">
+                        <MudSelectItem T="UserType" Value="@(UserType.Patient)">Patient</MudSelectItem>
+                        <MudSelectItem T="UserType" Value="@(UserType.Doctor)">Doctor</MudSelectItem>
+                        <MudSelectItem T="UserType" Value="@(UserType.Pharmacist)">Pharmacist</MudSelectItem>
+                    </MudSelect>
+                </MudForm>
                 
+                <MudHidden IsHidden="@(model.UserType != UserType.Patient)">
+                    <MudGrid Spacing="1">
+                        <MudItem xs="12">
+                            <MudTextField Label="NHS Number" @bind-Value="model.NhsNumber" For="@(() => model.NhsNumber)"/>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload Image Verification</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudIconButton Icon="@Icons.Material.AddAPhoto"></MudIconButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudHidden>
+
             </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:25rem">Register</MudButton>
+                    <MudButton OnClick="@RegisterUser" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:25rem">Register</MudButton>
                 </MudCardActions>
-        
         </MudCard>
     </EditForm>
 </MudContainer>
@@ -29,4 +72,21 @@
 @code{
     RegistrationPayload model = new RegistrationPayload();
     string PasswordComparison;
+    
+    bool isPasswordVisible;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.VisibilityOff;
+    
+    void TogglePasswordVisibility()
+    {
+        isPasswordVisible = !isPasswordVisible;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
+        PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
+    }
+    
+    async Task RegisterUser()
+    {
+       await UserService.RegisterPatient(model);
+    }
+    
 }

@@ -44,8 +44,8 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("NhsNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("NhsNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -141,14 +141,11 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserDetailId")
+                    b.Property<int>("UserDetailId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserType")
                         .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Verified")
                         .HasColumnType("bit");
@@ -226,7 +223,9 @@ namespace AdvancedAnalysisDesign.Migrations
                 {
                     b.HasOne("AdvancedAnalysisDesign.Models.UserDetail", "UserDetail")
                         .WithMany()
-                        .HasForeignKey("UserDetailId");
+                        .HasForeignKey("UserDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("UserDetail");
                 });

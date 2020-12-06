@@ -20,13 +20,14 @@ namespace AdvancedAnalysisDesign.Data
             {
                 FirstName = regPayload.FirstName,
                 LastName = regPayload.LastName,
-                DateOfBirth = regPayload.DateOfBirth,
+                DateOfBirth = (System.DateTimeOffset)regPayload.DateOfBirth,
                 PhoneNumber = regPayload.PhoneNumber
             };
             
             using (var context = _contextFactory.CreateDbContext())
             {
                 await context.UserDetails.AddAsync(userDetail);
+                await context.SaveChangesAsync();
                 return userDetail;
             }
         }
@@ -45,8 +46,8 @@ namespace AdvancedAnalysisDesign.Data
             
             using (var context = _contextFactory.CreateDbContext())
             {
-                user.UserDetail = userDetails;
                 await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
                 return user;
             }
         }
@@ -65,6 +66,7 @@ namespace AdvancedAnalysisDesign.Data
             using (var context = _contextFactory.CreateDbContext())
             {
                 await context.Patients.AddAsync(patient);
+                await context.SaveChangesAsync();
             }
         }
     }

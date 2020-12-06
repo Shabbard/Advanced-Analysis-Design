@@ -9,10 +9,10 @@ namespace AdvancedAnalysisDesign.Models
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
-        public DateTimeOffset DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public string Password { get; set; }
         public UserType UserType { get; set; }
-        public int NhsNumber { get; set; }
+        public string NhsNumber { get; set; }
         public byte[] VerificationImage { get; set; }
     }
 }
