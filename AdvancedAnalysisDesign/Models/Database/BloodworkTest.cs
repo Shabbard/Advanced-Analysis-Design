@@ -1,4 +1,4 @@
-namespace AdvancedAnalysisDesign.Models
+namespace AdvancedAnalysisDesign.Models.Database
 {
     public class BloodworkTest
     {

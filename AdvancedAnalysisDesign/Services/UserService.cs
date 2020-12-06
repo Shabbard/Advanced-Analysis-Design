@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Models;
+using AdvancedAnalysisDesign.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign.Data
@@ -38,11 +39,7 @@ namespace AdvancedAnalysisDesign.Data
                 PhoneNumber = regPayload.PhoneNumber
             };
             
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                await context.UserDetails.AddAsync(userDetail);
-                return userDetail;
-            }
+            return userDetail;
         }
         
         public async Task<User> RegisterUser(RegistrationPayload regPayload)
@@ -56,13 +53,8 @@ namespace AdvancedAnalysisDesign.Data
                 UserDetail = userDetails,
                 UserType = regPayload.UserType
             };
-            
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                user.UserDetail = userDetails;
-                await context.Users.AddAsync(user);
-                return user;
-            }
+
+            return user; // Depending other user types are implemented, this may need changing. Currently standalone users cannot be registered.
         }
 
         public async Task RegisterPatient(RegistrationPayload regPayload)
@@ -79,6 +71,7 @@ namespace AdvancedAnalysisDesign.Data
             using (var context = _contextFactory.CreateDbContext())
             {
                 await context.Patients.AddAsync(patient);
+                await context.SaveChangesAsync();
             }
         }
 

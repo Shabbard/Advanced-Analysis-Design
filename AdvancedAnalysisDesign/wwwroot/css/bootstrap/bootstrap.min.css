@@ -7729,6 +7729,20 @@ a.bg-dark:focus, a.bg-dark:hover, button.bg-dark:focus, button.bg-dark:hover {
     max-width: 100% !important
 }
 
+.mw-75 {
+    max-width: 75% !important
+}
+
+.mw-50 {
+    max-width: 50% !important
+}
+
+.mw-25 {
+    max-width: 25% !important
+}
+
+
+
 .mh-100 {
     max-height: 100% !important
 }
@@ -11502,7 +11516,7 @@ footer.sticky-footer {
     }
 
 body.sidebar-toggled footer.sticky-footer {
-    width: 100%
+    width: 100%;
 }
 
 /*Leon Added*/

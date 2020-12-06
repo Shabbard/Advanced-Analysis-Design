@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AdvancedAnalysisDesign.Models
+namespace AdvancedAnalysisDesign.Models.Database
 {
     public class PatientBloodwork
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace AdvancedAnalysisDesign.Models
+namespace AdvancedAnalysisDesign.Models.Database
 {
     public class UserDetail
     {

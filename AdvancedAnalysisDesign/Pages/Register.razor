@@ -1,47 +1,101 @@
 ﻿@page "/Register"
 @layout EmptyLayout
+@using AdvancedAnalysisDesign.Data
+@using AdvancedAnalysisDesign.Models
+@using AdvancedAnalysisDesign.Enums
+@using InputType = MudBlazor.InputType
+@using System.ComponentModel.DataAnnotations
 
-        <div class="col-lg-4 row card-body card o-hidden border-0 shadow-lg my-30 p-5 offset-4">
+@inject UserService UserService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
 
-            <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
-            </div>
-            <form class="user">
-                <div class="form-group row">
-                    <div class="col-sm-6 mb-3 mb-sm-0">
-                        <input type="text" class="form-control form-control-user" id="exampleFirstName"
-                               placeholder="First Name">
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control form-control-user" id="exampleLastName"
-                               placeholder="Last Name">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control form-control-user" id="exampleInputEmail"
-                           placeholder="Email Address">
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-6 mb-3 mb-sm-0">
-                        <input type="password" class="form-control form-control-user"
-                               id="exampleInputPassword" placeholder="Password">
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="password" class="form-control form-control-user"
-                               id="exampleRepeatPassword" placeholder="Repeat Password">
-                    </div>
-                </div>
-                <a href="login.html" class="btn btn-primary btn-user btn-block">
-                    Register Account
-                </a>
-                <hr>
-            </form>
-            <hr>
-            <div class="text-center">
-                <a class="small" href="forgot-password.html">Forgot Password?</a>
-            </div>
-            <div class="text-center">
-                <a class="small" href="login.html">Already have an account? Login!</a>
-            </div>
-        </div>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <EditForm Model="@registrationPayload" class="max-width-26rem center mt-30" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudCard Elevation="5" Class="RegistrationCard" Style="width:26rem">
+            <MudText Style="text-align:center; font-weight:bold; padding-top:1rem;" Typo="Typo.h4">Registration</MudText>
+            <MudCardContent>
+                <MudGrid Spacing="1">
+                    <MudItem xs="6">
+                        <MudTextField Label="First name" @bind-Value="registrationPayload.FirstName" For="@(() => registrationPayload.FirstName)" Required="true"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Surname" @bind-Value="registrationPayload.LastName" For="@(() => registrationPayload.LastName)" Required="true"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Email" @bind-Value="registrationPayload.EmailAddress" For="@(() => registrationPayload.EmailAddress)" Required="true"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Phone Number" @bind-Value="registrationPayload.PhoneNumber" For="@(() => registrationPayload.PhoneNumber)" Required="true"/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@registrationPayload.DateOfBirth" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField Label="Password" @bind-Value="registrationPayload.Password" For="@(() => registrationPayload.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                         <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="registrationPayload.PasswordComparison" For="@(() => registrationPayload.PasswordComparison)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required="true"/>
+                    </MudItem>
+                </MudGrid>
 
+                <MudForm>
+                    <MudSelect Label="User Account Type" Dense="true" OffsetY="true" @bind-Value="registrationPayload.UserType" Placeholder="Select culture">
+                        <MudSelectItem T="UserType" Value="@(UserType.Patient)">Patient</MudSelectItem>
+                        <MudSelectItem T="UserType" Value="@(UserType.Doctor)">Doctor</MudSelectItem>
+                        <MudSelectItem T="UserType" Value="@(UserType.Pharmacist)">Pharmacist</MudSelectItem>
+                    </MudSelect>
+                </MudForm>
+                
+                <MudHidden IsHidden="@(registrationPayload.UserType != UserType.Patient)">
+                    <MudGrid Spacing="1">
+                        <MudItem xs="12">
+                            <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)"/>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload Image Verification</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudIconButton Icon="@Icons.Material.AddAPhoto"></MudIconButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudHidden>
+
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width:25rem">Register</MudButton>
+            </MudCardActions>
+            
+            <div class="pb-2 pt-2 text-center">
+                <MudLink Href="/Login" Typo="Typo.body2">Back to Login</MudLink> @*Link to Login page*@
+            </div>
+        </MudCard>
+    </EditForm>
+</MudContainer>
+
+
+
+@code{
+    RegistrationPayload registrationPayload = new RegistrationPayload();
+     
+    
+    bool isPasswordVisible;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.VisibilityOff;
+    
+    void TogglePasswordVisibility()
+    {
+        isPasswordVisible = !isPasswordVisible;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
+        PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
+    }
+ 
+    private async void OnValidSubmit(EditContext context)
+    {
+        StateHasChanged();
+        await UserService.RegisterPatient(registrationPayload);
+        Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+        NavManager.NavigateTo("/");
+    }
+}
