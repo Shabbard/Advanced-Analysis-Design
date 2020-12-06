@@ -11525,9 +11525,10 @@ body.sidebar-toggled footer.sticky-footer {
     width: 26rem;
 }
 
-.center{
+.center {
     margin: 0 auto;
 }
+
 .parent {
     position: relative;
 }

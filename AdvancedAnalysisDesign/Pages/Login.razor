@@ -1,0 +1,60 @@
+﻿@page "/Login"
+@layout EmptyLayout
+@using AdvancedAnalysisDesign.Models
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <EditForm Model="@model" class="max-width-26rem center mt-30">
+        <DataAnnotationsValidator />
+        <MudCard Elevation="5" Class="LoginCard" Style="width:26rem">
+            <div class="p-3"> @*Added divs throughout to padd and margin the fields.*@
+                <MudCardContent>
+                    @*Email and password fields - Start *@
+                    <MudText Style="text-align:center; font-weight:bold" Typo="Typo.h4">Login</MudText>
+                    <div class="mt-4">
+                        <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)" />
+                    </div>
+                    <div class="mt-4">
+                        <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+                    </div>
+                    @*Email and password fields - End *@
+                </MudCardContent>
+                <MudCardActions>
+                    <div class="mt-4">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:23rem" OnClick="@LoginRequest">Login</MudButton>
+                    </div>
+                </MudCardActions>
+                <div style="text-align:center"> @*centered text in div as MudLink text center property does not work*@
+                    <MudLink Href="/ForgotPassword"  Typo="Typo.body2">Forgot Password?</MudLink> @*Link to forgot password page*@
+                    <MudToolBarSpacer /> @*Forces the next MudLink to next line*@
+                    <MudLink Href="/Register" Style="padding-bottom:0.5rem" Typo="Typo.body2">Dont have an account? Register Here</MudLink> @*Link to register page*@
+                </div>
+            </div>
+        </MudCard>
+    </EditForm>
+</MudContainer>
+@code{
+    User model = new User();
+
+
+    //Activited onClick Login button
+    public void LoginRequest()
+    {
+        //writeLoginCodeHere
+    }
+
+
+
+    //Allows the user to toggle password visibility on & off using the show password icon
+
+    bool isPasswordVisible;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.VisibilityOff;
+
+    void TogglePasswordVisibility()
+    {
+        isPasswordVisible = !isPasswordVisible;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
+        PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
+    }
+}
