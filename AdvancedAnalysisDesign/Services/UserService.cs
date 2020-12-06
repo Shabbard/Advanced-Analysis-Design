@@ -40,7 +40,7 @@ namespace AdvancedAnalysisDesign.Data
                 UserType = regPayload.UserType
             };
 
-            return user;
+            return user; // Depending other user types are implemented, this may need changing. Currently standalone users cannot be registered.
         }
 
         public async Task RegisterPatient(RegistrationPayload regPayload)
