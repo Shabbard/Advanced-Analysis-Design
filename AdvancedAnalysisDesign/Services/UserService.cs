@@ -14,11 +14,11 @@ namespace AdvancedAnalysisDesign.Data
             _contextFactory = contextFactory;
         }
 
-        public async Task<User> ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
+        public async Task ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
         {
             using (var context = _contextFactory.CreateDbContext())
             {
-                var result = context.Users.Single(u => forgotPayload.EmailAddress == EmailAddress);
+                var result = await context.Users.SingleOrDefaultAsync(u => u.EmailAddress == forgotPayload.EmailAddress);
 
                 if (result != null)
                 {
