@@ -22,7 +22,7 @@ namespace AdvancedAnalysisDesign.Data
 
                 if (result != null)
                 {
-                    await result.Password = forgotPayload.Password;
+                    result.Password = forgotPayload.Password;
                     context.SaveChanges();
                 }
             }
