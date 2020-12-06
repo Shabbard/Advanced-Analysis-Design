@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    [Migration("20201206184235_UserDetails-ForeignKeys")]
-    partial class UserDetailsForeignKeys
+    [Migration("20201206195958_nhs-number-string")]
+    partial class nhsnumberstring
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace AdvancedAnalysisDesign.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Medication", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Medication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,7 +39,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("Medications");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Patient", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Patient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientBloodwork", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("PatientBloodworks");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientBloodworkTest", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodworkTest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,7 +105,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("PatientBloodworkTests");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientMedication", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientMedication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,7 +130,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("PatientMedications");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.User", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,7 +159,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.UserDetail", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.UserDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -183,36 +183,36 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("UserDetails");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Patient", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Patient", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.User", "User")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientBloodwork", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.PatientMedication", null)
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.PatientMedication", null)
                         .WithMany("PatientBloodworks")
                         .HasForeignKey("PatientMedicationId");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientBloodworkTest", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodworkTest", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.PatientBloodwork", null)
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", null)
                         .WithMany("PatientBloodworkTests")
                         .HasForeignKey("PatientBloodworkId");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientMedication", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientMedication", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Medication", "Medication")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.Medication", "Medication")
                         .WithMany()
                         .HasForeignKey("MedicationId");
 
-                    b.HasOne("AdvancedAnalysisDesign.Models.Patient", "Patient")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId");
 
@@ -221,21 +221,21 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.User", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.UserDetail", "UserDetail")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.UserDetail", "UserDetail")
                         .WithMany()
                         .HasForeignKey("UserDetailId");
 
                     b.Navigation("UserDetail");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientBloodwork", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", b =>
                 {
                     b.Navigation("PatientBloodworkTests");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.PatientMedication", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientMedication", b =>
                 {
                     b.Navigation("PatientBloodworks");
                 });

@@ -1,5 +1,6 @@
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models;
+using AdvancedAnalysisDesign.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign

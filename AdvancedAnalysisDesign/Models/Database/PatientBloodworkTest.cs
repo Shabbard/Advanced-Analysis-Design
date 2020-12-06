@@ -1,7 +1,4 @@
-using System;
-using System.Globalization;
-
-namespace AdvancedAnalysisDesign.Models
+namespace AdvancedAnalysisDesign.Models.Database
 {
     public class PatientBloodworkTest
     {

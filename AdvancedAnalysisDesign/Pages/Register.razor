@@ -4,36 +4,39 @@
 @using AdvancedAnalysisDesign.Models
 @using AdvancedAnalysisDesign.Enums
 @using InputType = MudBlazor.InputType
+@using System.ComponentModel.DataAnnotations
 
 @inject UserService UserService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
-    <EditForm Model="@model" class="max-width-26rem center mt-30">
+    <EditForm Model="@model" class="max-width-26rem center mt-30" OnValidSubmit="OnValidSubmit">
         <DataAnnotationsValidator />
         <MudCard Elevation="5" Class="RegistrationCard" Style="width:26rem">
             <MudText Style="text-align:center; font-weight:bold; padding-top:1rem;" Typo="Typo.h4">Registration</MudText>
             <MudCardContent>
                 <MudGrid Spacing="1">
                     <MudItem xs="6">
-                        <MudTextField Label="First name" @bind-Value="model.FirstName" For="@(() => model.FirstName)"/>
+                        <MudTextField Label="First name" @bind-Value="model.FirstName" For="@(() => model.FirstName)" Required="true"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField Label="Surname" @bind-Value="model.LastName" For="@(() => model.LastName)"/>
+                        <MudTextField Label="Surname" @bind-Value="model.LastName" For="@(() => model.LastName)" Required="true"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)"/>
+                        <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)" Required="true"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField Label="Phone Number" @bind-Value="model.PhoneNumber" For="@(() => model.PhoneNumber)"/>
+                        <MudTextField Label="Phone Number" @bind-Value="model.PhoneNumber" For="@(() => model.PhoneNumber)" Required="true"/>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@model.DateOfBirth"/>
+                        <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@model.DateOfBirth" />
                     </MudItem>
                     <MudItem xs="6">
                         <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
                     </MudItem>
                     <MudItem xs="6">
-                         <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="PasswordComparison" For="@(() => PasswordComparison)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+                         <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="model.PasswordComparison" For="@(() => model.PasswordComparison)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required="true"/>
                     </MudItem>
                 </MudGrid>
 
@@ -61,7 +64,7 @@
 
             </MudCardContent>
                 <MudCardActions>
-                    <MudButton OnClick="@RegisterUser" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:25rem">Register</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:25rem">Register</MudButton>
                 </MudCardActions>
         </MudCard>
     </EditForm>
@@ -71,7 +74,7 @@
 
 @code{
     RegistrationPayload model = new RegistrationPayload();
-    string PasswordComparison;
+     
     
     bool isPasswordVisible;
     InputType PasswordInput = InputType.Password;
@@ -83,10 +86,12 @@
         PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
         PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
     }
-    
-    async Task RegisterUser()
+ 
+    private async void OnValidSubmit(EditContext context)
     {
-       await UserService.RegisterPatient(model);
+        StateHasChanged();
+        await UserService.RegisterPatient(model);
+        Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+        NavManager.NavigateTo("/");
     }
-    
 }

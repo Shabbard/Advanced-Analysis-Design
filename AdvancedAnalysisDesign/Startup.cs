@@ -28,7 +28,17 @@ namespace AdvancedAnalysisDesign
             services.AddServerSideBlazor();
             services.AddSingleton<UserService>();
             services.AddMudBlazorDialog();
-            services.AddMudBlazorSnackbar();
+            services.AddMudBlazorSnackbar(config =>
+            {
+                config.PositionClass = Defaults.Classes.Position.BottomLeft;
+
+                config.PreventDuplicates = false;
+                config.NewestOnTop = false;
+                config.ShowCloseIcon = true;
+                config.VisibleStateDuration = 10000;
+                config.HideTransitionDuration = 500;
+                config.ShowTransitionDuration = 500;
+            });
             services.AddMudBlazorResizeListener();
 
             var builder = new SqlConnectionStringBuilder(
