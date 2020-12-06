@@ -14,13 +14,27 @@ namespace AdvancedAnalysisDesign.Data
             _contextFactory = contextFactory;
         }
 
+        public async Task ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
+        {
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                var result = await context.Users.SingleOrDefaultAsync(u => u.EmailAddress == forgotPayload.EmailAddress);
+
+                if (result != null)
+                {
+                    result.Password = forgotPayload.Password;
+                    context.SaveChanges();
+                }
+            }
+        }
+
         public async Task<UserDetail> RegisterUserDetails(RegistrationPayload regPayload)
         {
             var userDetail = new UserDetail
             {
                 FirstName = regPayload.FirstName,
                 LastName = regPayload.LastName,
-                DateOfBirth = regPayload.DateOfBirth,
+                DateOfBirth = (System.DateTimeOffset)regPayload.DateOfBirth,
                 PhoneNumber = regPayload.PhoneNumber
             };
             
@@ -67,5 +81,6 @@ namespace AdvancedAnalysisDesign.Data
                 await context.Patients.AddAsync(patient);
             }
         }
+
     }
 }
