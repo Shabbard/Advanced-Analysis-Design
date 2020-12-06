@@ -15,6 +15,20 @@ namespace AdvancedAnalysisDesign.Data
             _contextFactory = contextFactory;
         }
 
+        public async Task ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
+        {
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                var result = await context.Users.SingleOrDefaultAsync(u => u.EmailAddress == forgotPayload.EmailAddress);
+
+                if (result != null)
+                {
+                    result.Password = forgotPayload.Password;
+                    context.SaveChanges();
+                }
+            }
+        }
+
         public async Task<UserDetail> RegisterUserDetails(RegistrationPayload regPayload)
         {
             var userDetail = new UserDetail
@@ -60,5 +74,6 @@ namespace AdvancedAnalysisDesign.Data
                 await context.SaveChangesAsync();
             }
         }
+
     }
 }
