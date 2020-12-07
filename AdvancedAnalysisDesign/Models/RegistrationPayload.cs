@@ -18,6 +18,8 @@ namespace AdvancedAnalysisDesign.Models
         [Required]
         public DateTime? DateOfBirth { get; set; }
         [Required]
+        public Gender Gender { get; set; }
+        [Required]
         public string Password { get; set; }
         [Required]
         [Compare(nameof(Password))]
