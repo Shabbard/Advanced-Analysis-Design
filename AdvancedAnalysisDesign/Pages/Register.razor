@@ -32,6 +32,17 @@
                     <MudItem xs="12">
                         <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@registrationPayload.DateOfBirth" />
                     </MudItem>
+                    
+
+                    <MudItem xs="12">
+                        <MudSelect Label="Gender" Dense="true" OffsetY="true" @bind-Value="registrationPayload.Gender" Placeholder="Select culture">
+                            <MudSelectItem T="Gender" Value="@(Gender.Male)">Male</MudSelectItem>
+                            <MudSelectItem T="Gender" Value="@(Gender.Female)">Female</MudSelectItem>
+                            <MudSelectItem T="Gender" Value="@(Gender.Other)">Other</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    
+
                     <MudItem xs="6">
                         <MudTextField Label="Password" @bind-Value="registrationPayload.Password" For="@(() => registrationPayload.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
                     </MudItem>
