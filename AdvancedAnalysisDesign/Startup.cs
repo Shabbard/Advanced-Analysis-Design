@@ -1,4 +1,5 @@
 using AdvancedAnalysisDesign.Data;
+using AdvancedAnalysisDesign.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ namespace AdvancedAnalysisDesign
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<UserService>();
+            services.AddSingleton<EmailService>();
             services.AddMudBlazorDialog();
             services.AddMudBlazorSnackbar(config =>
             {
@@ -45,7 +47,7 @@ namespace AdvancedAnalysisDesign
                 Configuration.GetConnectionString("AADDatabase"));
 
             builder.Password = Configuration["DbPassword"];
-                      
+            
             services.AddDbContextFactory<AADContext>(options =>
                 options.UseSqlServer(builder.ConnectionString));
         }
