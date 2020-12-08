@@ -1,10 +1,12 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Models;
 using AdvancedAnalysisDesign.Models.Database;
+using AdvancedAnalysisDesign.Pages;
 using Microsoft.EntityFrameworkCore;
 
-namespace AdvancedAnalysisDesign.Data
+namespace AdvancedAnalysisDesign.Services
 {
     public class UserService
     {
@@ -49,7 +51,7 @@ namespace AdvancedAnalysisDesign.Data
             var user = new User
             {
                 EmailAddress = regPayload.EmailAddress,
-                Password = regPayload.Password,
+                Password = BCrypt.Net.BCrypt.HashPassword(regPayload.Password),
                 UserDetail = userDetails,
                 UserType = regPayload.UserType
             };
