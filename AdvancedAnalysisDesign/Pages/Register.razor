@@ -104,8 +104,15 @@
     private async void OnValidSubmit(EditContext context)
     {
         StateHasChanged();
-        await UserService.RegisterPatient(registrationPayload);
-        Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
-        NavManager.NavigateTo("/");
+        try
+        {
+            await UserService.RegisterPatient(registrationPayload);
+            Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+            NavManager.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
     }
 }

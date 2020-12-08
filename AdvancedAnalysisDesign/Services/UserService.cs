@@ -48,6 +48,14 @@ namespace AdvancedAnalysisDesign.Services
         {
             var userDetails = await RegisterUserDetails(regPayload);
             
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                if (context.Users.Where(u => u.EmailAddress == regPayload.EmailAddress).Any())
+                {
+                    throw new ApplicationException("Email address is already in use!");
+                }
+            }
+            
             var user = new User
             {
                 EmailAddress = regPayload.EmailAddress,
