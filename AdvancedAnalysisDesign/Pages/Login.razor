@@ -1,8 +1,12 @@
 ﻿@page "/Login"
 @layout EmptyLayout
-@using AdvancedAnalysisDesign.Models
 @using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Services
+@using InputType = MudBlazor.InputType
 
+@inject UserService UserService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
     <EditForm Model="@model" class="max-width-26rem center mt-30">
@@ -22,7 +26,7 @@
                 </MudCardContent>
                 <MudCardActions>
                     <div class="mt-4">
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:23rem" OnClick="@LoginRequest">Login</MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:23rem" OnClick="@LoginRequest">Login</MudButton>
                     </div>
                 </MudCardActions>
                 <div style="text-align:center"> @*centered text in div as MudLink text center property does not work*@
@@ -36,12 +40,22 @@
 </MudContainer>
 @code{
     User model = new User();
-
-
+    
     //Activited onClick Login button
-    public void LoginRequest()
+    public async void LoginRequest()
     {
-        //writeLoginCodeHere
+        var loginSuccessful = await UserService.Login(model.EmailAddress, model.Password);
+
+        if (loginSuccessful)
+        {
+            Snackbar.Add("Login successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            Snackbar.Add("Login was unsuccessful. Please try again.", Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+    //writeLoginCodeHere
     }
 
 

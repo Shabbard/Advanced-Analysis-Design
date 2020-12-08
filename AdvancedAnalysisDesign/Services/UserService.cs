@@ -85,5 +85,13 @@ namespace AdvancedAnalysisDesign.Services
             }
         }
 
+        public async Task<bool> Login(string email, string password)
+        {
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                var user = await context.Users.FirstOrDefaultAsync(u => u.EmailAddress == email);
+                return user != null && BCrypt.Net.BCrypt.Verify(password, user.Password);
+            }
+        }
     }
 }
