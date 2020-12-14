@@ -22,8 +22,11 @@ namespace AdvancedAnalysisDesign.Services
 
             var Subject = "Forgot Password Code";
             var Body = "Hi " + firstName + ",\n\n" +
-                       "Your unique code is " + token + ". It will expire in 5 minutes.\n\n" +
-                       "Thanks Binary Beast Bloodwork";
+                       "Your unique code to is " + token + ". It will expire in 5 minutes.\n\n" +
+                       "You're receiving this email as a request to reset your password was recieved.\n" +
+                       "If you did not request this code, please disregard this email./n/n" +
+                       "Have a nice day.\n" +
+                       "Binary Beast Bloodwork";
 
             var client = new SmtpClient("smtp.gmail.com",587)
             {
