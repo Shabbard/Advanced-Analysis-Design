@@ -10,24 +10,21 @@ namespace AdvancedAnalysisDesign.Services
 {
     public class UserService
     {
-        private readonly IDbContextFactory<AADContext> _contextFactory;
+        private readonly AADContext _context;
         
-        public UserService(IDbContextFactory<AADContext> contextFactory)
+        public UserService(AADContext context)
         {
-            _contextFactory = contextFactory;
+            _context = context;
         }
 
         public async Task ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
         {
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var result = await context.Users.SingleOrDefaultAsync(u => u.EmailAddress == forgotPayload.EmailAddress);
+            var result = await _context.Users.SingleOrDefaultAsync(u => u.EmailAddress == forgotPayload.EmailAddress);
 
-                if (result != null)
-                {
-                    result.Password = forgotPayload.Password;
-                    context.SaveChanges();
-                }
+            if (result != null)
+            {
+                result.Password = forgotPayload.Password;
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -48,12 +45,9 @@ namespace AdvancedAnalysisDesign.Services
         {
             var userDetails = await RegisterUserDetails(regPayload);
             
-            using (var context = _contextFactory.CreateDbContext())
+            if (_context.Users.Where(u => u.EmailAddress == regPayload.EmailAddress).Any())
             {
-                if (context.Users.Where(u => u.EmailAddress == regPayload.EmailAddress).Any())
-                {
-                    throw new ApplicationException("Email address is already in use!");
-                }
+                throw new ApplicationException("Email address is already in use!");
             }
             
             var user = new User
@@ -78,20 +72,14 @@ namespace AdvancedAnalysisDesign.Services
                 VerificationImage = regPayload.VerificationImage
             };
 
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                await context.Patients.AddAsync(patient);
-                await context.SaveChangesAsync();
-            }
+            await _context.Patients.AddAsync(patient);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> Login(string email, string password)
         {
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var user = await context.Users.FirstOrDefaultAsync(u => u.EmailAddress == email);
-                return user != null && BCrypt.Net.BCrypt.Verify(password, user.Password);
-            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.EmailAddress == email);
+            return user != null && BCrypt.Net.BCrypt.Verify(password, user.Password);
         }
     }
 }

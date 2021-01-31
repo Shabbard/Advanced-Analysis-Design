@@ -26,7 +26,7 @@ namespace AdvancedAnalysisDesign
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<UserService>();
+            services.AddScoped<UserService>();
             services.AddSingleton<EmailService>();
             services.AddMudBlazorDialog();
             services.AddMudBlazorSnackbar(config =>
@@ -47,7 +47,7 @@ namespace AdvancedAnalysisDesign
 
             builder.Password = Configuration["DbPassword"];
             
-            services.AddDbContextFactory<AADContext>(options =>
+            services.AddDbContext<AADContext>(options =>
                 options.UseSqlServer(builder.ConnectionString));
         }
 
