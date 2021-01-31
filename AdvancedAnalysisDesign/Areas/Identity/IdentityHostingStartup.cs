@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,9 +13,13 @@ namespace AdvancedAnalysisDesign.Areas.Identity
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices((context, services) => {
+                var connectionStringBuilder = new SqlConnectionStringBuilder(
+                    context.Configuration.GetConnectionString("AADDatabase"));
+
+                connectionStringBuilder.Password = context.Configuration["DbPassword"];
+
                 services.AddDbContext<AADContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("AADDatabase")));
+                    options.UseSqlServer(connectionStringBuilder.ConnectionString));
 
                 services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<AADContext>();
