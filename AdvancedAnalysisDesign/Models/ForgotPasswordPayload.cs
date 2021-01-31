@@ -1,5 +1,4 @@
-﻿using System;
-using AdvancedAnalysisDesign.Enums;
+﻿using AdvancedAnalysisDesign.Enums;
 
 namespace AdvancedAnalysisDesign.Models
 {

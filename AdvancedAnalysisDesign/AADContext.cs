@@ -1,17 +1,17 @@
-using AdvancedAnalysisDesign.Enums;
-using AdvancedAnalysisDesign.Models;
-using AdvancedAnalysisDesign.Models.Database;
+﻿using AdvancedAnalysisDesign.Models.Database;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign
 {
-    public class AADContext : DbContext
+    public class AADContext : IdentityDbContext<IdentityUser>
     {
         public AADContext(DbContextOptions<AADContext> options)
             : base(options)
         {
         }
-        
+
         public DbSet<User> Users { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<Patient> Patients { get; set; }
@@ -19,5 +19,13 @@ namespace AdvancedAnalysisDesign
         public DbSet<Medication> Medications { get; set; }
         public DbSet<PatientBloodwork> PatientBloodworks { get; set; }
         public DbSet<PatientBloodworkTest> PatientBloodworkTests { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Customize the ASP.NET Identity model and override the defaults if needed.
+            // For example, you can rename the ASP.NET Identity table names and more.
+            // Add your customizations after calling base.OnModelCreating(builder);
+        }
     }
 }
