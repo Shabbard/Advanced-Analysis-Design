@@ -48,5 +48,8 @@
     <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\README.md" />
     <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data" />
+  </ItemGroup>
 
 </Project>
