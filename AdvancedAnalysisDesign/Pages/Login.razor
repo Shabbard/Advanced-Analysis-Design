@@ -17,10 +17,10 @@
                     @*Email and password fields - Start *@
                     <MudText Style="text-align:center; font-weight:bold" Typo="Typo.h4">Login</MudText>
                     <div class="mt-4">
-                        <MudTextField Label="Email" @bind-Value="model.EmailAddress" For="@(() => model.EmailAddress)" />
+                        <MudTextField Label="Email" @bind-Value="model.Email" For="@(() => model.Email)" />
                     </div>
                     <div class="mt-4">
-                        <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+                        <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="password" For="@(() => password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
                     </div>
                     @*Email and password fields - End *@
                 </MudCardContent>
@@ -40,25 +40,13 @@
 </MudContainer>
 @code{
     User model = new User();
+    string password;
     
     //Activited onClick Login button
     public async void LoginRequest()
     {
-        var loginSuccessful = await UserService.Login(model.EmailAddress, model.Password);
-
-        if (loginSuccessful)
-        {
-            Snackbar.Add("Login successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
-            NavManager.NavigateTo("/");
-        }
-        else
-        {
-            Snackbar.Add("Login was unsuccessful. Please try again.", Severity.Error, config => { config.ShowCloseIcon = false; });
-        }
-    //writeLoginCodeHere
+        await UserService.Login(model.Email, password);
     }
-
-
 
     //Allows the user to toggle password visibility on & off using the show password icon
 
