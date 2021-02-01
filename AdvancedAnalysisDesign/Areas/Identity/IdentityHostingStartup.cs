@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AdvancedAnalysisDesign.Models.Database;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace AdvancedAnalysisDesign.Areas.Identity
                 services.AddDbContext<AADContext>(options =>
                     options.UseSqlServer(connectionStringBuilder.ConnectionString));
 
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<AADContext>();
             });
         }
