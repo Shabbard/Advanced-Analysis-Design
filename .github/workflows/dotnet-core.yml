@@ -20,7 +20,8 @@ jobs:
         dotnet-version: 5.0.100
     - name: Install dependencies
       run: dotnet tool install --global dotnet-ef
-           dotnet restore
+    - name: Restore
+      run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
