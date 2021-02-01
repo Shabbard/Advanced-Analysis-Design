@@ -1,11 +1,19 @@
 ﻿@inherits LayoutComponentBase
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 <MudLayout>
     @* ----- TopBar Begin   ----- *@
 
     <MudAppBar Color="Color.Primary" Fixed="true">
         <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />  @*Drawer Button*@
-        <MudText Style="margin-left:1rem;" Typo="Typo.h5">Binary Beast - Bloodwork</MudText>     @*Application Title*@
+        <MudText Typo="Typo.h5">Binary Beast - Bloodwork</MudText>     @*Application Title*@
+        <MudAppBarSpacer/>
+        <AuthorizeView>
+            <Authorized>
+                <MudText Class="pr-4" Typo="Typo.body1"> Username: @userName</MudText>
+            </Authorized>
+        </AuthorizeView>
     </MudAppBar>
 
     @* ----- TopBar End   ----- *@
@@ -32,6 +40,21 @@
 </MudLayout>
 
 @code{
+
+    private string userName { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            userName = user.Identity.Name;
+        }
+    }
+
 
     bool open = true;
 
