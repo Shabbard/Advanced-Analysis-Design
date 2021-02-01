@@ -3,7 +3,13 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-
 <MudNavMenu Class="demo-navmenu" Style="margin-top:0.5rem; max-width:10rem;">
-    <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
+        </Authorized>
+        <NotAuthorized>
+            <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
 </MudNavMenu>

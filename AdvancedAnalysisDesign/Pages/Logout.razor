@@ -1,0 +1,10 @@
+@page "/Logout"
+@using AdvancedAnalysisDesign.Services
+@inject UserService UserService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await UserService.Logout();
+    }
+}
