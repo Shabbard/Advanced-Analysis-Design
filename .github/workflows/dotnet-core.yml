@@ -18,6 +18,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
+    - name: Set DbPassword
+      run: dotnet user-secrets set "DbPassword" ${{ secrets.DBPASSWORD }}
     - name: Install dependencies
       run: dotnet tool install --global dotnet-ef
     - name: Restore
