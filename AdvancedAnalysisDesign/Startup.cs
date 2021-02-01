@@ -1,6 +1,10 @@
+using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -46,6 +50,7 @@ namespace AdvancedAnalysisDesign
                 config.ShowTransitionDuration = 500;
             });
             services.AddMudBlazorResizeListener();
+            
 
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));
@@ -54,6 +59,25 @@ namespace AdvancedAnalysisDesign
             
             services.AddDbContext<AADContext>(options =>
                 options.UseSqlServer(builder.ConnectionString));
+            
+            services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp => {
+                var provider = (ServerAuthenticationStateProvider) sp.GetRequiredService<AuthenticationStateProvider>();
+                return provider;
+            });
+            services.AddScoped<PasswordHasher<User>>();
+            
+            services.AddIdentityCore<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<AADContext>()
+                .AddSignInManager();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "MyScheme";
+            }).AddCookie("MyScheme", options =>
+            {
+                options.Cookie.Name = "BinaryBeastAuth";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

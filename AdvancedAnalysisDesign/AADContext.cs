@@ -5,14 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign
 {
-    public class AADContext : IdentityDbContext<IdentityUser>
+    public class AADContext : IdentityDbContext<User>
     {
         public AADContext(DbContextOptions<AADContext> options)
             : base(options)
         {
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<PatientMedication> PatientMedications { get; set; }
