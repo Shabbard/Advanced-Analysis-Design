@@ -2,6 +2,7 @@ namespace AdvancedAnalysisDesign.Models.Database
 {
     public class BloodworkTest
     {
-        //*List of loads of tests pending nigel talk* - Leon
+        public int Id { get; set; }
+        public string TestName { get; set; }
     }
 }
