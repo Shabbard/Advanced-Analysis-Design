@@ -18,8 +18,7 @@ namespace AdvancedAnalysisDesign
         public DbSet<Medication> Medications { get; set; }
         public DbSet<PatientBloodwork> PatientBloodworks { get; set; }
         public DbSet<PatientBloodworkTest> PatientBloodworkTests { get; set; }
-        public DbSet<BloodworkTest> BloodworkTests { get; set; }
-
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
