@@ -8,41 +8,54 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
-    <EditForm Model="@model" class="max-width-26rem center mt-30">
-        <DataAnnotationsValidator />
-        <MudCard Elevation="5" Class="LoginCard" Style="width:26rem">
-            <div class="p-3"> @*Added divs throughout to padd and margin the fields.*@
-                <MudCardContent>
-                    @*Email and password fields - Start *@
-                    <MudText Style="text-align:center; font-weight:bold" Typo="Typo.h4">Login</MudText>
-                    <div class="mt-4">
-                        <MudTextField Label="Email" @bind-Value="model.Email" For="@(() => model.Email)" />
-                    </div>
-                    <div class="mt-4">
-                        <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="password" For="@(() => password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
-                    </div>
-                    @*Email and password fields - End *@
-                </MudCardContent>
-                <MudCardActions>
-                    <div class="mt-4">
-                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:23rem" OnClick="@LoginRequest">Login</MudButton>
-                    </div>
-                </MudCardActions>
-                <div style="text-align:center"> @*centered text in div as MudLink text center property does not work*@
-                    <MudLink Href="/ForgotPassword"  Typo="Typo.body2">Forgot Password?</MudLink> @*Link to forgot password page*@
-                    <MudToolBarSpacer /> @*Forces the next MudLink to next line*@
-                    <MudLink Href="/Register" Style="padding-bottom:0.5rem" Typo="Typo.body2">Dont have an account? Register Here</MudLink> @*Link to register page*@
-                </div>
-            </div>
-        </MudCard>
-    </EditForm>
-</MudContainer>
+<MudMainContent>
+    <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+            <MudGrid Justify="Justify.Center" Class="mt-16">
+                <MudItem xs="12">
+                    <EditForm Model="@model"> 
+                        <DataAnnotationsValidator/>
+                        <MudCard Elevation="5" Class="LoginCard">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Align="Align.Center" Typo="Typo.h3">Login</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudTextField Label="Email" @bind-Value="model.Email" For="@(() => model.Email)"/>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudTextField Label="Password" @bind-Value="password" For="@(() => password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudGrid Justify="Justify.Center" Class="pb-2">
+                                    <MudItem xs="12">
+                                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="demo-form-button" Style="min-width:100%" OnClick="@LoginRequest">Login</MudButton> @**@
+                                    </MudItem>
+                                    <MudGrid Style="flex-direction: column; align-items: center; justify-content: center">
+                                        <MudItem xs="12">
+                                            <MudLink Href="/ForgotPassword" Typo="Typo.body2">Forgot Password?</MudLink> @*Link to forgot password page*@
+                                        </MudItem>
+                                        <MudItem Class="mt-n5" xs="12">
+                                            <MudLink Href="/Register" Typo="Typo.body2">Dont have an account? Register Here</MudLink> @*Link to register page*@
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudGrid>
+                            </MudCardActions>
+                        </MudCard>
+                    </EditForm>
+                </MudItem>
+            </MudGrid>
+    </MudContainer>
+</MudMainContent>
+
 @code{
     User model = new User();
     string password;
     
-    //Activited onClick Login button
     public async void LoginRequest()
     {
         await UserService.Login(model.Email, password);
