@@ -3,13 +3,22 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudNavMenu Class="demo-navmenu" Style="margin-top:0.5rem; max-width:10rem;">
-    <AuthorizeView>
-        <Authorized>
-            <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
-        </Authorized>
-        <NotAuthorized>
-            <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
-        </NotAuthorized>
-    </AuthorizeView>
+<MudNavMenu Style="margin-top:0.5rem; max-width:10rem;">
+    <MudGrid Spacing="1">
+        <AuthorizeView>
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Settings">Settings</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
+                </MudItem>
+            </Authorized>
+            <NotAuthorized>
+                 <MudItem xs="12">
+                    <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
+                 </MudItem>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudGrid>
 </MudNavMenu>

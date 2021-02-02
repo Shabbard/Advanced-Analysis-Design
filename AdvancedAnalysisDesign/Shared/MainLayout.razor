@@ -1,6 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<MudThemeProvider Theme="darkTheme" />
+<MudDialogProvider DisableBackdropClick="true"
+                   CloseButton="true" />
+<MudSnackbarProvider />
 
 <MudLayout>
     @* ----- TopBar Begin   ----- *@
@@ -54,12 +60,49 @@
             userName = user.Identity.Name;
         }
     }
-
-
+    
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     var darkModeEnabled = await localStorage.GetItemAsync<bool>("DarkModeEnabled");
+    //     
+    //     currentTheme = darkModeEnabled ? darkTheme : defaultTheme;
+    //     StateHasChanged();
+    // }
+    
     bool open = true;
 
     void ToggleDrawer()
     {
         open = !open;
     }
+    
+    MudTheme currentTheme = new MudTheme();
+    MudTheme defaultTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#272c34"
+        }
+    };
+
+    MudTheme darkTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#27272f",
+            Background = "#32333d",
+            BackgroundGrey = "#27272f",
+            Surface = "#373740",
+            DrawerBackground = "#27272f",
+            DrawerText = "rgba(255,255,255, 0.50)",
+            DrawerIcon = "rgba(255,255,255, 0.50)",
+            AppbarBackground = "#27272f",
+            AppbarText = "rgba(255,255,255, 0.70)",
+            TextPrimary = "rgba(255,255,255, 0.70)",
+            TextSecondary = "rgba(255,255,255, 0.50)",
+            ActionDefault = "#adadb1",
+            ActionDisabled = "rgba(255,255,255, 0.26)",
+            ActionDisabledBackground = "rgba(255,255,255, 0.12)"
+        }
+    };
 }
