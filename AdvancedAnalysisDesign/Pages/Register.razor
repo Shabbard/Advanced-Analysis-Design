@@ -56,14 +56,14 @@
                             </MudGrid>
 
                             <MudForm>
-                                <MudSelect Label="User Account Type" Dense="true" OffsetY="true" @bind-Value="registrationPayload.UserType" Placeholder="Select culture">
-                                    <MudSelectItem T="UserType" Value="@(UserType.Patient)">Patient</MudSelectItem>
-                                    <MudSelectItem T="UserType" Value="@(UserType.Doctor)">Doctor</MudSelectItem>
-                                    <MudSelectItem T="UserType" Value="@(UserType.Pharmacist)">Pharmacist</MudSelectItem>
+                                <MudSelect Label="User Account Type" Dense="true" OffsetY="true" @bind-Value="registrationPayload.UserRole" Placeholder="Select culture">
+                                    <MudSelectItem T="Role" Value="@(Role.Patient)">Patient</MudSelectItem>
+                                    <MudSelectItem T="Role" Value="@(Role.GP)">Doctor</MudSelectItem>
+                                    <MudSelectItem T="Role" Value="@(Role.Pharmacist)">Pharmacist</MudSelectItem>
                                 </MudSelect>
                             </MudForm>
 
-                            <MudHidden IsHidden="@(registrationPayload.UserType != UserType.Patient)">
+                            <MudHidden IsHidden="@(registrationPayload.UserRole != Role.Patient)">
                                 <MudGrid Spacing="1">
                                     <MudItem xs="12">
                                         <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)"/>

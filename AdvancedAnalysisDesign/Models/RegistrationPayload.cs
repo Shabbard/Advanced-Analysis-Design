@@ -24,7 +24,7 @@ namespace AdvancedAnalysisDesign.Models
         [Required]
         [Compare(nameof(Password))]
         public string PasswordComparison { get; set; }
-        public UserType UserType { get; set; }
+        public Role UserRole { get; set; }
         [Required]
         public string NhsNumber { get; set; }
         public byte[] VerificationImage { get; set; }
