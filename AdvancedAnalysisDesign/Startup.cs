@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Services;
 using Microsoft.AspNetCore.Builder;
@@ -81,7 +84,7 @@ namespace AdvancedAnalysisDesign
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -105,6 +108,48 @@ namespace AdvancedAnalysisDesign
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+            
+            CreateRoles(serviceProvider).Wait();
+        }
+        
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            //initializing custom roles 
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            IdentityResult roleResult;
+
+            foreach(Role roleName in Enum.GetValues(typeof(Role)))
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName.ToString());
+                if (!roleExist)
+                {
+                    //create the roles and seed them to the database: Question 1
+                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName.ToString()));
+                }
+            }
+
+            //Here you could create a super user who will maintain the web app
+            var poweruser = new User
+            {
+                UserName = "admin",
+                Email = "admin@admin",
+                EmailConfirmed = true,
+            };
+            
+            //Ensure you have these values in your appsettings.json file
+            string userPWD = "P@ssword123";
+            var _user = await UserManager.FindByEmailAsync("admin@admin");
+
+            if(_user == null)
+            {
+                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+                if (createPowerUser.Succeeded)
+                {
+                    //here we tie the new user to the role
+                    await UserManager.AddToRoleAsync(poweruser, Role.Admin.ToString());
+                }
+            }
         }
     }
 }

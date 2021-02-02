@@ -87,7 +87,8 @@ namespace AdvancedAnalysisDesign.Services
                 UserDetail = userDetails,
                 Email = regPayload.EmailAddress,
                 UserName = regPayload.EmailAddress,
-                PhoneNumber = regPayload.PhoneNumber
+                PhoneNumber = regPayload.PhoneNumber,
+                EmailConfirmed = true //TODO: Remove this later
             };
             
             var result = await _userManager.CreateAsync(user, regPayload.Password);
