@@ -18,7 +18,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
+    - name: Set DbPassword
+      run: dotnet user-secrets set "DbPassword" ${{ secrets.DBPASSWORD }} --project AdvancedAnalysisDesign
     - name: Install dependencies
+      run: dotnet tool install --global dotnet-ef
+    - name: Restore
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
@@ -27,7 +31,7 @@ jobs:
     - name: Publish
       run: dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
     - name: Update Database
-      run: dotnet ef database update
+      run: dotnet ef database update --project AdvancedAnalysisDesign
     - name: Azure WebApp
       uses: Azure/webapps-deploy@v2
       with:
