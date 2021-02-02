@@ -1,10 +1,10 @@
 namespace AdvancedAnalysisDesign.Enums
 {
-    public enum UserType
+    public enum Role
     {
         Patient,
-        Doctor,
+        GP,
         Pharmacist,
-        SystemAdmin
+        Admin
     }
 }
