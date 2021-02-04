@@ -3,7 +3,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<MudThemeProvider Theme="darkTheme" />
+<MudThemeProvider Theme="currentTheme" />
 <MudDialogProvider DisableBackdropClick="true"
                    CloseButton="true" />
 <MudSnackbarProvider />
@@ -61,13 +61,13 @@
         }
     }
     
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     var darkModeEnabled = await localStorage.GetItemAsync<bool>("DarkModeEnabled");
-    //     
-    //     currentTheme = darkModeEnabled ? darkTheme : defaultTheme;
-    //     StateHasChanged();
-    // }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var darkModeEnabled = await localStorage.GetItemAsync<bool>("DarkModeEnabled");
+        
+        currentTheme = darkModeEnabled ? darkTheme : defaultTheme;
+        StateHasChanged();
+    }
     
     bool open = true;
 
@@ -76,8 +76,8 @@
         open = !open;
     }
     
-    MudTheme currentTheme = new MudTheme();
-    MudTheme defaultTheme = new MudTheme()
+    MudTheme currentTheme = new();
+    MudTheme defaultTheme = new()
     {
         Palette = new Palette()
         {
@@ -85,7 +85,7 @@
         }
     };
 
-    MudTheme darkTheme = new MudTheme()
+    MudTheme darkTheme = new()
     {
         Palette = new Palette()
         {
