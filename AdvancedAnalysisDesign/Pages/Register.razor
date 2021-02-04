@@ -55,27 +55,17 @@
                                 </MudItem>
                             </MudGrid>
 
-                            <MudForm>
-                                <MudSelect Label="User Account Type" Dense="true" OffsetY="true" @bind-Value="registrationPayload.UserRole" Placeholder="Select culture">
-                                    <MudSelectItem T="Role" Value="@(Role.Patient)">Patient</MudSelectItem>
-                                    <MudSelectItem T="Role" Value="@(Role.GP)">Doctor</MudSelectItem>
-                                    <MudSelectItem T="Role" Value="@(Role.Pharmacist)">Pharmacist</MudSelectItem>
-                                </MudSelect>
-                            </MudForm>
-
-                            <MudHidden IsHidden="@(registrationPayload.UserRole != Role.Patient)">
-                                <MudGrid Spacing="1">
-                                    <MudItem xs="12">
-                                        <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)"/>
-                                    </MudItem>
-                                    <MudItem xs="6">
-                                        <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload Image Verification</MudText>
-                                    </MudItem>
-                                    <MudItem xs="6">
-                                        <MudIconButton Icon="@Icons.Material.AddAPhoto"></MudIconButton>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudHidden>
+                            <MudGrid Spacing="1">
+                                <MudItem xs="12">
+                                    <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)"/>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload Image Verification</MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudIconButton Icon="@Icons.Material.AddAPhoto"></MudIconButton>
+                                </MudItem>
+                            </MudGrid>
 
                         </MudCardContent>
                         <MudCardActions>
@@ -93,7 +83,7 @@
 </MudMainContent>
 
 @code{
-    RegistrationPayload registrationPayload = new RegistrationPayload();
+    RegistrationPayload registrationPayload = new();
     
     bool isPasswordVisible;
     InputType PasswordInput = InputType.Password;
