@@ -1,21 +1,33 @@
 ﻿@inherits LayoutComponentBase
 
-<MudNavMenu Style="margin-top:0.5rem; max-width:10rem;">
+@using AdvancedAnalysisDesign.Enums
+
+<MudNavMenu Style="margin-top:0.5rem;">
     <MudGrid Spacing="1">
-        <AuthorizeView>
-            <Authorized>
-                <MudItem xs="12">
-                    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Settings">Settings</MudNavLink>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
-                </MudItem>
-            </Authorized>
-            <NotAuthorized>
-                 <MudItem xs="12">
-                    <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
-                 </MudItem>
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudGrid>
+        <AuthorizeView Roles="@(Role.Admin + "," + Role.GP)">
+                <Authorized>
+                    <MudItem xs="12">
+                        <MudNavLink Href="/GpUpload" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+                    </MudItem>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView>
+                <Authorized>
+                    <MudItem xs="12">
+                        <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Settings">Settings</MudNavLink>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
+                    </MudItem>
+                </Authorized>
+                <NotAuthorized>
+                    <MudItem xs="12">
+                        <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
+                    </MudItem>
+                </NotAuthorized>
+            </AuthorizeView>
+</MudGrid>
+    
 </MudNavMenu>
+
+
