@@ -2,6 +2,13 @@
 
 <MudNavMenu Style="margin-top:0.5rem; max-width:10rem;">
     <MudGrid Spacing="1">
+        <AuthorizeView Roles="GP">
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/GpUpload" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+                </MudItem>
+            </Authorized>
+        </AuthorizeView>
         <AuthorizeView>
             <Authorized>
                 <MudItem xs="12">
@@ -12,15 +19,11 @@
                 </MudItem>
             </Authorized>
             <NotAuthorized>
-                 <MudItem xs="12">
+                <MudItem xs="12">
                     <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
-                 </MudItem>
+                </MudItem>
             </NotAuthorized>
         </AuthorizeView>
     </MudGrid>
-    <AuthorizeView Roles="GP">
-        <Authorized>
-            <MudNavLink Href="/GpUpload" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
-    </AuthorizeView>
-        </Authorized>
+    
 </MudNavMenu>
