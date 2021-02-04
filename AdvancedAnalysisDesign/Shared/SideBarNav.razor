@@ -3,7 +3,14 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudNavMenu Class="demo-navmenu" Style="margin-top:0.5rem; max-width:10rem;">
+<MudNavMenu Class="demo-navmenu" Style="margin-top:0.5rem">
+
+    <AuthorizeView Roles="GP">
+        <Authorized>
+            <MudNavLink Href="/GpUpload" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
+
     <AuthorizeView>
         <Authorized>
             <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
