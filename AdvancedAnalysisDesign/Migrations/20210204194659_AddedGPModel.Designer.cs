@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    [Migration("20210204192827_AddedGPModel")]
+    [Migration("20210204194659_AddedGPModel")]
     partial class AddedGPModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,7 +36,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("BloodworkTests");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.GP", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -398,7 +398,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.GP", b =>
+            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", b =>
                 {
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
                         .WithMany()
@@ -409,7 +409,7 @@ namespace AdvancedAnalysisDesign.Migrations
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Patient", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.GP", "GP")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", "GP")
                         .WithMany()
                         .HasForeignKey("GPId");
 

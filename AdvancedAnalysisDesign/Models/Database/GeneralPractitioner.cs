@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AdvancedAnalysisDesign.Models.Database
 {
-    public class GP
+    public class GeneralPractitioner
     {
         public int Id { get; set; }
         public User User { get; set; }
