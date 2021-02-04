@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models;
 using AdvancedAnalysisDesign.Models.Database;
 using Microsoft.AspNetCore.Authentication;
@@ -106,6 +107,8 @@ namespace AdvancedAnalysisDesign.Services
                 NhsNumber = regPayload.NhsNumber,
                 VerificationImage = regPayload.VerificationImage
             };
+
+            await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
 
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
