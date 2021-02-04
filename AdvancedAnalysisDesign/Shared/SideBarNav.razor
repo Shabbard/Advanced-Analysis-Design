@@ -1,22 +1,26 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
 
-<MudNavMenu Class="demo-navmenu" Style="margin-top:0.5rem">
-
+<MudNavMenu Style="margin-top:0.5rem; max-width:10rem;">
+    <MudGrid Spacing="1">
+        <AuthorizeView>
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Settings">Settings</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
+                </MudItem>
+            </Authorized>
+            <NotAuthorized>
+                 <MudItem xs="12">
+                    <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
+                 </MudItem>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudGrid>
     <AuthorizeView Roles="GP">
         <Authorized>
             <MudNavLink Href="/GpUpload" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
-        </Authorized>
     </AuthorizeView>
-
-    <AuthorizeView>
-        <Authorized>
-            <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
         </Authorized>
-        <NotAuthorized>
-            <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
-        </NotAuthorized>
-    </AuthorizeView>
 </MudNavMenu>

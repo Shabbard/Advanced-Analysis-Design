@@ -1,0 +1,102 @@
+﻿@page "/settings"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject NavigationManager NavManager
+
+<AuthorizeView>
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudGrid Spacing="1">
+            <MudItem xs="12">
+                <MudCard>
+                    <MudCardContent>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Account Settings</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudFab Color="Color.Primary" Icon="@Icons.Material.Save" OnClick="@(() => NavManager.NavigateTo(NavManager.Uri, true))"/>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudExpansionPanels MultiExpansion="true">
+                            <MudExpansionPanel Text="Password Reset">
+                                <MudNavLink Href="/identity/account/forgotpassword" Match="NavLinkMatch.All">Click here to reset your password.</MudNavLink>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Phone Number">
+                                <MudNavLink Href="/Identity/Account/Manage" Match="NavLinkMatch.All">Click here to set a phone number.</MudNavLink>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Email Address">
+                                <MudNavLink Href="/Identity/Account/Manage/Email" Match="NavLinkMatch.All">Click here to change your email address.</MudNavLink>
+                            </MudExpansionPanel>
+                             <MudExpansionPanel Text="Personal Data">
+                                <MudNavLink Href="/Identity/Account/Manage/PersonalData" Match="NavLinkMatch.All">Click here to delete your personal data.</MudNavLink>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudCardContent>
+                    <MudCardActions>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12">
+                <MudCard>
+                    <MudCardContent>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">System Settings</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudFab Color="Color.Primary" Icon="@Icons.Material.Save" OnClick="@(() => NavManager.NavigateTo(NavManager.Uri, true))"/>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudExpansionPanels MultiExpansion="true">
+                            <MudExpansionPanel Text="Dark Mode">
+                                <MudToggleIconButton Toggled="@darkModeEnabled" ToggledChanged="() => ToggleDarkMode()"
+                                                     Icon="@Icons.Material.BrightnessHigh"
+                                                     ToggledIcon="@Icons.Material.Bedtime"/>
+                                <span>Toggle Dark Mode</span>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudCardContent>
+                    <MudCardActions>
+                        
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</AuthorizeView>
+
+@code {
+    bool darkModeEnabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+        }
+        else
+        {
+            NavManager.NavigateTo("/", true);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        darkModeEnabled = await localStorage.GetItemAsync<bool>("DarkModeEnabled");
+    }
+
+    private async Task ToggleDarkMode()
+    {
+        if (darkModeEnabled)
+        {
+            await localStorage.SetItemAsync("DarkModeEnabled", "false");
+        }
+        else
+        {
+            await localStorage.SetItemAsync("DarkModeEnabled", "true");
+        }
+        StateHasChanged();
+    }
+}
