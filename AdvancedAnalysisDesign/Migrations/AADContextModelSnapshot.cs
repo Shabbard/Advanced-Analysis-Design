@@ -82,7 +82,7 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("GPId")
+                    b.Property<int?>("GeneralPractitionerId")
                         .HasColumnType("int");
 
                     b.Property<string>("NhsNumber")
@@ -96,7 +96,7 @@ namespace AdvancedAnalysisDesign.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GPId");
+                    b.HasIndex("GeneralPractitionerId");
 
                     b.HasIndex("UserId");
 
@@ -407,15 +407,15 @@ namespace AdvancedAnalysisDesign.Migrations
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Patient", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", "GP")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", "GeneralPractitioner")
                         .WithMany()
-                        .HasForeignKey("GPId");
+                        .HasForeignKey("GeneralPractitionerId");
 
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("GP");
+                    b.Navigation("GeneralPractitioner");
 
                     b.Navigation("User");
                 });

@@ -7,7 +7,7 @@ namespace AdvancedAnalysisDesign.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "GPId",
+                name: "GeneralPractitionerId",
                 table: "Patients",
                 type: "int",
                 nullable: true);
@@ -34,9 +34,9 @@ namespace AdvancedAnalysisDesign.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Patients_GPId",
+                name: "IX_Patients_GeneralPractitionerId",
                 table: "Patients",
-                column: "GPId");
+                column: "GeneralPractitionerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GeneralPractitioners_UserId",
@@ -44,9 +44,9 @@ namespace AdvancedAnalysisDesign.Migrations
                 column: "UserId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Patients_GeneralPractitioners_GPId",
+                name: "FK_Patients_GeneralPractitioners_GeneralPractitionerId",
                 table: "Patients",
-                column: "GPId",
+                column: "GeneralPractitionerId",
                 principalTable: "GeneralPractitioners",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -55,18 +55,18 @@ namespace AdvancedAnalysisDesign.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Patients_GeneralPractitioners_GPId",
+                name: "FK_Patients_GeneralPractitioners_GeneralPractitionerId",
                 table: "Patients");
 
             migrationBuilder.DropTable(
                 name: "GeneralPractitioners");
 
             migrationBuilder.DropIndex(
-                name: "IX_Patients_GPId",
+                name: "IX_Patients_GeneralPractitionerId",
                 table: "Patients");
 
             migrationBuilder.DropColumn(
-                name: "GPId",
+                name: "GeneralPractitionerId",
                 table: "Patients");
         }
     }
