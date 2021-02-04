@@ -2,7 +2,7 @@
 
 namespace AdvancedAnalysisDesign.Migrations
 {
-    public partial class useridentitydetails : Migration
+    public partial class SquashedUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,6 +12,19 @@ namespace AdvancedAnalysisDesign.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "PhoneNumber",
+                table: "UserDetails");
+
+            migrationBuilder.DropColumn(
+                name: "Completed",
+                table: "PatientBloodworkTests");
+
+            migrationBuilder.RenameColumn(
+                name: "Results",
+                table: "PatientBloodworkTests",
+                newName: "TestType");
 
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
@@ -23,17 +36,65 @@ namespace AdvancedAnalysisDesign.Migrations
                 oldNullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "Discriminator",
-                table: "AspNetUsers",
+                name: "Result",
+                table: "PatientBloodworkTests",
                 type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "AspNetUserTokens",
+                type: "nvarchar(450)",
                 nullable: false,
-                defaultValue: "");
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserTokens",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
 
             migrationBuilder.AddColumn<int>(
                 name: "UserDetailId",
                 table: "AspNetUsers",
                 type: "int",
                 nullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "ProviderKey",
+                table: "AspNetUserLogins",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserLogins",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
+            migrationBuilder.CreateTable(
+                name: "BloodworkTests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TestName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BloodworkTests", x => x.Id);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_UserDetailId",
@@ -67,17 +128,31 @@ namespace AdvancedAnalysisDesign.Migrations
                 name: "FK_Patients_AspNetUsers_UserId",
                 table: "Patients");
 
+            migrationBuilder.DropTable(
+                name: "BloodworkTests");
+
             migrationBuilder.DropIndex(
                 name: "IX_AspNetUsers_UserDetailId",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
-                name: "Discriminator",
-                table: "AspNetUsers");
+                name: "Result",
+                table: "PatientBloodworkTests");
 
             migrationBuilder.DropColumn(
                 name: "UserDetailId",
                 table: "AspNetUsers");
+
+            migrationBuilder.RenameColumn(
+                name: "TestType",
+                table: "PatientBloodworkTests",
+                newName: "Results");
+
+            migrationBuilder.AddColumn<string>(
+                name: "PhoneNumber",
+                table: "UserDetails",
+                type: "nvarchar(max)",
+                nullable: true);
 
             migrationBuilder.AlterColumn<int>(
                 name: "UserId",
@@ -87,6 +162,49 @@ namespace AdvancedAnalysisDesign.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)",
                 oldNullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "Completed",
+                table: "PatientBloodworkTests",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "AspNetUserTokens",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserTokens",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "ProviderKey",
+                table: "AspNetUserLogins",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserLogins",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
 
             migrationBuilder.CreateTable(
                 name: "Users",

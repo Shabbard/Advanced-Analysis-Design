@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Services;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -41,6 +42,7 @@ namespace AdvancedAnalysisDesign
             services.AddScoped<UserService>();
             services.AddSingleton<EmailService>();
             services.AddMudBlazorDialog();
+            services.AddBlazoredLocalStorage();
             services.AddMudBlazorSnackbar(config =>
             {
                 config.PositionClass = Defaults.Classes.Position.BottomLeft;
