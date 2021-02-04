@@ -54,7 +54,7 @@ namespace AdvancedAnalysisDesign.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GP");
+                    b.ToTable("GeneralPractitioners");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Medication", b =>

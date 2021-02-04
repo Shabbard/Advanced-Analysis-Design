@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    [Migration("20210204191446_AddedGPModel")]
+    [Migration("20210204192827_AddedGPModel")]
     partial class AddedGPModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,7 +56,7 @@ namespace AdvancedAnalysisDesign.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GP");
+                    b.ToTable("GeneralPractitioners");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Medication", b =>
