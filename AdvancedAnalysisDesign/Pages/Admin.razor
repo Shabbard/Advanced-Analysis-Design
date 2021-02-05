@@ -1,0 +1,37 @@
+@page "/Admin"
+@using AdvancedAnalysisDesign.Enums
+
+<AuthorizeView Roles="@(Role.Admin + "," + Role.GP)">
+    <Authorized>
+        <MudContainer >
+            <MudCard>
+                <MudCardContent>
+                        <MudTabs Color="@Color.Primary" Rounded="true" Centered="true">
+                            <MudTabPanel Text="Item One">
+                                <MudText>Item One</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Item Two">
+                                <MudText>Item Two</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Item Three">
+                                <MudText>Item Three</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Item Four">
+                                <MudText>Item Four</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Item Five">
+                                <MudText>Item Five</MudText>
+                            </MudTabPanel>
+                            <MudTabPanel Text="Item Six">
+                                <MudText>Item Six</MudText>
+                            </MudTabPanel>
+                        </MudTabs>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    
+}
