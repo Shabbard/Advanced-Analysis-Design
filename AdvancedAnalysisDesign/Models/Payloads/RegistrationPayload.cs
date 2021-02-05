@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using AdvancedAnalysisDesign.Enums;
 
-namespace AdvancedAnalysisDesign.Models
+namespace AdvancedAnalysisDesign.Models.Payloads
 {
     public class RegistrationPayload
     {
