@@ -8,14 +8,13 @@
             <MudNavLink Href="/index" Icon="@Icons.Material.Home">Home Page</MudNavLink>
         </MudItem>
         <AuthorizeView Roles="@(Role.Admin + "," + Role.GP)">
-                <Authorized>
-                    <MudItem xs="12">
-                        <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudNavLink Href="/Admin" Icon="@Icons.Material.Security">Admin Settings</MudNavLink>
-                    </MudItem>
-                </Authorized>
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Admin" Icon="@Icons.Material.Security">Admin Settings</MudNavLink>
+                </MudItem>
             </Authorized>
         </AuthorizeView>
         <AuthorizeView>
