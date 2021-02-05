@@ -3,7 +3,10 @@
 @using AdvancedAnalysisDesign.Enums
 
 <MudNavMenu Style="margin-top:0.5rem;">
-    <MudGrid Spacing="1">
+    <MudGrid Spacing="1" Style="max-width:100%">
+        <MudItem xs="12">
+            <MudNavLink Href="/index" Icon="@Icons.Material.Home">Home Page</MudNavLink>
+        </MudItem>
         <AuthorizeView Roles="@(Role.Admin + "," + Role.GP)">
                 <Authorized>
                     <MudItem xs="12">
@@ -13,6 +16,7 @@
                         <MudNavLink Href="/Admin" Icon="@Icons.Material.Security">Admin Settings</MudNavLink>
                     </MudItem>
                 </Authorized>
+            </Authorized>
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>
@@ -31,5 +35,3 @@
         </AuthorizeView>
     </MudGrid>
 </MudNavMenu>
-
-
