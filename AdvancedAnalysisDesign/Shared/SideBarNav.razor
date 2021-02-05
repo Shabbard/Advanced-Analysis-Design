@@ -10,14 +10,17 @@
         <AuthorizeView Roles="@(Role.Admin + "," + Role.GP)">
             <Authorized>
                 <MudItem xs="12">
-                    <MudNavLink Href="/GpUpload" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+                    <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Admin" Icon="@Icons.Material.Security">Admin Settings</MudNavLink>
                 </MudItem>
             </Authorized>
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>
                 <MudItem xs="12">
-                    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Settings">Settings</MudNavLink>
+                    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.People">User Settings</MudNavLink>
                 </MudItem>
                 <MudItem xs="12">
                     <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
@@ -30,7 +33,4 @@
             </NotAuthorized>
         </AuthorizeView>
     </MudGrid>
-
 </MudNavMenu>
-
-
