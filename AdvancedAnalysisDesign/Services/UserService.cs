@@ -86,11 +86,6 @@ namespace AdvancedAnalysisDesign.Services
         {
             var userDetails = RegisterUserDetails(regPayload);
             
-            // if (_context.Users.Where(u => u.Email == regPayload.EmailAddress).Any())
-            // {
-            //     throw new ApplicationException("Email address is already in use!");
-            // }
-            
             var user = new User
             {
                 UserDetail = userDetails,
