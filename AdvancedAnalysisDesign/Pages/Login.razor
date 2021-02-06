@@ -65,12 +65,12 @@
 
     bool isPasswordVisible;
     InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.VisibilityOff;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     void TogglePasswordVisibility()
     {
         isPasswordVisible = !isPasswordVisible;
-        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.Filled.VisibilityOff ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
         PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
     }
 }

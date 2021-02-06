@@ -64,7 +64,7 @@
                                     <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload Image Verification</MudText>
                                 </MudItem>
                                 <MudItem xs="6">
-                                    <MudIconButton Icon="@Icons.Material.AddAPhoto"></MudIconButton>
+                                    <MudIconButton Icon="@Icons.Material.Filled.AddAPhoto"></MudIconButton>
                                 </MudItem>
                             </MudGrid>
 
@@ -88,12 +88,12 @@
     
     bool isPasswordVisible;
     InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.VisibilityOff;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     
     void TogglePasswordVisibility()
     {
         isPasswordVisible = !isPasswordVisible;
-        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.Filled.VisibilityOff ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
         PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
     }
  

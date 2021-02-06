@@ -40,21 +40,9 @@ namespace AdvancedAnalysisDesign
             services.AddScoped<UserService>();
             services.AddSingleton<EmailService>();
             services.AddScoped<SignInService>();
-            services.AddMudBlazorDialog();
+            services.AddMudServices();
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
-            services.AddMudBlazorSnackbar(config =>
-            {
-                config.PositionClass = Defaults.Classes.Position.BottomLeft;
-
-                config.PreventDuplicates = false;
-                config.NewestOnTop = false;
-                config.ShowCloseIcon = true;
-                config.VisibleStateDuration = 10000;
-                config.HideTransitionDuration = 500;
-                config.ShowTransitionDuration = 500;
-            });
-            services.AddMudBlazorResizeListener();
             
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));

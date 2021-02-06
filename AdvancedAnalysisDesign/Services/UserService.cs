@@ -59,17 +59,6 @@ namespace AdvancedAnalysisDesign.Services
             _blazorDownloadFileService = blazorDownloadFileService;
         }
 
-        public async Task ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
-        {
-            var result = await _context.Users.SingleOrDefaultAsync(u => u.Email == forgotPayload.EmailAddress);
-
-            if (result != null)
-            {
-                result.PasswordHash = forgotPayload.Password;
-                await _context.SaveChangesAsync();
-            }
-        }
-
         public UserDetail RegisterUserDetails(RegistrationPayload regPayload)
         {
             var userDetail = new UserDetail
@@ -177,15 +166,15 @@ namespace AdvancedAnalysisDesign.Services
             await _signInService.ResetUserLoginAsync(user);
         }
 
-        public async Task UpdatePhonenumberAsync(string phonenumber)
+        public async Task UpdatePhoneNumberAsync(string phoneNumber)
         {
             var user = await GetCurrentUserAsync();
 
-            var currentPhonenumber = await _userManager.GetPhoneNumberAsync(user);
+            var currentPhoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            if (currentPhonenumber != phonenumber)
+            if (currentPhoneNumber != phoneNumber)
             {
-                var changePasswordResult = await _userManager.SetPhoneNumberAsync(user, phonenumber);
+                var changePasswordResult = await _userManager.SetPhoneNumberAsync(user, phoneNumber);
                 if (!changePasswordResult.Succeeded)
                 {
                     foreach (var error in changePasswordResult.Errors)
@@ -196,7 +185,7 @@ namespace AdvancedAnalysisDesign.Services
                 await _signInService.ResetUserLoginAsync(user);
             }
         }
-        public async Task UpdateEmailaddressAsync(string newEmail)
+        public async Task UpdateEmailAddressAsync(string newEmail)
         {
             if (string.IsNullOrEmpty(newEmail))
             {
@@ -210,12 +199,14 @@ namespace AdvancedAnalysisDesign.Services
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
             
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            newEmail = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(newEmail));
+            userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(userId));
             
             Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmEmail", userId, newEmail, code);
             
             var emailMessage = $"Hi {user.UserDetail.FirstName} {user.UserDetail.LastName}. \n\n" + 
                                "You have requested an email address change, to confirm this please follow the url. \n\n" + 
-                               $"Please confirm your account by {HtmlEncoder.Default.Encode(confirmationUrl)}\n\n" +
+                               $"{HtmlEncoder.Default.Encode(confirmationUrl)}\n\n" +
                                "If you did not request this change, please disregard this email.\n\n" +
                                "Have a nice day.\n" +
                                "Binary Beast Bloodwork";
@@ -306,6 +297,38 @@ namespace AdvancedAnalysisDesign.Services
         public async Task<List<Patient>> FetchAllPatients()
         {
             return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
+        }
+        
+        public async Task SubmitForgetPasswordAsync(string emailAddress)
+        {
+            if (string.IsNullOrEmpty(emailAddress))
+            {
+                throw new Exception("Please enter an email address.");
+            }
+            
+            var user = await _userManager.FindByEmailAsync(emailAddress);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return;
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id));
+            
+            Url passwordResetUrl = _navigationManager.BaseUri.AppendPathSegments("PasswordReset", userId, code);
+            
+            var emailMessage = "You have requested a password reset, to reset your password please follow the url. \n\n" + 
+                               $"{HtmlEncoder.Default.Encode(passwordResetUrl)}\n\n" +
+                               "If you did not request this change, please disregard this email.\n\n" +
+                               "Have a nice day.\n" +
+                               "Binary Beast Bloodwork";
+            
+            await _emailService.SendEmailAsync(
+                emailAddress,
+                "Reset your password",
+                emailMessage);
         }
     }
 }

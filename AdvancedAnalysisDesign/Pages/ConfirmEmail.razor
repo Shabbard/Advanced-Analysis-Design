@@ -16,20 +16,23 @@
     public string Email { get; set; }
     [Parameter]
     public string Code { get; set; }
-    User user;
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            user = await UserManager.FindByIdAsync(UserId);
+            var decodedUserId = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(UserId));
+            
+            var user = await UserManager.FindByIdAsync(decodedUserId);
             if (user == null)
             {
                 Snackbar.Add($"Unable to load user with ID '{UserId}'.", Severity.Error);
             }
 
             var decodedCode = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
-            var result = await UserManager.ChangeEmailAsync(user, Email, decodedCode);
+            var decodedEmailAddress = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Email));
+            
+            var result = await UserManager.ChangeEmailAsync(user, decodedEmailAddress, decodedCode);
             if (!result.Succeeded)
             {
                 Snackbar.Add("Error changing email.", Severity.Error);
