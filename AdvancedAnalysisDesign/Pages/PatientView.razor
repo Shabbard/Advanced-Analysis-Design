@@ -3,71 +3,99 @@
 @using AdvancedAnalysisDesign.Services
 @using InputType = MudBlazor.InputType
 
+@using AdvancedAnalysisDesign.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
 @inject UserService UserService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 @*Limit to user + admin*@
 @*Link to specific user*@
 
-<MudCardHeader>
-    <CardHeaderContent>
-        @*Add Specific users name*@
-        <MudText Align="Align.Center" Typo="Typo.h3">Username</MudText>
-    </CardHeaderContent>
-</MudCardHeader>
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <MudCard Elevation="5" Class="MedicationCard">
+<AuthorizeView>
+    <MudContainer>
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Align="Align.Center" Typo="Typo.h5">Medication</MudText>
+                <MudText Align="Align.Center" Typo="Typo.h3">Patient Information</MudText>
             </CardHeaderContent>
         </MudCardHeader>
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Text="Medication">
+                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-16">
+                    <MudCard Elevation="5" Class="MedicationCard">
 
-        @* Data table for Medication *@
-        @*@<MudTable Items="usermedication.get" Hover="@hover" Breakpoint="Breakpoint.Sm">
-            <HeaderContent>
-                <MudTh>Name</MudTh>
-                <MudTh>Expiry</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Expiry">@context.Expiry</MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager />
-            </PagerContent>
-         </MudTable>*@
+                        @* Data table for Medication *@
+                        <MudTable Height="400px" Items="medicationTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                            <HeaderContent>
+                                <MudTh>Name</MudTh>
+                                <MudTh>Bloodwork Required</MudTh>
+                            </HeaderContent>
 
-    </MudCard>
-</MudContainer>
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <MudCard Elevation="5" Class="BloodworkCard">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Align="Align.Center" Typo="Typo.h5">Bloodwork</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
+                            <RowTemplate Context="row">
+                                <MudTd DataLabel="Name">@row.Medication.Name</MudTd>
+                                <MudTd DataLabel="Expiry">@row.Medication.BloodworkRequired</MudTd>
+                            </RowTemplate>
 
-        @* Data table for Bloodwork *@
-        @*@<MudTable Items="userbloodwork.get" Hover="@hover" Breakpoint="Breakpoint.Sm">
-            <HeaderContent>
-               <MudTh>Type</MudTh>
-               <MudTh>Date</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Type">@context.Type</MudTd>
-                <MudTd DataLabel="Date">@context.Date</MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager />
-            </PagerContent>
-        </MudTable>*@
+                            <PagerContent>
+                                <MudTablePager />
+                            </PagerContent>
+                        </MudTable>
 
-    </MudCard>
-</MudContainer>
+                    </MudCard>
+
+                    @*Add Request Medication Button*@
+
+
+                </MudContainer>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text="Bloodwork">
+                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-16">
+                    <MudCard Elevation="5" Class="MedicationCard">
+
+                        @* Data table for Bloodwork *@
+                        <MudTable Height="400px" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                            <HeaderContent>
+                                <MudTh>Id</MudTh>
+                                <MudTh>Date</MudTh>
+                            </HeaderContent>
+
+                            <RowTemplate Context="row">
+                                <MudTd DataLabel="Id">@row.Id</MudTd>
+                                <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                            </RowTemplate>
+
+                            <PagerContent>
+                                <MudTablePager />
+                            </PagerContent>
+                        </MudTable>
+
+                    </MudCard>
+
+                </MudContainer>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </MudContainer>
+</AuthorizeView>
 
 @code{
     private bool hover = true;
 
-    @*Add authorisation*@
+    private List<PatientMedication> medicationTableData = new List<PatientMedication>();
+    private List<PatientBloodwork> bloodworkTableData = new List<PatientBloodwork>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        {
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
 }
