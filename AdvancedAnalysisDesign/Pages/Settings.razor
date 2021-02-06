@@ -25,7 +25,7 @@
                                 <MudText Typo="Typo.h6">Account Settings</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                <MudFab Color="Color.Primary" Icon="@Icons.Material.Save" OnClick="@(() => NavManager.NavigateTo(NavManager.Uri, true))"/>
+                                <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Save" OnClick="@(() => NavManager.NavigateTo(NavManager.Uri, true))"/>
                             </CardHeaderActions>
                         </MudCardHeader>
                         <MudExpansionPanels MultiExpansion="true">
@@ -51,10 +51,10 @@
                             <MudExpansionPanel Text="Phone Number">
                                 <MudGrid Spacing="1">
                                     <MudItem xs="12">
-                                        <MudTextField Label="Phone number" Class="mt-3" @bind-Value="updatedPhonenumber"/>
+                                        <MudTextField Label="Phone number" Class="mt-3" @bind-Value="updatedPhoneNumber"/>
                                     </MudItem>
                                     <MudItem xs="12">
-                                        <MudButton ButtonType="ButtonType.Button" OnClick="UpdatePhonenumber" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
+                                        <MudButton ButtonType="ButtonType.Button" OnClick="UpdatePhoneNumber" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
                                     </MudItem>
                                 </MudGrid>
                             </MudExpansionPanel>
@@ -93,14 +93,14 @@
                                 <MudText Typo="Typo.h6">System Settings</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                <MudFab Color="Color.Primary" Icon="@Icons.Material.Save" OnClick="@(() => NavManager.NavigateTo(NavManager.Uri, true))"/>
+                                <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Save" OnClick="@(() => NavManager.NavigateTo(NavManager.Uri, true))"/>
                             </CardHeaderActions>
                         </MudCardHeader>
                         <MudExpansionPanels MultiExpansion="true">
                             <MudExpansionPanel Text="Dark Mode">
                                 <MudToggleIconButton Toggled="@darkModeEnabled" ToggledChanged="() => ToggleDarkMode()"
-                                                     Icon="@Icons.Material.BrightnessHigh"
-                                                     ToggledIcon="@Icons.Material.Bedtime"/>
+                                                     Icon="@Icons.Material.Filled.BrightnessHigh"
+                                                     ToggledIcon="@Icons.Material.Filled.Bedtime"/>
                                 <span>Toggle Dark Mode</span>
                             </MudExpansionPanel>
                         </MudExpansionPanels>
@@ -114,12 +114,12 @@
 @code {
     bool darkModeEnabled;
     UpdatePasswordPayload passwordResetModel = new();
-    string updatedPhonenumber;
+    string updatedPhoneNumber;
     string updatedEmailAddress;
     string currentEmailAddress;
     bool isPasswordVisible;
     InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.VisibilityOff;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,7 +129,7 @@
         if (authStateUser.Identity.IsAuthenticated)
         {
             var user = await UserService.GetCurrentUserAsync();
-            updatedPhonenumber = await UserManager.GetPhoneNumberAsync(user);
+            updatedPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
             currentEmailAddress = await UserManager.GetEmailAsync(user);
         }
         else
@@ -159,7 +159,7 @@
     void TogglePasswordVisibility()
     {
         isPasswordVisible = !isPasswordVisible;
-        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.Filled.VisibilityOff ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
         PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
     }
 
@@ -176,11 +176,11 @@
         }
     }
     
-    private async Task UpdatePhonenumber()
+    private async Task UpdatePhoneNumber()
     {
         try
         {
-            await UserService.UpdatePhonenumberAsync(updatedPhonenumber);
+            await UserService.UpdatePhoneNumberAsync(updatedPhoneNumber);
             Snackbar.Add("Phone number update successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
         }
         catch (Exception e)
@@ -193,7 +193,7 @@
     {
         try
         {
-            await UserService.UpdateEmailaddressAsync(updatedEmailAddress);
+            await UserService.UpdateEmailAddressAsync(updatedEmailAddress);
             Snackbar.Add("Confirmation email sent to your current email address.", Severity.Success, config => { config.ShowCloseIcon = false; });
         }
         catch (Exception e)
