@@ -1,4 +1,4 @@
-﻿@page "/GpUploadInput"
+﻿@page "/GpUploadInput/{id}"
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -7,21 +7,18 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-10">
     <MudGrid>
         <MudItem xs="3">
-            <div class="rounded-lg">
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.West" IconColor="Color.Secondary" Size="Size.Large">Update & Return</MudButton>
-            </div>
+               <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.West" IconColor="Color.Secondary" Size="Size.Large" Class="rounded-lg">Update & Return</MudButton>
         </MudItem>
 
         <MudItem xs="12">
-            <div class="rounded-lg">
-                <MudPaper Elevation="5" Class="pa-4 pt-2">
+                <MudPaper Elevation="5" Class="pa-4 rounded-lg">
 
                     <MudText>Input Patient Test Results</MudText>
 
-                    <MudGrid Style="flex-direction: row; ">
+                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
 
                         <MudItem xs="5">
-                            <MudTextField @bind-Value="TextValue" Label="Test Type" Variant="Variant.Outlined"></MudTextField>
+                            <MudAutocomplete T="string" Label="Test Type" Variant="Variant.Outlined"/>
                         </MudItem>
 
                         <MudItem xs="5">
@@ -29,26 +26,24 @@
                         </MudItem>
 
                         <MudItem xs="2">
-                            <div class="rounded-lg">
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Add" IconColor="Color.Secondary" Size="Size.Large" Style="flex: 1">Add Test Results</MudButton>
-                            </div>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Add" IconColor="Color.Secondary" Size="Size.Large" Style="flex: 1" Class="rounded-lg">Add Test Results</MudButton>
                         </MudItem>
 
                     </MudGrid>
                 </MudPaper>
-            </div>
         </MudItem>
 
         <MudItem xs="12">
-            <div class="rounded-lg">
-                <MudPaper Elevation="5" Class="pa-4" Style="height: 600px;"></MudPaper>
-            </div>
+                <MudPaper Elevation="5" Class="pa-4 rounded-lg" Style="height: 600px;"></MudPaper>  
         </MudItem>
 
     </MudGrid>
 </MudContainer>
 
 @code {
+
+    [Parameter]
+    public string id { get; set; }
 
     public string TextValue { get; set; }
 
