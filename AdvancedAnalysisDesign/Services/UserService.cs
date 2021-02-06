@@ -302,5 +302,10 @@ namespace AdvancedAnalysisDesign.Services
             
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Patient>> FetchAllPatients()
+        {
+            return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
+        }
     }
 }
