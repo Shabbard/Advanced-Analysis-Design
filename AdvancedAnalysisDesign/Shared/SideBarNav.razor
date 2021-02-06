@@ -3,31 +3,34 @@
 @using AdvancedAnalysisDesign.Enums
 
 <MudNavMenu Style="margin-top:0.5rem;">
-    <MudGrid Spacing="1">
+    <MudGrid Spacing="1" Style="max-width:100%">
+        <MudItem xs="12">
+            <MudNavLink Href="/index" Icon="@Icons.Material.Home">Home Page</MudNavLink>
+        </MudItem>
         <AuthorizeView Roles="@(Role.Admin + "," + Role.GP)">
-                <Authorized>
-                    <MudItem xs="12">
-                        <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
-                    </MudItem>
-                </Authorized>
-            </AuthorizeView>
-            <AuthorizeView>
-                <Authorized>
-                    <MudItem xs="12">
-                        <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Settings">Settings</MudNavLink>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
-                    </MudItem>
-                </Authorized>
-                <NotAuthorized>
-                    <MudItem xs="12">
-                        <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
-                    </MudItem>
-                </NotAuthorized>
-            </AuthorizeView>
-</MudGrid>
-    
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.CloudUpload">Upload Results</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Admin" Icon="@Icons.Material.Security">Admin Settings</MudNavLink>
+                </MudItem>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView>
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.People">User Settings</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Logout" Icon="@Icons.Material.ExitToApp">Log out</MudNavLink>
+                </MudItem>
+            </Authorized>
+            <NotAuthorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Login" Icon="@Icons.Material.Login">Log in</MudNavLink>
+                </MudItem>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudGrid>
 </MudNavMenu>
-
-
