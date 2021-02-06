@@ -1,0 +1,73 @@
+﻿@page "/GpUploadInput"
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-10">
+    <MudGrid>
+        <MudItem xs="3">
+            <div class="rounded-lg">
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.West" IconColor="Color.Secondary" Size="Size.Large">Update & Return</MudButton>
+            </div>
+        </MudItem>
+
+        <MudItem xs="12">
+            <div class="rounded-lg">
+                <MudPaper Elevation="5" Class="pa-4 pt-2">
+
+                    <MudText>Input Patient Test Results</MudText>
+
+                    <MudGrid Style="flex-direction: row; ">
+
+                        <MudItem xs="5">
+                            <MudTextField @bind-Value="TextValue" Label="Test Type" Variant="Variant.Outlined"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="5">
+                            <MudTextField @bind-Value="TextValue" Label="Result" Variant="Variant.Outlined"></MudTextField>
+                        </MudItem>
+
+                        <MudItem xs="2">
+                            <div class="rounded-lg">
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Add" IconColor="Color.Secondary" Size="Size.Large" Style="flex: 1">Add Test Results</MudButton>
+                            </div>
+                        </MudItem>
+
+                    </MudGrid>
+                </MudPaper>
+            </div>
+        </MudItem>
+
+        <MudItem xs="12">
+            <div class="rounded-lg">
+                <MudPaper Elevation="5" Class="pa-4" Style="height: 600px;"></MudPaper>
+            </div>
+        </MudItem>
+
+    </MudGrid>
+</MudContainer>
+
+@code {
+
+    public string TextValue { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole("GP") || user.IsInRole("Admin"))
+        {
+
+
+        }
+        else
+        {
+
+            NavigationManager.NavigateTo("/", true);
+
+        }
+    }
+
+}
