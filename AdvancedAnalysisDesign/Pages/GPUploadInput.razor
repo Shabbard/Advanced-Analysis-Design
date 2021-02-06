@@ -1,51 +1,84 @@
 ﻿@page "/GpUploadInput/{id}"
+@using AdvancedAnalysisDesign.Models
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Services
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject UserService UserService
 
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-10">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
     <MudGrid>
-        <MudItem xs="3">
-               <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.West" IconColor="Color.Secondary" Size="Size.Large" Class="rounded-lg">Update & Return</MudButton>
+        <MudItem xs="12">
+            <MudPaper Class="pa-4">
+
+                <MudText>Input Patient Test Results</MudText>
+
+                <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
+
+                    <MudItem xs="5">
+                        <MudAutocomplete T="string" Label="Test Type" @bind-Value="TestInput" SearchFunc="@Search" Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="5">
+                        <MudTextField @bind-Value="ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
+                    </MudItem>
+
+                    <MudItem xs="2">
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Add" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton>
+                    </MudItem>
+
+                </MudGrid>
+            </MudPaper>
         </MudItem>
 
         <MudItem xs="12">
-                <MudPaper Elevation="5" Class="pa-4 rounded-lg">
+            <MudPaper Class="pa-4">
 
-                    <MudText>Input Patient Test Results</MudText>
-
-                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
-
-                        <MudItem xs="5">
-                            <MudAutocomplete T="string" Label="Test Type" Variant="Variant.Outlined"/>
-                        </MudItem>
-
-                        <MudItem xs="5">
-                            <MudTextField @bind-Value="TextValue" Label="Result" Variant="Variant.Outlined"></MudTextField>
-                        </MudItem>
-
-                        <MudItem xs="2">
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Add" IconColor="Color.Secondary" Size="Size.Large" Style="flex: 1" Class="rounded-lg">Add Test Results</MudButton>
-                        </MudItem>
-
-                    </MudGrid>
-                </MudPaper>
-        </MudItem>
-
-        <MudItem xs="12">
-                <MudPaper Elevation="5" Class="pa-4 rounded-lg" Style="height: 600px;"></MudPaper>  
+                <MudTable Items="TestList" Breakpoint="Breakpoint.Sm" FixedHeader="true" Height="600px">
+                    <HeaderContent>
+                        <MudTh>Test Type</MudTh>
+                        <MudTh>Result</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="Test">
+                        <MudTd DataLabel="Test Type">@Test.TestType</MudTd>
+                        <MudTd DataLabel="Result">@Test.Result</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudPaper>
         </MudItem>
 
     </MudGrid>
 </MudContainer>
 
 @code {
-
     [Parameter]
     public string id { get; set; }
+    private string TestInput { get; set; }
+    private string ResultInput { get; set; }
 
-    public string TextValue { get; set; }
+    List<PatientBloodworkTestsPayload> TestList = new List<PatientBloodworkTestsPayload>();
+
+    private async Task<IEnumerable<string>> Search(string value)
+    {
+        List<BloodworkTest> SearchReults = new List<BloodworkTest>();
+
+        SearchReults = await UserService.ReturnTestSearch(value);
+
+        if (string.IsNullOrEmpty(value))
+            return new string[0];
+        return SearchReults.Select(x => x.TestName);
+    }
+
+    private async Task InputTestResults()
+    {
+        TestList.Add(new PatientBloodworkTestsPayload
+        {
+            TestType = TestInput,
+            Result = ResultInput
+        });
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,6 +87,7 @@
 
         if (user.IsInRole("GP") || user.IsInRole("Admin"))
         {
+
 
 
         }

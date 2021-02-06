@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -164,6 +165,11 @@ namespace AdvancedAnalysisDesign.Services
             await _jsRuntime.InvokeVoidAsync("blazorExtensions.DeleteCookie", "BinaryBeastAuth");
 
             await Task.CompletedTask;
+        }
+
+        public async Task<List<BloodworkTest>>ReturnTestSearch(string userinput)
+        {
+            return await _context.BloodworkTests.Where(test => test.TestName.Contains(userinput)).ToListAsync();
         }
     }
 }
