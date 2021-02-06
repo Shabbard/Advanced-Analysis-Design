@@ -36,19 +36,5 @@ namespace AdvancedAnalysisDesign.Services
             
             client.Send(binaryBeastEmailAddress,emailAddress,Subject,Body);
         }
-        
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
-        {
-            var emailPassword = Configuration["EmailPassword"];
-            const string binaryBeastEmailAddress = "binarybeastbloodwork@gmail.com";
-            
-            var client = new SmtpClient("smtp.gmail.com",587)
-            {
-                Credentials = new NetworkCredential(binaryBeastEmailAddress, emailPassword),
-                EnableSsl = true
-            };
-            
-            await client.SendMailAsync(binaryBeastEmailAddress,email,subject,htmlMessage);
-        }
     }
 }

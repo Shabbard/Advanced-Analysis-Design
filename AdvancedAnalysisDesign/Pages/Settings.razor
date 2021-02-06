@@ -1,18 +1,7 @@
 ﻿@page "/settings"
-@using InputType = MudBlazor.InputType
-@using AdvancedAnalysisDesign.Services
-@using Blazored.LocalStorage
-@using AdvancedAnalysisDesign.Models.Payloads
-@using AdvancedAnalysisDesign.Models.Database
-@using Microsoft.AspNetCore.Identity
-@using AdvancedAnalysisDesign.Dialogs
-@inject ILocalStorageService LocalStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationStateProvider _authenticationStateProvider
 @inject NavigationManager NavManager
-@inject UserService UserService
-@inject ISnackbar Snackbar
-@inject UserManager<User> UserManager
-@inject IDialogService Dialog
 
 <AuthorizeView>
     <MudContainer MaxWidth="MaxWidth.Large">
@@ -30,59 +19,21 @@
                         </MudCardHeader>
                         <MudExpansionPanels MultiExpansion="true">
                             <MudExpansionPanel Text="Password Reset">
-                                <EditForm Model="@passwordResetModel" OnValidSubmit="UpdatePassword" Context="anotherName">
-                                    <DataAnnotationsValidator />
-                                    <MudGrid Spacing="1"> 
-                                        <MudItem xs="12">
-                                            <MudTextField Label="Current password" @bind-Value="passwordResetModel.CurrentPassword" For="@(() => passwordResetModel.CurrentPassword)" />
-                                        </MudItem>
-                                        <MudItem xs="12">
-                                            <MudTextField Label="New password" HelperText="Password must have at least one uppercase letter, digit and alphanumeric character" Class="mt-3" @bind-Value="passwordResetModel.NewPassword" For="@(() => passwordResetModel.NewPassword)" InputType="PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>                                   
-                                        </MudItem>
-                                        <MudItem xs="12">
-                                            <MudTextField Label="Confim new password" HelperText="Repeat the password" Class="mt-3" @bind-Value="passwordResetModel.ConfirmNewPassword" For="@(() => passwordResetModel.ConfirmNewPassword)" InputType="PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>                                   
-                                        </MudItem>
-                                        <MudItem xs="12">
-                                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Update Password</MudButton>                               
-                                        </MudItem>
-                                    </MudGrid>
-                                </EditForm>
+                                <MudNavLink Href="/identity/account/forgotpassword" Match="NavLinkMatch.All">Click here to reset your password.</MudNavLink>
                             </MudExpansionPanel>
                             <MudExpansionPanel Text="Phone Number">
-                                <MudGrid Spacing="1">
-                                    <MudItem xs="12">
-                                        <MudTextField Label="Phone number" Class="mt-3" @bind-Value="updatedPhonenumber"/>
-                                    </MudItem>
-                                    <MudItem xs="12">
-                                        <MudButton ButtonType="ButtonType.Button" OnClick="UpdatePhonenumber" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
-                                    </MudItem>
-                                </MudGrid>
+                                <MudNavLink Href="/Identity/Account/Manage" Match="NavLinkMatch.All">Click here to set a phone number.</MudNavLink>
                             </MudExpansionPanel>
                             <MudExpansionPanel Text="Email Address">
-                                <MudGrid Spacing="1">
-                                    <MudItem xs="12">
-                                        <MudTextField ReadOnly="true" Label="Email address" Class="mt-3" @bind-Value="currentEmailAddress"/>
-                                    </MudItem>
-                                    <MudItem xs="12">
-                                        <MudTextField Label="New email address" Class="mt-3" @bind-Value="updatedEmailAddress"/>
-                                    </MudItem>
-                                    <MudItem xs="12">
-                                        <MudButton ButtonType="ButtonType.Button" OnClick="UpdateEmailAddress" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
-                                    </MudItem>
-                                </MudGrid>
+                                <MudNavLink Href="/Identity/Account/Manage/Email" Match="NavLinkMatch.All">Click here to change your email address.</MudNavLink>
                             </MudExpansionPanel>
                              <MudExpansionPanel Text="Personal Data">
-                                <MudGrid Spacing="1">
-                                    <MudItem xs="12">
-                                        <MudButton ButtonType="ButtonType.Button" OnClick="() => UserService.DownloadPersonalDataAsync()" Variant="Variant.Filled" Color="Color.Primary">Download Personal Data</MudButton>
-                                    </MudItem>
-                                    <MudItem xs="12">
-                                        <MudButton ButtonType="ButtonType.Button" OnClick="() => { Dialog.Show<ConfirmUserDeleteDialog>(); }" Variant="Variant.Filled" Color="Color.Primary">Delete Personal Data</MudButton>
-                                    </MudItem>
-                                </MudGrid>
+                                <MudNavLink Href="/Identity/Account/Manage/PersonalData" Match="NavLinkMatch.All">Click here to delete your personal data.</MudNavLink>
                             </MudExpansionPanel>
                         </MudExpansionPanels>
                     </MudCardContent>
+                    <MudCardActions>
+                    </MudCardActions>
                 </MudCard>
             </MudItem>
             <MudItem xs="12">
@@ -105,6 +56,9 @@
                             </MudExpansionPanel>
                         </MudExpansionPanels>
                     </MudCardContent>
+                    <MudCardActions>
+                        
+                    </MudCardActions>
                 </MudCard>
             </MudItem>
         </MudGrid>
@@ -113,24 +67,14 @@
 
 @code {
     bool darkModeEnabled;
-    UpdatePasswordPayload passwordResetModel = new();
-    string updatedPhonenumber;
-    string updatedEmailAddress;
-    string currentEmailAddress;
-    bool isPasswordVisible;
-    InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.VisibilityOff;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var authStateUser = authState.User;
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        if (authStateUser.Identity.IsAuthenticated)
+        if (user.Identity.IsAuthenticated)
         {
-            var user = await UserService.GetCurrentUserAsync();
-            updatedPhonenumber = await UserManager.GetPhoneNumberAsync(user);
-            currentEmailAddress = await UserManager.GetEmailAsync(user);
         }
         else
         {
@@ -140,65 +84,19 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        darkModeEnabled = await LocalStorage.GetItemAsync<bool>("DarkModeEnabled");
+        darkModeEnabled = await localStorage.GetItemAsync<bool>("DarkModeEnabled");
     }
 
     private async Task ToggleDarkMode()
     {
         if (darkModeEnabled)
         {
-            await LocalStorage.SetItemAsync("DarkModeEnabled", "false");
+            await localStorage.SetItemAsync("DarkModeEnabled", "false");
         }
         else
         {
-            await LocalStorage.SetItemAsync("DarkModeEnabled", "true");
+            await localStorage.SetItemAsync("DarkModeEnabled", "true");
         }
         StateHasChanged();
-    }
-    
-    void TogglePasswordVisibility()
-    {
-        isPasswordVisible = !isPasswordVisible;
-        PasswordInputIcon = PasswordInputIcon == Icons.Material.VisibilityOff ? Icons.Material.Visibility : Icons.Material.VisibilityOff;
-        PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
-    }
-
-    private async Task UpdatePassword()
-    {
-        try
-        {
-            await UserService.UpdatePasswordAsync(passwordResetModel);
-            Snackbar.Add("Password update successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
-        }
-    }
-    
-    private async Task UpdatePhonenumber()
-    {
-        try
-        {
-            await UserService.UpdatePhonenumberAsync(updatedPhonenumber);
-            Snackbar.Add("Phone number update successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
-        }
-    }
-    
-    private async Task UpdateEmailAddress()
-    {
-        try
-        {
-            await UserService.UpdateEmailaddressAsync(updatedEmailAddress);
-            Snackbar.Add("Confirmation email sent to your current email address.", Severity.Success, config => { config.ShowCloseIcon = false; });
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
-        }
     }
 }

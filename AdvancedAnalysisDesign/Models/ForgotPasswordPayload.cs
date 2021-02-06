@@ -1,6 +1,6 @@
 ﻿using AdvancedAnalysisDesign.Enums;
 
-namespace AdvancedAnalysisDesign.Models.Payloads
+namespace AdvancedAnalysisDesign.Models
 {
     public class ForgotPasswordPayload
     {
