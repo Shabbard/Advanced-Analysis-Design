@@ -17,16 +17,20 @@
 
                 <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
 
-                    <MudItem xs="5">
+                    <MudItem xs="4">
                         <MudAutocomplete T="string" Label="Test Type" @bind-Value="TestInput" SearchFunc="@Search" Variant="Variant.Outlined" />
                     </MudItem>
 
-                    <MudItem xs="5">
+                    <MudItem xs="4">
                         <MudTextField @bind-Value="ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
                     </MudItem>
 
                     <MudItem xs="2">
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Add" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton>
+                        @*<MudDatePicker Label="Date of Test" @bind-Date="date" />*@
+                    </MudItem>
+
+                    <MudItem xs="2">
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.SaveAlt" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton>
                     </MudItem>
 
                 </MudGrid>
@@ -55,10 +59,11 @@
 @code {
     [Parameter]
     public string id { get; set; }
-    private string TestInput { get; set; }
-    private string ResultInput { get; set; }
+    string TestInput;
+    string ResultInput;
+    //DateTime date;
 
-    List<PatientBloodworkTestsPayload> TestList = new List<PatientBloodworkTestsPayload>();
+    List<PatientBloodworkTest> TestList = new List<PatientBloodworkTest>();
 
     private async Task<IEnumerable<string>> Search(string value)
     {
@@ -73,11 +78,19 @@
 
     private async Task InputTestResults()
     {
-        TestList.Add(new PatientBloodworkTestsPayload
+
+        if (!string.IsNullOrEmpty(TestInput) && !string.IsNullOrEmpty(ResultInput))
         {
-            TestType = TestInput,
-            Result = ResultInput
-        });
+            TestList.Add(new PatientBloodworkTest
+            {
+                TestType = TestInput,
+                Result = ResultInput
+            });
+
+            TestInput = "";
+            ResultInput = "";
+        }
+
     }
 
     protected override async Task OnInitializedAsync()
@@ -87,7 +100,6 @@
 
         if (user.IsInRole("GP") || user.IsInRole("Admin"))
         {
-
 
 
         }
