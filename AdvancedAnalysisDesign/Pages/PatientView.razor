@@ -14,67 +14,62 @@
 @*Link to specific user*@
 
 <AuthorizeView>
-    <MudContainer>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Align="Align.Center" Typo="Typo.h3">Patient Information</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudExpansionPanels MultiExpansion="true">
-            <MudExpansionPanel Text="Medication">
-                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-16">
-                    <MudCard Elevation="5" Class="MedicationCard">
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+        <MudGrid  Justify="Justify.Center">
+            <MudItem xs="6">
+                <MudPaper Elevation="5">
 
-                        @* Data table for Medication *@
-                        <MudTable Height="400px" Items="medicationTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                            <HeaderContent>
-                                <MudTh>Name</MudTh>
-                                <MudTh>Bloodwork Required</MudTh>
-                            </HeaderContent>
+                    @* Data table for Medication *@
+                    <MudTable Height="700px" FixedHeader="true" Items="medicationTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Medication</MudText>
+                        </ToolBarContent>
+                                
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Bloodwork Required</MudTh>
+                        </HeaderContent>
 
-                            <RowTemplate Context="row">
-                                <MudTd DataLabel="Name">@row.Medication.Name</MudTd>
-                                <MudTd DataLabel="Expiry">@row.Medication.BloodworkRequired</MudTd>
-                            </RowTemplate>
+                        <RowTemplate Context="row">
+                           <MudTd DataLabel="Name">@row.Medication.Name</MudTd>
+                           <MudTd DataLabel="Expiry">@row.Medication.BloodworkRequired</MudTd>
+                        </RowTemplate>
 
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
-
-                    </MudCard>
-
-                    @*Add Request Medication Button*@
+                        @*<PagerContent>
+                            <MudTablePager />
+                        </PagerContent>*@
+                    </MudTable>
 
 
-                </MudContainer>
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Bloodwork">
-                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-16">
-                    <MudCard Elevation="5" Class="MedicationCard">
+                </MudPaper>
+            </MudItem>
 
-                        @* Data table for Bloodwork *@
-                        <MudTable Height="400px" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                            <HeaderContent>
-                                <MudTh>Id</MudTh>
-                                <MudTh>Date</MudTh>
-                            </HeaderContent>
+            <MudItem xs="6">
+                <MudPaper Elevation="5">
 
-                            <RowTemplate Context="row">
-                                <MudTd DataLabel="Id">@row.Id</MudTd>
-                                <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
-                            </RowTemplate>
+                    @* Data table for Bloodwork *@
+                    <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Medication</MudText>
+                        </ToolBarContent>
 
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
+                        <HeaderContent>
+                            <MudTh>Id</MudTh>
+                            <MudTh>Date</MudTh>
+                        </HeaderContent>
 
-                    </MudCard>
+                        <RowTemplate Context="row">
+                            <MudTd DataLabel="Id">@row.Id</MudTd>
+                            <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                        </RowTemplate>
 
-                </MudContainer>
-            </MudExpansionPanel>
-        </MudExpansionPanels>
+                        @*<PagerContent>
+                            <MudTablePager />
+                        </PagerContent>*@
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
     </MudContainer>
 </AuthorizeView>
 
