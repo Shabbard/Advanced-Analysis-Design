@@ -307,30 +307,5 @@ namespace AdvancedAnalysisDesign.Services
         {
             return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
         }
-
-        public async Task<List<BloodworkTest>>ReturnTestSearch(string userinput)
-        {
-            return await _context.BloodworkTests.Where(test => test.TestName.Contains(userinput)).ToListAsync();
-        }
-
-        //public async Task<List<PatientBloodworkTest>> FetchPatientsTests(int patientID)
-        //{
-        //    var patientmeds = await _context.PatientMedications.Include(x => x.Patient).Where(y => y.Patient.Id == patientID).ToListAsync();
-
-        //    List<BloodworkTest> ListofTests = new List<BloodworkTest>();
-
-        //    foreach ( var test in patientmeds) 
-        //    {
-        //        ListofTests.Add({
-
-        //            test.PatientBloodworks,
-                
-        //        });
-        //    }
-
-
-
-        //    return ListofTests;
-        //}
     }
 }

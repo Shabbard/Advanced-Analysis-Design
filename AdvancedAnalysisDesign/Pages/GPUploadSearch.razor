@@ -89,7 +89,6 @@
 
     private async Task OnSelect()
     {
-        var userID = patientSelected.Id;
-        NavigationManager.NavigateTo("/GpUploadInput/" + userID, true);
+        NavigationManager.NavigateTo("/GpUploadInput/" + patientSelected.Id, true);
     }
 }
