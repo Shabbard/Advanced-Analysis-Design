@@ -1,4 +1,4 @@
-@page "/ConfirmEmail/{UserId}/{Email}/{Code}"
+@page "/ConfirmEmailChange/{UserId}/{Email}/{Code}"
 @using AdvancedAnalysisDesign.Models.Database
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Text
@@ -45,11 +45,12 @@
             {
                 Snackbar.Add("Error changing user name.", Severity.Error);
             }
+            else
+            {
+                Snackbar.Add("Email address successfully updated.", Severity.Success);
+                await SignInService.ResetUserLoginAsync(user);
+            }
             
-            Snackbar.Add("Email address successfully updated.", Severity.Success);
-
-            await SignInService.ResetUserLoginAsync(user);
-        
             NavManager.NavigateTo("/");
         }
     }
