@@ -112,8 +112,6 @@ namespace AdvancedAnalysisDesign.Services
 
             await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
 
-            // await _signInService.SignInAsync(user);
-
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
             
