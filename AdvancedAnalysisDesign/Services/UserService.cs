@@ -81,7 +81,9 @@ namespace AdvancedAnalysisDesign.Services
                 Email = regPayload.EmailAddress,
                 UserName = regPayload.EmailAddress,
                 PhoneNumber = regPayload.PhoneNumber,
-                EmailConfirmed = true //TODO: Remove this later
+#if DEBUG
+                EmailConfirmed = true
+#endif
             };
             
             var result = await _userManager.CreateAsync(user, regPayload.Password);
@@ -110,10 +112,14 @@ namespace AdvancedAnalysisDesign.Services
 
             await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
 
-            await _signInService.SignInAsync(user);
+            // await _signInService.SignInAsync(user);
 
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
+            
+#if RELEASE
+            await SendConfirmationEmail(user.Email);
+#endif
         }
 
         public async Task Login(string email, string password)
@@ -123,6 +129,12 @@ namespace AdvancedAnalysisDesign.Services
             if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Success)
             {
                 _snackbar.Add("Login was unsuccessful. Please try again.", Severity.Error, config => { config.ShowCloseIcon = false; });
+                return;
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                _snackbar.Add("Account has not been confirmed.", Severity.Error, config => { config.ShowCloseIcon = false; });
                 return;
             }
 
@@ -202,7 +214,7 @@ namespace AdvancedAnalysisDesign.Services
             newEmail = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(newEmail));
             userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(userId));
             
-            Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmEmail", userId, newEmail, code);
+            Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmEmailChange", userId, newEmail, code);
             
             var emailMessage = $"Hi {user.UserDetail.FirstName} {user.UserDetail.LastName}. \n\n" + 
                                "You have requested an email address change, to confirm this please follow the url. \n\n" + 
@@ -328,6 +340,30 @@ namespace AdvancedAnalysisDesign.Services
             await _emailService.SendEmailAsync(
                 emailAddress,
                 "Reset your password",
+                emailMessage);
+        }
+
+        private async Task SendConfirmationEmail(string userEmail)
+        {
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            var userId = await _userManager.GetUserIdAsync(user);
+            
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(userId));
+            
+            Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmAccount", userId, code);
+            
+            var emailMessage = $"Hi {user.UserDetail.FirstName} {user.UserDetail.LastName}. \n\n" + 
+                               "You have created an account using our software, to confirm your account please follow the url. \n\n" + 
+                               $"{HtmlEncoder.Default.Encode(confirmationUrl)}\n\n" +
+                               "Have a nice day.\n" +
+                               "Binary Beast Bloodwork";
+            
+            await _emailService.SendEmailAsync(
+                userEmail,
+                "Confirm your account",
                 emailMessage);
         }
     }

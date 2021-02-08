@@ -1,6 +1,7 @@
 @using AdvancedAnalysisDesign.Services
 @inject UserService UserService
 @inject ISnackbar Snackbar
+@inject NavigationManager NavManager
 
 <MudDialog>
     <DialogContent>
@@ -28,6 +29,7 @@
         {
             await UserService.DeletePersonalDataAsync(password);
             MudDialog.Close(DialogResult.Ok(true));
+            NavManager.NavigateTo("/");
         }
         catch (Exception e)
         {
