@@ -190,9 +190,11 @@ namespace AdvancedAnalysisDesign.Migrations
                         .UseIdentityColumn();
 
                     b.Property<DateTimeOffset?>("DatePickedUp")
+
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateScheduled")
+
                         .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsPickedUp")
