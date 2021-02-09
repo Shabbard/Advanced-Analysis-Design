@@ -331,23 +331,9 @@ namespace AdvancedAnalysisDesign.Services
         
         public async Task<(int,int,int)> returnPrescriptionCounters(List<Patient> patients)
         {
-            int prescriptionsDue = 0, prescriptionsPrepared = 0, prescriptionsCollected = 0;
-
-            foreach(var patient in patients)
-            {
-                prescriptionsDue += patient.Medications.Count;
-                foreach(var medication in patient.Medications)
-                {
-                    if(medication.Pickup.IsPrepared)
-                    {
-                        prescriptionsPrepared++;
-                        if (medication.Pickup.IsPickedUp)
-                        {
-                            prescriptionsCollected++;
-                        }
-                    }
-                }
-            }
+            var prescriptionsDue = patients.Count(x => x.Medications.Count());
+            var prescriptionsPrepared = patients.Count(x => x.Medications.Where(x => x.Pickup.IsPrepared));
+            var prescriptionsCollected = patients.Count(x => x.Medications.Where(x => x.Pickup.IsPickedUp));
 
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
