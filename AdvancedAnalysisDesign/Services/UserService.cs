@@ -106,14 +106,14 @@ namespace AdvancedAnalysisDesign.Services
 
             PatientImages images = new PatientImages
             {
-                SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
-                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
+                SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.PatientRegistrationPayload.SelfiePhoto),
+                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.PatientRegistrationPayload.IDPhoto)
             };
 
             var patient = new Patient
             {
                 User = user,
-                NhsNumber = regPayload.NhsNumber,
+                NhsNumber = regPayload.PatientRegistrationPayload.NhsNumber,
                 PatientImages = images
             };
 
@@ -322,6 +322,16 @@ namespace AdvancedAnalysisDesign.Services
         public async Task<List<Patient>> FetchAllPatients()
         {
             return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
+        }
+        
+        // public async Task<List<User>> FetchUsersForSurgery()
+        // {
+        //     return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
+        // }
+        
+        public async Task<List<User>> FetchAllUsers()
+        {
+            return  await _context.Users.Include(x => x.UserDetail).ToListAsync();
         }
         
         public async Task SubmitForgetPasswordAsync(string emailAddress)
