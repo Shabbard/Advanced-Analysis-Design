@@ -17,7 +17,7 @@
             <MudPaper Elevation="5">
 
                 @* Data table for Medication *@
-                @if (medicationTableData.Count != 0)@*if statement to check if medication is on the system. if not display a mudalert*@
+                @if (medicationTableData.Any())@*if statement to check if medication is on the system. if not display a mudalert*@
                 {
                     <MudTable Height="700px" FixedHeader="true" Items="medicationTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
 
@@ -34,10 +34,6 @@
                             <MudTd DataLabel="Name">@row.Medication.Name</MudTd>
                             <MudTd DataLabel="Expiry">@row.Medication.BloodworkRequired</MudTd>
                         </RowTemplate>
-
-                        @*<PagerContent>
-                    <MudTablePager />
-                </PagerContent>*@
                     </MudTable>
                 }
                 else
@@ -54,7 +50,7 @@
 
 
                 @* Data table for Bloodwork *@
-                @if (bloodworkTableData.Count != 0) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
+                @if (bloodworkTableData.Any()) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
                 {
                     <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
                         <ToolBarContent>
@@ -70,10 +66,6 @@
                             <MudTd DataLabel="Id">@row.Id</MudTd>
                             <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
                         </RowTemplate>
-
-                        @*<PagerContent>
-                    <MudTablePager />
-                </PagerContent>*@
                     </MudTable>
                 }
                 else
