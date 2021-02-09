@@ -1,0 +1,24 @@
+﻿@page "/PharmacyDashboard"
+@using AdvancedAnalysisDesign.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<MudContainer>
+
+</MudContainer>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        {
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
+}
