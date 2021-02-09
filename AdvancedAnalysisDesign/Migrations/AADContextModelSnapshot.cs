@@ -197,6 +197,9 @@ namespace AdvancedAnalysisDesign.Migrations
 
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("DateScheduled")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<bool>("IsPickedUp")
                         .HasColumnType("bit");
 
