@@ -14,6 +14,13 @@
                 </MudItem>
             </Authorized>
         </AuthorizeView>
+        <AuthorizeView Roles="@(Role.Admin + "," + Role.Patient)">
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/PatientView" Icon="@Icons.Material.Filled.LocalHospital">Patient Information</MudNavLink>
+                </MudItem>
+            </Authorized>
+        </AuthorizeView>
         <AuthorizeView Roles="@(Role.Pharmacist + " ," + Role.Admin)">
             <Authorized>
                 <MudItem xs="12">
