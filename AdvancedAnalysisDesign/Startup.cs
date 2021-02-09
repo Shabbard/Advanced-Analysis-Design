@@ -141,7 +141,7 @@ namespace AdvancedAnalysisDesign
             var poweruser = new User
             {
                 UserName = "admin",
-                Email = "admin@admin",
+                Email = "admin",
                 EmailConfirmed = true,
             };
             
