@@ -10,6 +10,7 @@ namespace AdvancedAnalysisDesign.Models.Database
     {
         public int Id { get; set; }
         public string FileName { get; set; }
-        public byte[] ImageUrl { get; set; }
+        public byte[] IDPhoto { get; set; }
+        public byte[] SelfiePhoto { get; set; }
     }
 }
