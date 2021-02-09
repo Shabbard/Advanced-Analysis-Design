@@ -115,16 +115,6 @@ namespace AdvancedAnalysisDesign.Services
                 };
                 images.Add(tempImage);
             }
-            //foreach(var file in regPayload.VerificationImages)
-            //{
-            //    var imageUrl = await ConvertIBrowserFileToBytesAsync(file);
-            //    PatientImages tempImage = new PatientImages
-            //    {
-            //        FileName = file.Name,
-            //        ImageUrl = imageUrl
-            //    };
-            //    images.Add(tempImage);
-            //} // seems to not work as buffer is out of memory.
 
             var patient = new Patient
             {
