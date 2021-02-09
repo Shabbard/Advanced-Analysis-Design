@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -102,12 +103,24 @@ namespace AdvancedAnalysisDesign.Services
         public async Task RegisterPatient(RegistrationPayload regPayload)
         {
             var user = await RegisterUser(regPayload);
-            
+
+            List<PatientImages> images = new();
+            for(var i = 0; i < regPayload.VerificationImages.Count; i++)
+            {
+                var image = await ConvertIBrowserFileToBytesAsync(regPayload.VerificationImages[i]);
+                PatientImages tempImage = new PatientImages
+                {
+                    FileName = regPayload.VerificationImages[i].Name,
+                    ImageUrl = image
+                };
+                images.Add(tempImage);
+            }
+
             var patient = new Patient
             {
                 User = user,
                 NhsNumber = regPayload.NhsNumber,
-                VerificationImage = regPayload.VerificationImage
+                PatientImages = images
             };
 
             await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
@@ -118,6 +131,14 @@ namespace AdvancedAnalysisDesign.Services
 #if RELEASE
             await SendConfirmationEmail(user.Email);
 #endif
+        }
+
+        public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
+        {
+            var maxByteSize = 10485760;
+            var buffer = new byte[browserFile.Size];
+            await browserFile.OpenReadStream(maxByteSize).ReadAsync(buffer);
+            return buffer;
         }
 
         public async Task Login(string email, string password)
