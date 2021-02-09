@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AdvancedAnalysisDesign.Enums;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace AdvancedAnalysisDesign.Models.Payloads
 {
@@ -27,6 +29,6 @@ namespace AdvancedAnalysisDesign.Models.Payloads
         public Role UserRole { get; set; }
         [Required]
         public string NhsNumber { get; set; }
-        public byte[] VerificationImage { get; set; }
+        public IList<IBrowserFile> VerificationImages { get; set; }
     }
 }

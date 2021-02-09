@@ -20,6 +20,7 @@ namespace AdvancedAnalysisDesign
         public DbSet<PatientBloodworkTest> PatientBloodworkTests { get; set; }
         public DbSet<BloodworkTest> BloodworkTests { get; set; }
         public DbSet<GeneralPractitioner> GeneralPractitioners { get; set; }
+        public DbSet<PatientImages> PatientImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
