@@ -17,6 +17,16 @@
                 </MudItem>
             </Authorized>
         </AuthorizeView>
+        <AuthorizeView Roles="@(Role.Pharmacist + " ," + Role.Admin)">
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/PharmacistDashboard" Icon="@Icons.Material.Filled.LocalPharmacy">Pharmacist Dashboard</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/PharmacistPatientSearch" Icon="@Icons.Material.Filled.People">Patient Search</MudNavLink>
+                </MudItem>
+            </Authorized>
+        </AuthorizeView>
         <AuthorizeView>
             <Authorized>
                 <MudItem xs="12">
