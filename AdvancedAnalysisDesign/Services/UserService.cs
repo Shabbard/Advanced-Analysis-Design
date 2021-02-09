@@ -104,17 +104,11 @@ namespace AdvancedAnalysisDesign.Services
         {
             var user = await RegisterUser(regPayload);
 
-            List<PatientImages> images = new();
-            for(var i = 0; i < regPayload.VerificationImages.Count; i++)
+            PatientImages images = new PatientImages
             {
-                var image = await ConvertIBrowserFileToBytesAsync(regPayload.VerificationImages[i]);
-                PatientImages tempImage = new PatientImages
-                {
-                    FileName = regPayload.VerificationImages[i].Name,
-                    ImageUrl = image
-                };
-                images.Add(tempImage);
-            }
+                SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
+                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
+            };
 
             var patient = new Patient
             {
