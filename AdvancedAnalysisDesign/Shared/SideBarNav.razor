@@ -12,9 +12,6 @@
                 <MudItem xs="12">
                     <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.Filled.CloudUpload">Upload Results</MudNavLink>
                 </MudItem>
-                <MudItem xs="12">
-                    <MudNavLink Href="/Admin" Icon="@Icons.Material.Filled.Security">Admin Settings</MudNavLink>
-                </MudItem>
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Roles="@(Role.Pharmacist + " ," + Role.Admin)">
@@ -24,6 +21,9 @@
                 </MudItem>
                 <MudItem xs="12">
                     <MudNavLink Href="/PharmacistPatientSearch" Icon="@Icons.Material.Filled.People">Patient Search</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/Admin" Icon="@Icons.Material.Filled.Security">Admin Settings</MudNavLink>
                 </MudItem>
             </Authorized>
         </AuthorizeView>
