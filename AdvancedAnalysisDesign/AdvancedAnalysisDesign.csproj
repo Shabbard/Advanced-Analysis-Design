@@ -54,6 +54,7 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data" />
     <Folder Include="Models\DataTransferObjects" />
+    <Folder Include="Pages\Pharmacist\" />
   </ItemGroup>
 
 </Project>
