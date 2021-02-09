@@ -10,6 +10,6 @@ namespace AdvancedAnalysisDesign.Models.Database
         public int Id { get; set; }
         public bool IsPickedUp { get; set; }
         public bool IsPrepared { get; set; }
-        public DateTimeOffset DatePickedUp { get; set; }
+        public DateTimeOffset? DatePickedUp { get; set; }
     }
 }
