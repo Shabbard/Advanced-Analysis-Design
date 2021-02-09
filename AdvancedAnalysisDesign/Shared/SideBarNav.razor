@@ -12,6 +12,23 @@
                 <MudItem xs="12">
                     <MudNavLink Href="/GpUploadSearch" Icon="@Icons.Material.Filled.CloudUpload">Upload Results</MudNavLink>
                 </MudItem>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="@(Role.Admin + "," + Role.Patient)">
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/PatientView" Icon="@Icons.Material.Filled.LocalHospital">Patient Information</MudNavLink>
+                </MudItem>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="@(Role.Pharmacist + " ," + Role.Admin)">
+            <Authorized>
+                <MudItem xs="12">
+                    <MudNavLink Href="/PharmacistDashboard" Icon="@Icons.Material.Filled.LocalPharmacy">Pharmacist Dashboard</MudNavLink>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNavLink Href="/PharmacistPatientSearch" Icon="@Icons.Material.Filled.People">Patient Search</MudNavLink>
+                </MudItem>
                 <MudItem xs="12">
                     <MudNavLink Href="/Admin" Icon="@Icons.Material.Filled.Security">Admin Settings</MudNavLink>
                 </MudItem>
