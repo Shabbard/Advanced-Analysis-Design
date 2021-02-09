@@ -17,26 +17,30 @@
             <MudPaper Elevation="5">
 
                 @* Data table for Medication *@
-                <MudTable Height="700px" FixedHeader="true" Items="medicationTableData"  Hover="@hover" Breakpoint="Breakpoint.Sm">
+                @if (medicationTableData.Any())@*if statement to check if medication is on the system. if not display a mudalert*@
+                {
+                    <MudTable Height="700px" FixedHeader="true" Items="medicationTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
 
-                    <ToolBarContent>
-                        <MudText Typo="Typo.h6">Medication</MudText>
-                    </ToolBarContent>
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Medication</MudText>
+                        </ToolBarContent>
 
-                    <HeaderContent>
-                        <MudTh>Name</MudTh>
-                        <MudTh>Bloodwork Required</MudTh>
-                    </HeaderContent>
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Bloodwork Required</MudTh>
+                        </HeaderContent>
 
-                    <RowTemplate Context="row">
-                        <MudTd DataLabel="Name">@row.Medication.Name</MudTd>
-                        <MudTd DataLabel="Expiry">@row.Medication.BloodworkRequired</MudTd>
-                    </RowTemplate>
+                        <RowTemplate Context="row">
+                            <MudTd DataLabel="Name">@row.Medication.Name</MudTd>
+                            <MudTd DataLabel="Expiry">@row.Medication.BloodworkRequired</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Info">You currently have no medication on the system. If this is an error please contact example@example.com</MudAlert>
+                }
 
-                    @*<PagerContent>
-                        <MudTablePager />
-                    </PagerContent>*@
-                </MudTable>
 
             </MudPaper>
         </MudItem>
@@ -44,26 +48,31 @@
         <MudItem xs="6">
             <MudPaper Elevation="5">
 
+
                 @* Data table for Bloodwork *@
-                <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.h6">Bloodwork</MudText>
-                    </ToolBarContent>
+                @if (bloodworkTableData.Any()) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
+                {
+                    <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Bloodwork</MudText>
+                        </ToolBarContent>
 
-                    <HeaderContent>
-                        <MudTh>Id</MudTh>
-                        <MudTh>Date</MudTh>
-                    </HeaderContent>
+                        <HeaderContent>
+                            <MudTh>Id</MudTh>
+                            <MudTh>Date</MudTh>
+                        </HeaderContent>
 
-                    <RowTemplate Context="row">
-                        <MudTd DataLabel="Id">@row.Id</MudTd>
-                        <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
-                    </RowTemplate>
+                        <RowTemplate Context="row">
+                            <MudTd DataLabel="Id">@row.Id</MudTd>
+                            <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Info">You currently have no bloodwork on the system. If this is an error please contact example@example.com</MudAlert>
+                }
 
-                    @*<PagerContent>
-                <MudTablePager />
-            </PagerContent>*@
-                </MudTable>
 
             </MudPaper>
         </MudItem>
