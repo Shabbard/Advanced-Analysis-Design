@@ -335,25 +335,17 @@ namespace AdvancedAnalysisDesign.Services
 
             foreach(var patient in patients)
             {
+                prescriptionsDue += patient.Medications.Count;
                 foreach(var medication in patient.Medications)
                 {
-                    
-                    if(medication.Pickup.IsPickedUp)
-                    {
-                        prescriptionsCollected++;
-                        prescriptionsPrepared++;
-                        prescriptionsDue++;
-                    }
-                    else if(medication.Pickup.IsPrepared)
+                    if(medication.Pickup.IsPrepared)
                     {
                         prescriptionsPrepared++;
-                        prescriptionsDue++;
+                        if (medication.Pickup.IsPickedUp)
+                        {
+                            prescriptionsCollected++;
+                        }
                     }
-                    else
-                    {
-                        prescriptionsDue++;
-                    }
-                    
                 }
             }
 
