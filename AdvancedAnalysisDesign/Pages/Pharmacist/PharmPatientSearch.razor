@@ -1,0 +1,94 @@
+﻿@page "/PharmacistPatientSearch"
+
+@using AdvancedAnalysisDesign.Services
+@using AdvancedAnalysisDesign.Models.Database
+
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+
+    <MudGrid Justify="Justify.Center">
+
+        <MudItem xs="12">
+
+            <MudPaper Elevation="5" Class="pa-4 pt-2">
+
+                <MudTable Height="700px" FixedHeader="true" Items="patientTableData" Hover="true" @bind-SelectedItem="patientSelected" SortLabel="Sort By" Filter="new Func<Patient,bool>(FilterFunc)">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h5" Style="font-weight:bold">Select A Patient</MudText>
+                        <MudToolBarSpacer />
+                        <MudTextField @bind-Value="tableSearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+
+                    <HeaderContent>
+                        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Patient, object>(x=>x.User.UserDetail.FirstName)">Name</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<Patient, object>(x=>x.User.UserDetail.DateOfBirth)">Date Of Birth</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<Patient, object>(x=>x.NhsNumber)">NHS Number</MudTableSortLabel></MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate Context="row">
+                        <MudTd>@row.User.UserDetail.FirstName @row.User.UserDetail.LastName</MudTd>
+                        <MudTd>@row.User.UserDetail.DateOfBirth.ToString("d")</MudTd> @*d = shortdate format (dd/mm/yyyy). Auto changes for US date too*@
+                        <MudTd>@row.NhsNumber</MudTd>
+                    </RowTemplate>
+                </MudTable>
+
+            </MudPaper>
+
+        </MudItem>
+
+    </MudGrid>
+
+
+</MudContainer>
+
+
+
+
+
+@code {
+    private List<Patient> patientTableData = new List<Patient>();
+    private string tableSearchString { get; set; }
+    private Patient _value = new Patient(); // used for getter in patientSelected
+    private Patient patientSelected { get { return _value; } set { _value = value; OnSelect(); } } // When a patient is selected setter runs OnSelect
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole("Pharmacist") || user.IsInRole("Admin"))
+        {
+            patientTableData = await UserService.FetchAllPatients();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
+
+    private bool FilterFunc(Patient patient)
+    {
+        if (string.IsNullOrWhiteSpace(tableSearchString))
+            return true;
+        if (patient.NhsNumber.Contains(tableSearchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (patient.User.UserDetail.FirstName.Contains(tableSearchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (patient.User.UserDetail.LastName.Contains(tableSearchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{patient.NhsNumber} {patient.User.UserDetail.FirstName} {patient.User.UserDetail.LastName}".Contains(tableSearchString))
+            return true;
+        return false;
+    }
+
+    private async Task OnSelect()
+    {
+        var userID = patientSelected.User.Id;
+        NavigationManager.NavigateTo("/PharmacistPatientInfomation/" + userID, true);
+    }
+}
