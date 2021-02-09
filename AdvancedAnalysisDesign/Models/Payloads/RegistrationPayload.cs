@@ -29,6 +29,7 @@ namespace AdvancedAnalysisDesign.Models.Payloads
         public Role UserRole { get; set; }
         [Required]
         public string NhsNumber { get; set; }
-        public IList<IBrowserFile> VerificationImages { get; set; }
+        public IBrowserFile IDPhoto { get; set; }
+        public IBrowserFile SelfiePhoto { get; set; }
     }
 }

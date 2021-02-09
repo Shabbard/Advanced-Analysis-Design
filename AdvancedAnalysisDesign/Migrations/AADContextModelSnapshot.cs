@@ -88,12 +88,17 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<string>("NhsNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PatientImagesId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GeneralPractitionerId");
+
+                    b.HasIndex("PatientImagesId");
 
                     b.HasIndex("UserId");
 
@@ -153,15 +158,13 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("ImageUrl")
+                    b.Property<byte[]>("IDPhoto")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("PatientId")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("SelfiePhoto")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
 
                     b.ToTable("PatientImages");
                 });
@@ -431,11 +434,17 @@ namespace AdvancedAnalysisDesign.Migrations
                         .WithMany()
                         .HasForeignKey("GeneralPractitionerId");
 
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.PatientImages", "PatientImages")
+                        .WithMany()
+                        .HasForeignKey("PatientImagesId");
+
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("GeneralPractitioner");
+
+                    b.Navigation("PatientImages");
 
                     b.Navigation("User");
                 });
@@ -452,13 +461,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", null)
                         .WithMany("PatientBloodworkTests")
                         .HasForeignKey("PatientBloodworkId");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientImages", b =>
-                {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.Patient", null)
-                        .WithMany("PatientImages")
-                        .HasForeignKey("PatientId");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientMedication", b =>
@@ -534,11 +536,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Patient", b =>
-                {
-                    b.Navigation("PatientImages");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", b =>
