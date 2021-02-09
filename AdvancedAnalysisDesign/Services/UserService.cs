@@ -323,7 +323,43 @@ namespace AdvancedAnalysisDesign.Services
         {
             return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
         }
+
+        public async Task<List<Patient>> FetchAllPatientsWithPickups()
+        {
+            return await _context.Patients.Include(x=> x.Medications).Include(x => x.Medications.Where(x => x.Pickup.DatePickedUp == null)).ThenInclude(x => x.Pickup).ToListAsync();
+        }
         
+        public async Task<(int,int,int)> returnPrescriptionCounters(List<Patient> patients)
+        {
+            int prescriptionsDue = 0, prescriptionsPrepared = 0, prescriptionsCollected = 0;
+
+            foreach(var patient in patients)
+            {
+                foreach(var medication in patient.Medications)
+                {
+                    
+                    if(medication.Pickup.IsPickedUp)
+                    {
+                        prescriptionsCollected++;
+                        prescriptionsPrepared++;
+                        prescriptionsDue++;
+                    }
+                    else if(medication.Pickup.IsPrepared)
+                    {
+                        prescriptionsPrepared++;
+                        prescriptionsDue++;
+                    }
+                    else
+                    {
+                        prescriptionsDue++;
+                    }
+                    
+                }
+            }
+
+            return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
+        }
+
         public async Task SubmitForgetPasswordAsync(string emailAddress)
         {
             if (string.IsNullOrEmpty(emailAddress))
