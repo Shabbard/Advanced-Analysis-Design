@@ -7,9 +7,7 @@
 @using Syncfusion.Blazor.Schedule
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject UserService UserService
-
-
+@inject PatientService PatientService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
 
@@ -29,21 +27,33 @@
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Due</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right" Color="Color.Default"><MudLink Color="Color.Info" Href="/PrescriptionsDue">Click to View ></MudLink></MudText>
+                    <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
+                        <MudItem>
+                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionList", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                        </MudItem>
+                    </MudGrid>
                 </MudPaper>
             </MudItem>
             <MudItem xs="4">
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescritions Prepared</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsPrepared / @prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right" Color="Color.Default"><MudLink Color="Color.Info" Href="/PrescriptionsPrepared">Click to View ></MudLink></MudText>
+                    <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
+                        <MudItem> 
+                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionPreparation", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                        </MudItem>
+                    </MudGrid>
                 </MudPaper>
             </MudItem>
             <MudItem xs="4">
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Collected</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right"><MudLink Color="Color.Info" Href="/PrescriptionsCollected">Click to View ></MudLink></MudText>
+                    <MudGrid Justify="Justify.FlexEnd" Class="pr-1"> 
+                        <MudItem>
+                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionCollection", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                        </MudItem>
+                    </MudGrid>
                 </MudPaper>
             </MudItem>
         </MudGrid>
@@ -75,9 +85,9 @@
 
         if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
-            patientWithPickups = await UserService.FetchAllPatientsWithPickups();
-            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = await UserService.returnPrescriptionCounters(patientWithPickups);
-            pickupDatasource = await UserService.returnPickupScheduler(patientWithPickups);
+            patientWithPickups = await PatientService.FetchAllPatientsWithPickups();
+            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
+            pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
         }
         else
         {

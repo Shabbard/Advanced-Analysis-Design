@@ -1,29 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
-using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Models.DataTransferObjects;
 using AdvancedAnalysisDesign.Models.Payloads;
 using BlazorDownloadFile;
-using Blazored.LocalStorage;
 using Flurl;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace AdvancedAnalysisDesign.Services
@@ -99,41 +91,6 @@ namespace AdvancedAnalysisDesign.Services
             }
 
             return user; // Depending other user types are implemented, this may need changing. Currently standalone users cannot be registered.
-        }
-
-        public async Task RegisterPatient(PatientRegistrationPayload regPayload)
-        {
-            var user = await RegisterUser(regPayload);
-
-            PatientImages images = new PatientImages
-            {
-                SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
-                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
-            };
-
-            var patient = new Patient
-            {
-                User = user,
-                NhsNumber = regPayload.NhsNumber,
-                PatientImages = images
-            };
-
-            await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
-
-            await _context.Patients.AddAsync(patient);
-            await _context.SaveChangesAsync();
-            
-#if RELEASE
-            await SendConfirmationEmail(user.Email);
-#endif
-        }
-
-        public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
-        {
-            var maxByteSize = 10485760;
-            var buffer = new byte[browserFile.Size];
-            await browserFile.OpenReadStream(maxByteSize).ReadAsync(buffer);
-            return buffer;
         }
 
         public async Task Login(string email, string password)
@@ -320,69 +277,6 @@ namespace AdvancedAnalysisDesign.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Patient>> FetchAllPatients()
-        {
-            return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
-        }
-
-        public async Task<List<Patient>> FetchAllPatientsWithPickups()
-        {
-            return await _context.Patients.Include(x=> x.Medications).Include(x => x.Medications.Where(x => x.Pickup.DatePickedUp == null)).ThenInclude(x => x.Pickup).ToListAsync();
-        }
-        
-        // public async Task<List<User>> FetchUsersForSurgery()
-        // {
-        //     return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
-        // }
-        
-        public async Task<List<UserWithRoleDto>> FetchAllUsers()
-        {
-            // this monstrosity gets all users except the default admin, includes user details and includes the users role
-            return await _context.Users
-                .Include(x => x.UserDetail)
-                .Where(x => x.UserName != "admin")
-                .Join(_context.UserRoles,
-                user => user.Id,
-                userRole => userRole.UserId,
-                (user, userRole) => new
-                {
-                    User = user,
-                    RoleId = userRole.RoleId
-                })
-                .Join(_context.Roles,
-                userRole => userRole.RoleId,
-                role => role.Id,
-                (userRole, role) => new UserWithRoleDto
-                {
-                    Role = Enum.Parse<Role>(role.Name),
-                    User = userRole.User
-                })
-                .ToListAsync();
-        }
-        
-        public async Task<(int,int,int)> returnPrescriptionCounters(List<Patient> patients)
-        {
-            int prescriptionsDue = patients.Select(x => x.Medications.Count()).Sum();
-            int prescriptionsPrepared = patients.Select(x => x.Medications.Where(y => y.Pickup.IsPrepared).Count()).Sum();
-            int prescriptionsCollected = patients.Select(x => x.Medications.Where(y => y.Pickup.IsPickedUp).Count()).Sum();
-
-            return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
-        }
-
-        public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)
-        {
-            var listOfPickups = patients.SelectMany(x => x.Medications.Select(x => x.Pickup)).ToList();
-            return listOfPickups.Select(x => new PickupSchedulerPayload()
-            {
-                StartTime = x.DateScheduled,
-                EndTime = x.DateScheduled.Value.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
-                Subject = "Medication Pickup",
-                IsPickedUp = x.IsPickedUp,
-                IsPrepared = x.IsPrepared
-            }
-            ).ToList();
-        }
-
         public async Task SubmitForgetPasswordAsync(string emailAddress)
         {
             if (string.IsNullOrEmpty(emailAddress))
@@ -415,7 +309,7 @@ namespace AdvancedAnalysisDesign.Services
                 emailMessage);
         }
 
-        private async Task SendConfirmationEmail(string userEmail)
+        public async Task SendConfirmationEmail(string userEmail)
         {
             var user = await _userManager.FindByEmailAsync(userEmail);
             var userId = await _userManager.GetUserIdAsync(user);

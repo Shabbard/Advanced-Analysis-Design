@@ -31,7 +31,7 @@
                         </HeaderContent>
 
                         <RowTemplate Context="row">
-                            <MudTd DataLabel="Name">@row.Name</MudTd>
+                            <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
                             <MudTd DataLabel="Expiry">@row.BloodworkRequired</MudTd>
                         </RowTemplate>
                     </MudTable>
@@ -82,7 +82,7 @@
 @code{
     private bool hover = true;
 
-    private List<Medication> medicationTableData = new List<Medication>();
+    private List<PatientMedication> medicationTableData = new List<PatientMedication>();
     private List<PatientBloodwork> bloodworkTableData = new List<PatientBloodwork>();
 
     protected override async Task OnInitializedAsync()

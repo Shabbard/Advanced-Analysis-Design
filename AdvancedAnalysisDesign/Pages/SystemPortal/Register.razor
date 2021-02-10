@@ -4,7 +4,7 @@
 @using InputType = MudBlazor.InputType
 @using AdvancedAnalysisDesign.Services
 
-@inject UserService UserService
+@inject PatientService PatientService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
@@ -148,7 +148,7 @@
         {
             registrationPayload.IDPhoto = IDFile[0];
             registrationPayload.SelfiePhoto = SelfieFile[0];
-            await UserService.RegisterPatient(registrationPayload);
+            await PatientService.RegisterPatient(registrationPayload);
             Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
             NavManager.NavigateTo("/");
         }
