@@ -18,6 +18,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
+using Syncfusion.Blazor;
 
 namespace AdvancedAnalysisDesign
 {
@@ -43,7 +44,7 @@ namespace AdvancedAnalysisDesign
             services.AddMudServices();
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
-            
+            services.AddSyncfusionBlazor();
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));
 
@@ -81,6 +82,7 @@ namespace AdvancedAnalysisDesign
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Configuration["SyncFusionLicense"]);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

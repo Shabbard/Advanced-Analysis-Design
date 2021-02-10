@@ -324,6 +324,11 @@ namespace AdvancedAnalysisDesign.Services
         {
             return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
         }
+
+        public async Task<List<Patient>> FetchAllPatientsWithPickups()
+        {
+            return await _context.Patients.Include(x=> x.Medications).Include(x => x.Medications.Where(x => x.Pickup.DatePickedUp == null)).ThenInclude(x => x.Pickup).ToListAsync();
+        }
         
         // public async Task<List<User>> FetchUsersForSurgery()
         // {
@@ -355,6 +360,29 @@ namespace AdvancedAnalysisDesign.Services
                 .ToListAsync();
         }
         
+        public async Task<(int,int,int)> returnPrescriptionCounters(List<Patient> patients)
+        {
+            int prescriptionsDue = patients.Select(x => x.Medications.Count()).Sum();
+            int prescriptionsPrepared = patients.Select(x => x.Medications.Where(y => y.Pickup.IsPrepared).Count()).Sum();
+            int prescriptionsCollected = patients.Select(x => x.Medications.Where(y => y.Pickup.IsPickedUp).Count()).Sum();
+
+            return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
+        }
+
+        public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)
+        {
+            var listOfPickups = patients.SelectMany(x => x.Medications.Select(x => x.Pickup)).ToList();
+            return listOfPickups.Select(x => new PickupSchedulerPayload()
+            {
+                StartTime = x.DateScheduled,
+                EndTime = x.DateScheduled.Value.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
+                Subject = "Medication Pickup",
+                IsPickedUp = x.IsPickedUp,
+                IsPrepared = x.IsPrepared
+            }
+            ).ToList();
+        }
+
         public async Task SubmitForgetPasswordAsync(string emailAddress)
         {
             if (string.IsNullOrEmpty(emailAddress))

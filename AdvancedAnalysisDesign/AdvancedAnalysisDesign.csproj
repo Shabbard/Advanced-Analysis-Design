@@ -27,6 +27,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
     <PackageReference Include="MudBlazor" Version="2.0.0" />
+    <PackageReference Include="Syncfusion.Blazor.Schedule" Version="18.4.0.42" />
+    <PackageReference Include="Syncfusion.Licensing" Version="18.4.0.42" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
@@ -54,6 +56,7 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data" />
     <Folder Include="Pages\Pharmacist\" />
+    <Folder Include="Models\DataTransferObjects" />
   </ItemGroup>
 
 </Project>
