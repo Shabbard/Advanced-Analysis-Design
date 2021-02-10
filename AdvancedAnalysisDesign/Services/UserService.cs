@@ -38,7 +38,7 @@ namespace AdvancedAnalysisDesign.Services
         private readonly PasswordHasher<User> _passwordHasher;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly IBlazorDownloadFileService _blazorDownloadFileService;
-        
+        private readonly Random _random;
         public UserService(UserManager<User> userManager,
             AADContext context,
             EmailService emailService,
@@ -47,7 +47,8 @@ namespace AdvancedAnalysisDesign.Services
             NavigationManager navigationManager,
             PasswordHasher<User> passwordHasher,
             AuthenticationStateProvider authenticationStateProvider,
-            IBlazorDownloadFileService blazorDownloadFileService)
+            IBlazorDownloadFileService blazorDownloadFileService,
+            Random random)
         {
             _userManager = userManager;
             _context = context;
@@ -58,6 +59,7 @@ namespace AdvancedAnalysisDesign.Services
             _passwordHasher = passwordHasher;
             _authenticationStateProvider = authenticationStateProvider;
             _blazorDownloadFileService = blazorDownloadFileService;
+            _random = random;
         }
 
         public UserDetail RegisterUserDetails(RegistrationPayload regPayload)
@@ -326,7 +328,18 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<Patient>> FetchAllPatientsWithPickups()
         {
-            return await _context.Patients.Include(x=> x.Medications).Include(x => x.Medications.Where(x => x.Pickup.DatePickedUp == null)).ThenInclude(x => x.Pickup).ToListAsync();
+            return await _context.Patients.Where(x => x.Medications.Any(y => y.Pickup.DateScheduled.HasValue)).Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue)).ThenInclude(x => x.Pickup).ToListAsync();
+
+        }
+
+        public async Task<List<Patient>> FetchAllPatientMedicationAndPickups()
+        {
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x=>x.Medication).Include(x => x.Medications).ToListAsync();
+        }
+
+        public async Task<List<Medication>> FetchAllMedications()
+        {
+            return await _context.Medications.ToListAsync();
         }
         
         public async Task<(int,int,int)> returnPrescriptionCounters(List<Patient> patients)
@@ -382,6 +395,28 @@ namespace AdvancedAnalysisDesign.Services
                 emailAddress,
                 "Reset your password",
                 emailMessage);
+        }
+
+        public async Task<PatientMedication> createMedication(Medication medication, bool isBloodworkRequired)
+        {
+            return new()
+            {
+
+                Medication = medication,
+                BloodworkRequired = isBloodworkRequired,
+                Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null }
+            };
+        }
+
+        public async Task populateFakeMedicationData()
+        {
+            var patients = await FetchAllPatientMedicationAndPickups();
+            var medications = await FetchAllMedications();
+            foreach(var patient in patients)
+            {
+                patient.Medications.Add( await createMedication(medications[_random.Next(medications.Count)], true));
+            }
+            await _context.SaveChangesAsync();
         }
 
         private async Task SendConfirmationEmail(string userEmail)
