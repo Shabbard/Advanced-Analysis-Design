@@ -92,6 +92,8 @@
 
         if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
+            medicationTableData = await UserService.FetchAllMedication();
+            bloodworkTableData = await UserService.FetchAllBloodwork();
         }
         else
         {

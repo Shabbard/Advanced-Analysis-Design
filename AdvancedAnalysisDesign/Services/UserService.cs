@@ -338,6 +338,16 @@ namespace AdvancedAnalysisDesign.Services
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
 
+        public async Task<List<PatientMedication>> FetchAllMedication()
+        {
+            return await _context.PatientMedications.Include(x => x.Medication).ToListAsync();
+        }
+
+        public async Task<List<PatientBloodwork>> FetchAllBloodwork()
+        {
+            return await _context.PatientBloodworks.ToListAsync();
+        }
+
         public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)
         {
             var listOfPickups = patients.SelectMany(x => x.Medications.Select(x => x.Pickup)).ToList();
