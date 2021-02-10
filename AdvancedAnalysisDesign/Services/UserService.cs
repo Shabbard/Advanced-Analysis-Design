@@ -410,24 +410,11 @@ namespace AdvancedAnalysisDesign.Services
 
         private async Task PrescribeSystem() 
         {
-
-            List<Patient> patientTableData = new List<Patient>();
-
-            patientTableData = await FetchAllPatients();
+            var patientTableData = await FetchAllPatients();
 
             foreach (var patient in patientTableData) 
             {
-                var random_meds = "yeet";
-                var random_tests = "yeet";
-
-                var medication = new Medication
-                {
-
-                    Name = random_meds,
-               
-                };
-
-                await _context.Medications.AddAsync(medication);
+                
 
             }
 
