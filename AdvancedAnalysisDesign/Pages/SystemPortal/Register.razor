@@ -27,7 +27,7 @@
 
                             <MudGrid Spacing="1">
                                 <MudItem xs="12">
-                                    <MudTextField Label="NHS Number" @bind-Value="registrationPayload.PatientRegistrationPayload.NhsNumber" For="@(() => registrationPayload.PatientRegistrationPayload.NhsNumber)" />
+                                    <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)" />
                                 </MudItem>
                                 <MudItem xs="7">
                                     <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload ID Image for Verification.</MudText>
@@ -121,7 +121,7 @@
 </MudMainContent>
 
 @code{
-    RegistrationPayload registrationPayload = new();
+    PatientRegistrationPayload registrationPayload = new();
     IList<IBrowserFile> IDFile = new List<IBrowserFile>();
     IList<IBrowserFile> SelfieFile = new List<IBrowserFile>();
     bool isPopOverVisible;
@@ -146,8 +146,8 @@
         StateHasChanged();
         try
         {
-            registrationPayload.PatientRegistrationPayload.IDPhoto = IDFile[0];
-            registrationPayload.PatientRegistrationPayload.SelfiePhoto = SelfieFile[0];
+            registrationPayload.IDPhoto = IDFile[0];
+            registrationPayload.SelfiePhoto = SelfieFile[0];
             await UserService.RegisterPatient(registrationPayload);
             Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
             NavManager.NavigateTo("/");

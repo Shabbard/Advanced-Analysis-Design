@@ -8,11 +8,6 @@ namespace AdvancedAnalysisDesign.Models.Payloads
 {
     public class RegistrationPayload
     {
-        public RegistrationPayload()
-        {
-            PatientRegistrationPayload = new();
-        }
-        
         [Required]
         public string FirstName { get; set; }
         [Required]
@@ -33,6 +28,5 @@ namespace AdvancedAnalysisDesign.Models.Payloads
         [Compare(nameof(Password))]
         public string PasswordComparison { get; set; }
         public Role UserRole { get; set; }
-        public PatientRegistrationPayload PatientRegistrationPayload { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
+using AdvancedAnalysisDesign.Models.DataTransferObjects;
 using AdvancedAnalysisDesign.Models.Payloads;
 using BlazorDownloadFile;
 using Blazored.LocalStorage;
@@ -100,20 +101,20 @@ namespace AdvancedAnalysisDesign.Services
             return user; // Depending other user types are implemented, this may need changing. Currently standalone users cannot be registered.
         }
 
-        public async Task RegisterPatient(RegistrationPayload regPayload)
+        public async Task RegisterPatient(PatientRegistrationPayload regPayload)
         {
             var user = await RegisterUser(regPayload);
 
             PatientImages images = new PatientImages
             {
-                SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.PatientRegistrationPayload.SelfiePhoto),
-                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.PatientRegistrationPayload.IDPhoto)
+                SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
+                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
             };
 
             var patient = new Patient
             {
                 User = user,
-                NhsNumber = regPayload.PatientRegistrationPayload.NhsNumber,
+                NhsNumber = regPayload.NhsNumber,
                 PatientImages = images
             };
 
@@ -329,9 +330,29 @@ namespace AdvancedAnalysisDesign.Services
         //     return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
         // }
         
-        public async Task<List<User>> FetchAllUsers()
+        public async Task<List<UserWithRoleDto>> FetchAllUsers()
         {
-            return  await _context.Users.Include(x => x.UserDetail).ToListAsync();
+            // this monstrosity gets all users except the default admin, includes user details and includes the users role
+            return await _context.Users
+                .Include(x => x.UserDetail)
+                .Where(x => x.UserName != "admin")
+                .Join(_context.UserRoles,
+                user => user.Id,
+                userRole => userRole.UserId,
+                (user, userRole) => new
+                {
+                    User = user,
+                    RoleId = userRole.RoleId
+                })
+                .Join(_context.Roles,
+                userRole => userRole.RoleId,
+                role => role.Id,
+                (userRole, role) => new UserWithRoleDto
+                {
+                    Role = Enum.Parse<Role>(role.Name),
+                    User = userRole.User
+                })
+                .ToListAsync();
         }
         
         public async Task SubmitForgetPasswordAsync(string emailAddress)

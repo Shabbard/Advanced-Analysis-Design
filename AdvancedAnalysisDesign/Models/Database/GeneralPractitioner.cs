@@ -11,6 +11,6 @@ namespace AdvancedAnalysisDesign.Models.Database
         public User User { get; set; }
         public string EmergencyContact { get; set; }
         public string OfficeNumber  { get; set; }
-
+        public Surgery Surgery { get; set; }
     }
 }
