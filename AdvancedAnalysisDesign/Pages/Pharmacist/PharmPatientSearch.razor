@@ -6,7 +6,7 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject UserService UserService
+@inject PatientService PatientService 
 
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
@@ -63,7 +63,7 @@
 
         if (user.IsInRole("Pharmacist") || user.IsInRole("Admin"))
         {
-            patientTableData = await UserService.FetchAllPatients();
+            patientTableData = await PatientService.FetchAllPatients();
         }
         else
         {
@@ -86,9 +86,9 @@
         return false;
     }
 
-    private async Task OnSelect()
+    private void OnSelect()
     {
-        var userID = patientSelected.User.Id;
-        NavigationManager.NavigateTo("/PharmacistPatientInfomation/" + userID, true);
+        var userId = patientSelected.User.Id;
+        NavigationManager.NavigateTo("/PharmacistPatientInfomation/" + userId, true);
     }
 }

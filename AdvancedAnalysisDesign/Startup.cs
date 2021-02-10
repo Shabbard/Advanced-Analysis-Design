@@ -39,6 +39,8 @@ namespace AdvancedAnalysisDesign
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<UserService>();
+            services.AddScoped<PatientService>();
+            services.AddScoped<NonPatientService>();
             services.AddSingleton<EmailService>();
             services.AddScoped<SignInService>();
             services.AddMudServices();

@@ -7,9 +7,7 @@
 @using Syncfusion.Blazor.Schedule
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject UserService UserService
-
-
+@inject PatientService PatientService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
 
@@ -87,9 +85,9 @@
 
         if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
-            patientWithPickups = await UserService.FetchAllPatientsWithPickups();
-            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = await UserService.returnPrescriptionCounters(patientWithPickups);
-            pickupDatasource = await UserService.returnPickupScheduler(patientWithPickups);
+            patientWithPickups = await PatientService.FetchAllPatientsWithPickups();
+            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
+            pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
         }
         else
         {
