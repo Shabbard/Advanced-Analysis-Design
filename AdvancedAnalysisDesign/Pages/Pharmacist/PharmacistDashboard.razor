@@ -31,17 +31,8 @@
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsDue</MudText>
                     <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
                         <MudItem>
-                            <MudButton OnClick="@PrescriptionListNav"
-                                       Target="_blank"
-                                       Variant="Variant.Text"
-                                       EndIcon="@Icons.Material.Outlined.KeyboardArrowRight"
-                                       IconColor="Color.Info"
-                                       Color="Color.Info"
-                                       Class="p-1"
-                                       Style="text-transform:unset;">
-                                <MudText>
-                                    Click to View
-                                </MudText>
+                            <MudButton OnClick="@PrescriptionListNav"Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;">
+                                <MudText> Click to View </MudText>
                             </MudButton>
                         </MudItem>
                     </MudGrid>
@@ -53,17 +44,8 @@
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsPrepared / @prescriptionsDue</MudText>
                     <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
                         <MudItem>
-                            <MudButton OnClick="@PrescriptionPrepNav"
-                                       Target="_blank"
-                                       Variant="Variant.Text"
-                                       EndIcon="@Icons.Material.Outlined.KeyboardArrowRight"
-                                       IconColor="Color.Info"
-                                       Color="Color.Info"
-                                       Class="p-1"
-                                       Style="text-transform:unset;">
-                                <MudText>
-                                    Click to View
-                                </MudText>
+                            <MudButton OnClick="@PrescriptionPrepNav" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;">
+                                <MudText> Click to View </MudText>
                             </MudButton>
                         </MudItem>
                     </MudGrid>
@@ -75,17 +57,8 @@
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
                     <MudGrid Justify="Justify.FlexEnd" Class="pr-1"> 
                         <MudItem>
-                            <MudButton OnClick="@PrescriptionCollectionNav"
-                                       Target="_blank"
-                                       Variant="Variant.Text"
-                                       EndIcon="@Icons.Material.Outlined.KeyboardArrowRight"
-                                       IconColor="Color.Info"
-                                       Color="Color.Info"
-                                       Class="p-1"
-                                       Style="text-transform:unset;">
-                                <MudText>
-                                    Click to View
-                                </MudText>
+                            <MudButton OnClick="@PrescriptionCollectionNav" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;">
+                                <MudText> Click to View </MudText>
                             </MudButton>
                         </MudItem>
                     </MudGrid>
@@ -115,17 +88,17 @@
 
     private async Task PrescriptionCollectionNav()
     {
-        NavigationManager.NavigateTo("/PrescriptionCollection");
+        NavigationManager.NavigateTo("/PrescriptionCollection", true);
     }
 
     private async Task PrescriptionListNav()
     {
-        NavigationManager.NavigateTo("/PrescriptionList");
+        NavigationManager.NavigateTo("/PrescriptionList", true);
     }
 
     private async Task PrescriptionPrepNav()
     {
-        NavigationManager.NavigateTo("/PrescriptionPreparation");
+        NavigationManager.NavigateTo("/PrescriptionPreparation", true);
     }
 
 
