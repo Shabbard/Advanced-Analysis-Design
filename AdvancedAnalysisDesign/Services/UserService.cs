@@ -338,14 +338,15 @@ namespace AdvancedAnalysisDesign.Services
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
 
-        public async Task<List<PatientMedication>> FetchAllMedication()
+        public async Task<List<Patient>> FetchAllMedication()
         {
-            return await _context.PatientMedications.Include(x => x.Medication).Include(x => x.Pickup).ToListAsync();
+            var user = await GetCurrentUserAsync();
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Where(y => y.User.UserDetail.Id.Equals(user.Id)).ToListAsync();            
         }
 
-        public async Task<List<PatientBloodwork>> FetchAllBloodwork()
+        public async Task<List<Patient>> FetchAllBloodwork()
         {
-            return await _context.PatientBloodworks.ToListAsync();
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).Where(y => y.User.UserDetail.Id.Equals(user.Id)).ToListAsync();
         }
 
         public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)

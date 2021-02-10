@@ -33,10 +33,10 @@
                         </HeaderContent>
 
                         <RowTemplate Context="row">
-                            <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
-                            <MudTd DataLabel="Expiry">@row.BloodworkRequired</MudTd>
-                            <MudTd DataLabel="Picked Up">@row.Pickup.IsPickedUp</MudTd>
-                            <MudTd DataLabel="Pick Up Date">@row.Pickup.DateScheduled</MudTd>
+                            <MudTd DataLabel="Name">@row.Medications.Medication.MedicationName</MudTd>
+                            <MudTd DataLabel="Expiry">@row.Medications.BloodworkRequired</MudTd>
+                            <MudTd DataLabel="Picked Up">@row.Medications.Pickup.IsPickedUp</MudTd>
+                            <MudTd DataLabel="Pick Up Date">@row.Medications.Pickup.DateScheduled</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -67,7 +67,7 @@
                         </HeaderContent>
 
                         <RowTemplate Context="row">
-                            <MudTd DataLabel="ID">@row.Id</MudTd>
+                            <MudTd DataLabel="ID">@row.Medications.</MudTd>
                             <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
                         </RowTemplate>
                     </MudTable>
@@ -86,8 +86,8 @@
 @code{
     private bool hover = true;
 
-    private List<PatientMedication> medicationTableData = new List<PatientMedication>();
-    private List<PatientBloodwork> bloodworkTableData = new List<PatientBloodwork>();
+    private List<Patient> medicationTableData = new List<Patient>();
+    private List<Patient> bloodworkTableData = new List<Patient>();
 
     protected override async Task OnInitializedAsync()
     {
