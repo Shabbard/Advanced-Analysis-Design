@@ -340,7 +340,7 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<PatientMedication>> FetchAllMedication()
         {
-            return await _context.PatientMedications.Include(x => x.Medication).ToListAsync();
+            return await _context.PatientMedications.Include(x => x.Medication).Include(x => x.Pickup).ToListAsync();
         }
 
         public async Task<List<PatientBloodwork>> FetchAllBloodwork()

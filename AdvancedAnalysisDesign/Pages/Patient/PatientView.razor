@@ -28,11 +28,15 @@
                         <HeaderContent>
                             <MudTh>Name</MudTh>
                             <MudTh>Bloodwork Required</MudTh>
+                            <MudTh>Picked Up</MudTh>
+                            <MudTh>Pick Up Date</MudTh>
                         </HeaderContent>
 
                         <RowTemplate Context="row">
                             <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
                             <MudTd DataLabel="Expiry">@row.BloodworkRequired</MudTd>
+                            <MudTd DataLabel="Picked Up">@row.Pickup.IsPickedUp</MudTd>
+                            <MudTd DataLabel="Pick Up Date">@row.Pickup.DateScheduled</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -58,12 +62,12 @@
                         </ToolBarContent>
 
                         <HeaderContent>
-                            <MudTh>Id</MudTh>
+                            <MudTh>Name</MudTh>
                             <MudTh>Date</MudTh>
                         </HeaderContent>
 
                         <RowTemplate Context="row">
-                            <MudTd DataLabel="Id">@row.Id</MudTd>
+                            <MudTd DataLabel="ID">@row.Id</MudTd>
                             <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
                         </RowTemplate>
                     </MudTable>
