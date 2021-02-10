@@ -12,5 +12,7 @@ namespace AdvancedAnalysisDesign.Models.Database
         public string FileName { get; set; }
         public byte[] IDPhoto { get; set; }
         public byte[] SelfiePhoto { get; set; }
+        public bool IsFlagged { get; set; }
+        public bool IsVerified { get; set; }
     }
 }

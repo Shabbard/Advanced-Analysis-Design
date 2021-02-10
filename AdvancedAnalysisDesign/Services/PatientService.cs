@@ -44,7 +44,9 @@ namespace AdvancedAnalysisDesign.Services
             PatientImages images = new PatientImages
             {
                 SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
-                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
+                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto),
+                IsFlagged = false,
+                IsVerified = false
             };
 
             var patient = new Patient
