@@ -2,11 +2,14 @@
 
 @using AdvancedAnalysisDesign.Services
 @using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.Payloads
 @using AdvancedAnalysisDesign.Enums
-
+@using Syncfusion.Blazor.Schedule
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject UserService UserService
+
+
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
 
@@ -40,16 +43,30 @@
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Collected</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right" ><MudLink Color="Color.Info" Href="/PrescriptionsCollected">Click to View ></MudLink></MudText>
+                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right"><MudLink Color="Color.Info" Href="/PrescriptionsCollected">Click to View ></MudLink></MudText>
                 </MudPaper>
             </MudItem>
         </MudGrid>
     </MudGrid>
+    <MudGrid Style="flex-direction:row">
+        <MudItem xs="12" Class="mt-16">
+            <MudPaper Elevation="5" Class="pt-2">
+
+                <SfSchedule Readonly="true" TValue="Pickup" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
+                    <ScheduleEventSettings DataSource="@pickupDatasource"></ScheduleEventSettings>
+                </SfSchedule>
+
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
 </MudContainer>
 
 @code {
     List<Patient> patientWithPickups = new();
     int prescriptionsDue, prescriptionsPrepared, prescriptionsCollected;
+    private List<PickupSchedulerPayload> pickupDatasource = new();
+    private DateTime currentDate = DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,11 +77,13 @@
         {
             patientWithPickups = await UserService.FetchAllPatientsWithPickups();
             (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = await UserService.returnPrescriptionCounters(patientWithPickups);
+            pickupDatasource = await UserService.returnPickupScheduler(patientWithPickups);
         }
         else
         {
             NavigationManager.NavigateTo("/", true);
         }
     }
+
 
 }
