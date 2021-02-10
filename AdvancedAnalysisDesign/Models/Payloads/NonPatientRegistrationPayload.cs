@@ -8,6 +8,6 @@ namespace AdvancedAnalysisDesign.Models.Payloads
 {
     public class NonPatientRegistrationPayload : RegistrationPayload
     {
-        public IMedicalInstitution MedicalInstitution { get; set; }
+        public MedicalInstitution MedicalInstitution { get; set; }
     }
 }

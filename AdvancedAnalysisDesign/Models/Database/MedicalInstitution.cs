@@ -1,6 +1,6 @@
 namespace AdvancedAnalysisDesign.Models.Database
 {
-    public class Surgery : IMedicalInstitution
+    public class MedicalInstitution
     {
         public int Id { get; set; }
         public string Address { get; set; }
