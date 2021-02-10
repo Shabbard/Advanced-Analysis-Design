@@ -1,7 +1,10 @@
 @page "/Admin"
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Services
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+
+@inject UserService UserService 
 
 <MudContainer>
     <MudCard>
@@ -16,8 +19,12 @@
                 <MudTabPanel Text="Item Three">
                     <MudText>Item Three</MudText>
                 </MudTabPanel>
-                <MudTabPanel Text="Item Four">
-                    <MudText>Item Four</MudText>
+                <MudTabPanel Text="Fake Medication import">
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem Class="pt-10">
+                            <MudButton OnClick="createFakeMedicationData" Variant="Variant.Filled" Color="Color.Primary">Create Fake Medication Data</MudButton>
+                        </MudItem>
+                    </MudGrid>
                 </MudTabPanel>
                 <MudTabPanel Text="Item Five">
                     <MudText>Item Five</MudText>
@@ -46,9 +53,8 @@
         }
     }
 
-    private async Task SystemPrescribe()
+    private async Task createFakeMedicationData()
     {
-
+        await UserService.populateFakeMedicationData();
     }
-
 }

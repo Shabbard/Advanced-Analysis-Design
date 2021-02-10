@@ -45,6 +45,7 @@ namespace AdvancedAnalysisDesign
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
             services.AddSyncfusionBlazor();
+            services.AddSingleton<Random>();
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));
 
