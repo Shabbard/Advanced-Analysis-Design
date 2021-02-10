@@ -407,5 +407,59 @@ namespace AdvancedAnalysisDesign.Services
                 "Confirm your account",
                 emailMessage);
         }
+
+        private async Task PrescribeSystem() 
+        {
+
+            List<Patient> patientTableData = new List<Patient>();
+
+            patientTableData = await FetchAllPatients();
+
+            foreach (var patient in patientTableData) 
+            {
+                var random_meds = "yeet";
+                var random_tests = "yeet";
+
+                var medication = new Medication
+                {
+
+                    Name = random_meds,
+               
+                };
+
+                await _context.Medications.AddAsync(medication);
+
+            }
+
+            await _context.SaveChangesAsync();
+
+            //var patient = new Patient
+            //{
+            //    User = user,
+            //    NhsNumber = regPayload.NhsNumber,
+            //    PatientImages = images
+            //};
+
+            //await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
+
+            //await _context.Patients.AddAsync(patient);
+            //await _context.SaveChangesAsync();
+
+
+            //For patients int he db
+            //give random medication
+            //give random works needed
+            //no pickup times 
+
+            //public int Id { get; set; }
+            //public string Name { get; set; }
+            //public bool BloodworkRequired { get; set; }
+            //public ICollection<PatientBloodwork> PatientBloodworks { get; set; }
+            //public TimeSpan DateIntervalOfBloodworkRenewal { get; set; }
+            //public Pickup Pickup { get; set; }
+
+
+
+        }
     }
 }
