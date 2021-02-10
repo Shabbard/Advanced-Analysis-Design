@@ -87,24 +87,23 @@ namespace AdvancedAnalysisDesign.Services
             ).ToList();
         }
         
-        public async Task<PatientMedication> createMedication(Medication medication, bool isBloodworkRequired)
+        public PatientMedication CreateMedication(Medication medication, bool isBloodworkRequired)
         {
             return new()
             {
-
                 Medication = medication,
                 BloodworkRequired = isBloodworkRequired,
                 Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null }
             };
         }
 
-        public async Task populateFakeMedicationData()
+        public async Task PopulateFakeMedicationData()
         {
             var patients = await FetchAllPatientMedicationAndPickups();
             var medications = await FetchAllMedications();
             foreach(var patient in patients)
             {
-                patient.Medications.Add( await createMedication(medications[_random.Next(medications.Count)], true));
+                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true));
             }
             await _context.SaveChangesAsync();
         }
@@ -117,7 +116,6 @@ namespace AdvancedAnalysisDesign.Services
         public async Task<List<Patient>> FetchAllPatientsWithPickups()
         {
             return await _context.Patients.Where(x => x.Medications.Any(y => y.Pickup.DateScheduled.HasValue)).Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue)).ThenInclude(x => x.Pickup).ToListAsync();
-
         }
 
         public async Task<List<Patient>> FetchAllPatientMedicationAndPickups()
@@ -128,29 +126,6 @@ namespace AdvancedAnalysisDesign.Services
         public async Task<List<Medication>> FetchAllMedications()
         {
             return await _context.Medications.ToListAsync();
-        }
-        
-        public async Task<(int,int,int)> returnPrescriptionCounters(List<Patient> patients)
-        {
-            int prescriptionsDue = patients.Select(x => x.Medications.Count()).Sum();
-            int prescriptionsPrepared = patients.Select(x => x.Medications.Where(y => y.Pickup.IsPrepared).Count()).Sum();
-            int prescriptionsCollected = patients.Select(x => x.Medications.Where(y => y.Pickup.IsPickedUp).Count()).Sum();
-
-            return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
-        }
-
-        public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)
-        {
-            var listOfPickups = patients.SelectMany(x => x.Medications.Select(x => x.Pickup)).ToList();
-            return listOfPickups.Select(x => new PickupSchedulerPayload()
-            {
-                StartTime = x.DateScheduled,
-                EndTime = x.DateScheduled.Value.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
-                Subject = "Medication Pickup",
-                IsPickedUp = x.IsPickedUp,
-                IsPrepared = x.IsPrepared
-            }
-            ).ToList();
         }
     }
 }
