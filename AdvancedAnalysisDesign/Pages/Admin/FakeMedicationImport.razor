@@ -1,0 +1,15 @@
+@using AdvancedAnalysisDesign.Services
+@inject PatientService PatientService 
+
+<MudGrid Justify="Justify.Center">
+    <MudItem Class="pt-10">
+        <MudButton OnClick="CreateFakeMedicationData" Variant="Variant.Filled" Color="Color.Primary">Create Fake Medication Data</MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private async Task CreateFakeMedicationData()
+    {
+        await PatientService.populateFakeMedicationData();
+    }
+}

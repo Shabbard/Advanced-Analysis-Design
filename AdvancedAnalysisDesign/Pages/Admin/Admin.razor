@@ -5,7 +5,7 @@
 @inject NavigationManager NavigationManager
 
 
-@inject UserService UserService 
+
 <MudContainer>
     <MudCard>
         <MudCardContent>
@@ -20,11 +20,7 @@
                     <MudText>Item Three</MudText>
                 </MudTabPanel>
                 <MudTabPanel Text="Fake Medication import">
-                    <MudGrid Justify="Justify.Center">
-                        <MudItem Class="pt-10">
-                            <MudButton OnClick="createFakeMedicationData" Variant="Variant.Filled" Color="Color.Primary">Create Fake Medication Data</MudButton>
-                        </MudItem>
-                    </MudGrid>
+                    <FakeMedicationImport></FakeMedicationImport>
                 </MudTabPanel>
                 <MudTabPanel Text="Item Five">
                     <MudText>Item Five</MudText>
@@ -51,10 +47,5 @@
         {
             NavigationManager.NavigateTo("/", true);
         }
-    }
-
-    private async Task createFakeMedicationData()
-    {
-        await UserService.populateFakeMedicationData();
     }
 }
