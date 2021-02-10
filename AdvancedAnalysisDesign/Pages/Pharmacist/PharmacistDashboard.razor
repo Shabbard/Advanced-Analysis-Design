@@ -29,21 +29,60 @@
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Due</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right" Color="Color.Default"><MudLink Color="Color.Info" Href="/PrescriptionsDue">Click to View ></MudLink></MudText>
+                    <MudItem>
+                        <MudButton OnClick="@PrescriptionListNav"
+                                   Target="_blank"
+                                   Variant="Variant.Text"
+                                   EndIcon="@Icons.Material.Outlined.KeyboardArrowRight"
+                                   IconColor="Color.Info"
+                                   Color="Color.Info"
+                                   Class="pl-5 pt-5 pb-4"
+                                   Style="text-transform:unset; flex-direction:column-reverse">
+                            <MudText>
+                                Click to View
+                            </MudText>
+                        </MudButton>
+                    </MudItem>
                 </MudPaper>
             </MudItem>
             <MudItem xs="4">
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescritions Prepared</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsPrepared / @prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right" Color="Color.Default"><MudLink Color="Color.Info" Href="/PrescriptionsPrepared">Click to View ></MudLink></MudText>
+                    <MudItem>
+                        <MudButton OnClick="@PrescriptionPrepNav"
+                                   Target="_blank"
+                                   Variant="Variant.Text"
+                                   EndIcon="@Icons.Material.Outlined.KeyboardArrowRight"
+                                   IconColor="Color.Info"
+                                   Color="Color.Info"
+                                   Class="pl-5 pt-5 pb-4"
+                                   Style="text-transform:unset; flex-direction:column-reverse">
+                            <MudText>
+                                Click to View
+                            </MudText>
+                        </MudButton>
+                    </MudItem>
                 </MudPaper>
             </MudItem>
             <MudItem xs="4">
                 <MudPaper Elevation="4">
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Collected</MudText>
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
-                    <MudText Class="pr-5 pt-5 pb-4" Align="Align.Right"><MudLink Color="Color.Info" Href="/PrescriptionsCollected">Click to View ></MudLink></MudText>
+                    <MudItem>
+                        <MudButton OnClick="@PrescriptionCollectionNav"
+                                    Target="_blank"
+                                    Variant="Variant.Text"
+                                    EndIcon="@Icons.Material.Outlined.KeyboardArrowRight"
+                                    IconColor="Color.Info"
+                                    Color="Color.Info"
+                                    Class="pl-5 pt-5 pb-4"
+                                    Style="text-transform:unset; flex-direction:column-reverse">
+                            <MudText>
+                                Click to View
+                            </MudText>
+                        </MudButton>
+                    </MudItem>
                 </MudPaper>
             </MudItem>
         </MudGrid>
@@ -67,6 +106,22 @@
     int prescriptionsDue, prescriptionsPrepared, prescriptionsCollected;
     private List<PickupSchedulerPayload> pickupDatasource = new();
     private DateTime currentDate = DateTime.Now;
+
+    private async Task PrescriptionCollectionNav()
+    {
+        NavigationManager.NavigateTo("/PrescriptionCollection");
+    }
+
+    private async Task PrescriptionListNav()
+    {
+        NavigationManager.NavigateTo("/PrescriptionList");
+    }
+
+    private async Task PrescriptionPrepNav()
+    {
+        NavigationManager.NavigateTo("/PrescriptionPreparation");
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
