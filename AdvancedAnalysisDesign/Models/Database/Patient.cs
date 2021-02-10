@@ -9,6 +9,6 @@ namespace AdvancedAnalysisDesign.Models.Database
         public User User { get; set; }
         public GeneralPractitioner GeneralPractitioner { get; set; }
         public PatientImages PatientImages { get; set; }
-        public List<Medication> Medications { get; set; }
+        public List<PatientMedication> Medications { get; set; }
     }
 }
