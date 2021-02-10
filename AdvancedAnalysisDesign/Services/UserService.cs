@@ -338,6 +338,20 @@ namespace AdvancedAnalysisDesign.Services
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
 
+        public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)
+        {
+            var listOfPickups = patients.SelectMany(x => x.Medications.Select(x => x.Pickup)).ToList();
+            return listOfPickups.Select(x => new PickupSchedulerPayload()
+            {
+                StartTime = x.DateScheduled,
+                EndTime = x.DateScheduled.Value.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
+                Subject = "Medication Pickup",
+                IsPickedUp = x.IsPickedUp,
+                IsPrepared = x.IsPrepared
+            }
+            ).ToList();
+        }
+
         public async Task SubmitForgetPasswordAsync(string emailAddress)
         {
             if (string.IsNullOrEmpty(emailAddress))
