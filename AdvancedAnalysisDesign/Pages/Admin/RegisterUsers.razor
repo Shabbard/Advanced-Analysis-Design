@@ -1,0 +1,60 @@
+@using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Pages.SystemPortal
+@using AdvancedAnalysisDesign.Models.Payloads
+@inject ISnackbar Snackbar
+
+<EditForm Model="@registrationPayload" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <RegisterForm RegistrationPayload="@registrationPayload"></RegisterForm>
+    <MudGrid Spacing="1">
+        <MudItem xs="12">
+        </MudItem>
+        <MudItem xs="12">
+            <MudSelect Label="User Role" OffsetY="true" @bind-Value="registrationPayload.UserRole" Placeholder="@(Role.GP)">
+                <MudSelectItem T="Role" Value="@(Role.GP)">General Practitioner</MudSelectItem>
+                <MudSelectItem T="Role" Value="@(Role.Pharmacist)">Pharmacist</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            @* <MudSelect Label="@(registrationPayload.UserRole == Role.Pharmacist ? "Pharmacy" : "Surgery")" OffsetY="true" @bind-Value="registrationPayload.MedicalInstitution" Placeholder="@(Role.GP)"> *@
+            @*    @foreach () *@
+            @*    { *@
+            @*     *@
+            @*    } *@
+            @* </MudSelect> *@
+        </MudItem>  
+        <MudItem xs="12">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width:100%">Register</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    NonPatientRegistrationPayload registrationPayload = new();
+    List<MedicalInstitution> medicalInstitutions = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private async Task<List<MedicalInstitution>> GetMedicalInstitutions()
+    {
+        
+    }
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        StateHasChanged();
+        try
+        {
+            // await UserService.RegisterPatient(registrationPayload);
+            Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+    }
+}
