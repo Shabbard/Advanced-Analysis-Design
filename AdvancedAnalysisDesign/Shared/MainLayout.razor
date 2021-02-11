@@ -27,7 +27,7 @@
     @* ----- Drawer Start   ----- *@
 
     @* ----- Drawer allows the side bar to be toggle   ----- *@
-    <MudDrawer @bind-Open="@open" Clipped="true" Elevation="1">
+    <MudDrawer @bind-Open="@open" ClipMode="DrawerClipMode.Docked" Elevation="1">
         <SideBarNav />
     </MudDrawer>
 
@@ -45,11 +45,9 @@
     @* ----- MainContent End   ----- *@
 </MudLayout>
 
-@code{
-
+@code {
     private string userName { get; set; }
-
-
+    
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -69,7 +67,7 @@
         StateHasChanged();
     }
     
-    bool open = true;
+    bool open = false;
 
     void ToggleDrawer()
     {

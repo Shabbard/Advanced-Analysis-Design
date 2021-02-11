@@ -1,0 +1,41 @@
+@using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Payloads
+@using AdvancedAnalysisDesign.Services
+@inject ISnackbar Snackbar
+@inject NonPatientService NonPatientService
+
+<EditForm Model="@AddMedicalInstitutionPayload" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField Label="Name" @bind-Value="AddMedicalInstitutionPayload.Name" For="@(() => AddMedicalInstitutionPayload.Name)" Required="true"/>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Label="Address" @bind-Value="AddMedicalInstitutionPayload.Address" For="@(() => AddMedicalInstitutionPayload.Address)" Required="true"/>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Label="Contact Number" @bind-Value="AddMedicalInstitutionPayload.ContactNumber" For="@(() => AddMedicalInstitutionPayload.ContactNumber)" Required="true"/>
+        </MudItem>  
+        <MudItem xs="12">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width:100%">Add Medical Institution</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    AddMedicalInstitutionPayload AddMedicalInstitutionPayload = new();
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        StateHasChanged();
+        try
+        {
+            await NonPatientService.AddMedicalInstitution(AddMedicalInstitutionPayload);
+            Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+    }
+}
