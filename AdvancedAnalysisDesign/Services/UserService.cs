@@ -5,7 +5,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
+using AdvancedAnalysisDesign.Models.DataTransferObjects;
 using AdvancedAnalysisDesign.Models.Payloads;
 using BlazorDownloadFile;
 using Flurl;
@@ -330,6 +332,31 @@ namespace AdvancedAnalysisDesign.Services
                 userEmail,
                 "Confirm your account",
                 emailMessage);
+        }
+
+        public async Task<List<UserWithRoleDto>> FetchAllUsers()
+        {
+            // this monstrosity gets all users except the default admin, includes user details and includes the users role
+            return await _context.Users
+                .Include(x => x.UserDetail)
+                .Where(x => x.UserName != "admin")
+                .Join(_context.UserRoles,
+                    user => user.Id,
+                    userRole => userRole.UserId,
+                    (user, userRole) => new
+                    {
+                        User = user,
+                        RoleId = userRole.RoleId
+                    })
+                .Join(_context.Roles,
+                    userRole => userRole.RoleId,
+                    role => role.Id,
+                    (userRole, role) => new UserWithRoleDto
+                    {
+                        Role = Enum.Parse<Role>(role.Name),
+                        User = userRole.User
+                    })
+                .ToListAsync();
         }
     }
 }

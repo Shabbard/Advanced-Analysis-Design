@@ -37,7 +37,7 @@ namespace AdvancedAnalysisDesign.Services
             return buffer;
         }
         
-        public async Task RegisterPatient(RegistrationPayload regPayload)
+        public async Task RegisterPatient(PatientRegistrationPayload regPayload)
         {
             var user = await _userService.RegisterUser(regPayload);
 
