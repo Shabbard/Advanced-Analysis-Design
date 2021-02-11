@@ -35,11 +35,11 @@ namespace AdvancedAnalysisDesign.Services
             {
                 throw new Exception("Name is already in use.");
             }
-            if (_context.MedicalInstitutions.Any(x => x.Name == medicalInstitutionPayload.Address))
+            if (_context.MedicalInstitutions.Any(x => x.Address == medicalInstitutionPayload.Address))
             {
                 throw new Exception("Address is already in use.");
             }
-            if (_context.MedicalInstitutions.Any(x => x.Name == medicalInstitutionPayload.ContactNumber))
+            if (_context.MedicalInstitutions.Any(x => x.ContactNumber == medicalInstitutionPayload.ContactNumber))
             {
                 throw new Exception("Contact number is already in use.");
             }
