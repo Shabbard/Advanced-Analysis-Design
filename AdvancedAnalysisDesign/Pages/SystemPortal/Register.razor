@@ -1,7 +1,5 @@
 ﻿@page "/Register"
 @layout EmptyLayout
-@using AdvancedAnalysisDesign.Models
-@using AdvancedAnalysisDesign.Enums
 @using AdvancedAnalysisDesign.Models.Payloads
 @using InputType = MudBlazor.InputType
 @using AdvancedAnalysisDesign.Services
@@ -25,38 +23,7 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudGrid Justify="Justify.Center" Spacing="2">
-                                <MudItem xs="6">
-                                    <MudTextField Label="First name" @bind-Value="registrationPayload.FirstName" For="@(() => registrationPayload.FirstName)" Required="true" />
-                                </MudItem>
-                                <MudItem xs="6">
-                                    <MudTextField Label="Surname" @bind-Value="registrationPayload.LastName" For="@(() => registrationPayload.LastName)" Required="true" />
-                                </MudItem>
-                                <MudItem xs="6">
-                                    <MudTextField Label="Email" @bind-Value="registrationPayload.EmailAddress" For="@(() => registrationPayload.EmailAddress)" Required="true" />
-                                </MudItem>
-                                <MudItem xs="6">
-                                    <MudTextField Label="Phone Number" @bind-Value="registrationPayload.PhoneNumber" For="@(() => registrationPayload.PhoneNumber)" Required="true" />
-                                </MudItem>
-                                <MudItem xs="12">
-                                    <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@registrationPayload.DateOfBirth" />
-                                </MudItem>
-
-                                <MudItem xs="12">
-                                    <MudSelect Label="Gender" Dense="true" OffsetY="true" @bind-Value="registrationPayload.Gender" Placeholder="Select culture">
-                                        <MudSelectItem T="Gender" Value="@(Gender.Male)">Male</MudSelectItem>
-                                        <MudSelectItem T="Gender" Value="@(Gender.Female)">Female</MudSelectItem>
-                                        <MudSelectItem T="Gender" Value="@(Gender.Other)">Other</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-
-                                <MudItem xs="6">
-                                    <MudTextField Label="Password" @bind-Value="registrationPayload.Password" For="@(() => registrationPayload.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
-                                </MudItem>
-                                <MudItem xs="6">
-                                    <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="registrationPayload.PasswordComparison" For="@(() => registrationPayload.PasswordComparison)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required="true" />
-                                </MudItem>
-                            </MudGrid>
+                            <RegisterForm RegistrationPayload="@registrationPayload"></RegisterForm>
 
                             <MudGrid Spacing="1">
                                 <MudItem xs="12">
@@ -154,7 +121,7 @@
 </MudMainContent>
 
 @code{
-    RegistrationPayload registrationPayload = new();
+    PatientRegistrationPayload registrationPayload = new();
     IList<IBrowserFile> IDFile = new List<IBrowserFile>();
     IList<IBrowserFile> SelfieFile = new List<IBrowserFile>();
     bool isPopOverVisible;

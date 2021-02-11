@@ -1,0 +1,79 @@
+@using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Pages.SystemPortal
+@using AdvancedAnalysisDesign.Models.Payloads
+@using AdvancedAnalysisDesign.Services
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
+@inject NonPatientService NonPatientService
+
+<EditForm Model="@registrationPayload" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <RegisterForm RegistrationPayload="@registrationPayload"></RegisterForm>
+    <MudGrid Spacing="1">
+        <MudItem xs="12">
+            <MudSelect Label="User Role" OffsetY="true" @bind-Value="registrationPayload.UserRole" Placeholder="@(Role.GP)">
+                <MudSelectItem T="Role" Value="@(Role.GP)">General Practitioner</MudSelectItem>
+                <MudSelectItem T="Role" Value="@(Role.Pharmacist)">Pharmacist</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        @if (user.IsInRole(Role.Admin.ToString()))
+        {
+            <MudItem xs="12">
+                <MudSelect Label="Medical Institution" OffsetY="true" @bind-Value="registrationPayload.MedicalInstitution" Placeholder="@(Role.GP)">
+                    @foreach (var medicalInstitution in medicalInstitutions)
+                    {
+                        <MudSelectItem Value="medicalInstitution">@medicalInstitution.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>  
+        }
+        <MudItem xs="12">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width:100%">Register</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    NonPatientRegistrationPayload registrationPayload = new();
+    List<MedicalInstitution> medicalInstitutions = new();
+    ClaimsPrincipal user = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (user.IsInRole(Role.Admin.ToString()))
+        {
+            medicalInstitutions = await NonPatientService.GetMedicalInstitutions();
+        }
+        if (user.IsInRole(Role.Pharmacist.ToString()))
+        {
+            registrationPayload.MedicalInstitution = await NonPatientService.GetMedicalInstitutionForUser();
+        }
+    }
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        StateHasChanged();
+        try
+        {
+            if (registrationPayload.UserRole == Role.GP)
+            {
+                await NonPatientService.RegisterGp(registrationPayload);
+            }
+            else if (registrationPayload.UserRole == Role.Pharmacist)
+            {
+                await NonPatientService.RegisterPharmacist(registrationPayload);
+            }
+            
+            Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+    }
+}
