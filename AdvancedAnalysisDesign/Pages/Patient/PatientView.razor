@@ -7,7 +7,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-@inject UserService UserService
+@inject PatientService PatientService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
@@ -96,8 +96,8 @@
 
         if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
-            medicationTableData = await UserService.FetchUserMedication();
-            bloodworkTableData = await UserService.FetchUserBloodwork();
+            medicationTableData = await PatientService.FetchUserMedication();
+            bloodworkTableData = await PatientService.FetchUserBloodwork();
         }
         else
         {
