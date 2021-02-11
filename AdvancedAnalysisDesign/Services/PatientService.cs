@@ -31,7 +31,7 @@ namespace AdvancedAnalysisDesign.Services
         
         public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
         {
-            var maxByteSize = 10485760;
+            var maxByteSize = 10485760; // max of 10MB
             var buffer = new byte[browserFile.Size];
             await browserFile.OpenReadStream(maxByteSize).ReadAsync(buffer);
             return buffer;
@@ -44,7 +44,9 @@ namespace AdvancedAnalysisDesign.Services
             PatientImages images = new PatientImages
             {
                 SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
-                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
+                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto),
+                IsFlagged = false,
+                IsVerified = false
             };
 
             var patient = new Patient

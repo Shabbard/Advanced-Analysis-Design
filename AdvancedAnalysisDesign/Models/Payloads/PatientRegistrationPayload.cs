@@ -11,6 +11,7 @@ namespace AdvancedAnalysisDesign.Models.Payloads
         public string NhsNumber { get; set; }
         [Required]
         public IBrowserFile IDPhoto { get; set; }
+        [Required]
         public IBrowserFile SelfiePhoto { get; set; }
     }
 }
