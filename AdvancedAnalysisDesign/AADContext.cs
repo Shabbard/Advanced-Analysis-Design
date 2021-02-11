@@ -22,8 +22,7 @@ namespace AdvancedAnalysisDesign
         public DbSet<PatientImages> PatientImages { get; set; }
         public DbSet<Pickup> Pickups { get; set; }
         public DbSet<Pharmacist> Pharmacists { get; set; }
-        public DbSet<MedicalInstitution> Surgeries { get; set; }
-        public DbSet<MedicalInstitution> Pharmacies { get; set; }
+        public DbSet<MedicalInstitution> MedicalInstitutions { get; set; }
         public DbSet<Medication> Medications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

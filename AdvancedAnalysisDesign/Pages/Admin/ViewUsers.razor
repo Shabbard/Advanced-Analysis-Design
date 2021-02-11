@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject UserService UserService
+@inject NonPatientService NonPatientService
 
 <MudTable Elevation="0" Items="Users" Height="700px" FixedHeader="true" Hover="true" SortLabel="Sort By" Filter="new Func<UserWithRoleDto,bool>(FilterFunc)">
     <ToolBarContent>
@@ -39,25 +40,20 @@
     
     private User _value = new(); // used for getter in patientSelected
     private User userSelected { get { return _value; } set { _value = value; OnSelect(); } } // When a patient is selected setter runs OnSelect
-    
     string userSearchTerm;
     
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
-        if (user.IsInRole(Role.GP.ToString()))
+    
+        if (user.IsInRole(Role.Pharmacist.ToString()))
         {
-    // Users = await UserService.FetchAllUsers();
+            Users = await UserService.FetchAllUsers(await NonPatientService.GetMedicalInstitutionForUser());
         }
         else if (user.IsInRole(Role.Admin.ToString()))
         {
             Users = await UserService.FetchAllUsers();
-        }
-        else
-        {
-            NavigationManager.NavigateTo("/", true);
         }
     }
     
@@ -72,7 +68,6 @@
         if (user.User.Email.Contains(userSearchTerm, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
-    //TODO: Add GP Surgery search
     }
     
     private async Task OnSelect()
