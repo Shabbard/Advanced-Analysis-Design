@@ -1,12 +1,13 @@
 @page "/Admin"
 @using AdvancedAnalysisDesign.Enums
 @using AdvancedAnalysisDesign.Services
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject UserService UserService
 @inject ISnackbar Snackbar
 
-<MudContainer>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
     <MudCard>
         <MudCardContent>
             <MudTabs Color="@Color.Primary" Rounded="true" Centered="true">
@@ -16,12 +17,16 @@
                 <MudTabPanel Text="Register User">
                     <RegisterUsers></RegisterUsers>
                 </MudTabPanel>
-                <MudTabPanel Text="Surgeries">
-                    <MudText>Item Two</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Pharmacies">
-                    <MudText>Item Three</MudText>
-                </MudTabPanel>
+                @if (user.IsInRole(Role.Admin.ToString()))
+                {
+                    <MudTabPanel Text="Medical Institutions">
+                        <ViewMedicalInstitutions></ViewMedicalInstitutions>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Add Medical Institution">
+                        <AddMedicalInstitution></AddMedicalInstitution>
+                    </MudTabPanel>
+                }
+                
                 <MudTabPanel Text="Fake Medication import">
                     <FakeMedicationImport></FakeMedicationImport>
                 </MudTabPanel>
@@ -31,13 +36,13 @@
 </MudContainer>
 
 @code {
-
+    ClaimsPrincipal user = new();
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        user = authState.User;
 
-        if (user.IsInRole(Role.GP.ToString()))
+        if (user.IsInRole(Role.Pharmacist.ToString()))
         {
         }
         else if (user.IsInRole(Role.Admin.ToString()))

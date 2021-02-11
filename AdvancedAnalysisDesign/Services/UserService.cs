@@ -91,7 +91,7 @@ namespace AdvancedAnalysisDesign.Services
                 }
             }
 
-            return user; // Depending other user types are implemented, this may need changing. Currently standalone users cannot be registered.
+            return user;
         }
 
         public async Task Login(string email, string password)
@@ -334,10 +334,10 @@ namespace AdvancedAnalysisDesign.Services
                 emailMessage);
         }
 
-        public async Task<List<UserWithRoleDto>> FetchAllUsers()
+        public async Task<List<UserWithRoleDto>> FetchAllUsers(MedicalInstitution medicalInstitution = null)
         {
             // this monstrosity gets all users except the default admin, includes user details and includes the users role
-            return await _context.Users
+            var users = _context.Users
                 .Include(x => x.UserDetail)
                 .Where(x => x.UserName != "admin")
                 .Join(_context.UserRoles,
@@ -355,8 +355,27 @@ namespace AdvancedAnalysisDesign.Services
                     {
                         Role = Enum.Parse<Role>(role.Name),
                         User = userRole.User
-                    })
-                .ToListAsync();
+                    });
+
+            if (medicalInstitution == null)
+            {
+                return await users.ToListAsync();
+            }
+
+            var usersForInstitution = await GetUsersForInstitution(medicalInstitution);
+
+            return await users.Where(x => usersForInstitution.Contains(x.User)).ToListAsync();
+        }
+        
+        public async Task<List<User>> GetUsersForInstitution(MedicalInstitution medicalInstitution)
+        {
+            var pharmacists = _context.Pharmacists.Include(x => x.Pharmacy)
+                .Where(x => x.Pharmacy == medicalInstitution).Select(x => x.User);
+
+            var generalPractitioners = _context.GeneralPractitioners.Include(x => x.Surgery)
+                .Where(x => x.Surgery == medicalInstitution).Select(x => x.User);
+            
+            return await pharmacists.Union(generalPractitioners).ToListAsync();
         }
     }
 }
