@@ -33,10 +33,10 @@
                         </HeaderContent>
 
                         <RowTemplate Context="row">
-                            <MudTd DataLabel="Name">@row.Medications.Medication.MedicationName</MudTd>
-                            <MudTd DataLabel="Expiry">@row.Medications.BloodworkRequired</MudTd>
-                            <MudTd DataLabel="Picked Up">@row.Medications.Pickup.IsPickedUp</MudTd>
-                            <MudTd DataLabel="Pick Up Date">@row.Medications.Pickup.DateScheduled</MudTd>
+                            <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
+                            <MudTd DataLabel="Expiry">@row.BloodworkRequired</MudTd>
+                            <MudTd DataLabel="Picked Up">@row.Pickup.IsPickedUp</MudTd>
+                            <MudTd DataLabel="Pick Up Date">@row.Pickup.DateScheduled</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -56,21 +56,23 @@
                 @* Data table for Bloodwork *@
                 @if (bloodworkTableData.Any()) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
                 {
-                    <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                        <ToolBarContent>
-                            <MudText Typo="Typo.h6">Bloodwork</MudText>
-                        </ToolBarContent>
 
-                        <HeaderContent>
-                            <MudTh>Name</MudTh>
-                            <MudTh>Date</MudTh>
-                        </HeaderContent>
+                 <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Bloodwork</MudText>
+                    </ToolBarContent>
 
-                        <RowTemplate Context="row">
-                            <MudTd DataLabel="ID">@row.Medications.PatientBloodwork.Id</MudTd>
-                            <MudTd DataLabel="Date">@row.Medications.PatientBloodwork.DateOfResults</MudTd>
-                        </RowTemplate>
-                    </MudTable>
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Date</MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate Context="row">
+                        <MudTd DataLabel="ID">@row.Id</MudTd>
+                        <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                    </RowTemplate>
+                </MudTable>
+
                 }
                 else
                 {
@@ -86,9 +88,10 @@
 @code{
     private bool hover = true;
 
-    private List<Patient> medicationTableData = new List<Patient>();
-    private List<Patient> bloodworkTableData = new List<Patient>();
-
+    private Patient PatientmedicationData = new Patient();
+    private PatientMedication PatientbloodworkData = new PatientMedication();
+    private List<PatientMedication> medicationTableData = new List<PatientMedication>();
+    private List<PatientBloodwork> bloodworkTableData = new List<PatientBloodwork>();
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -96,8 +99,22 @@
 
         if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
-            medicationTableData = await PatientService.FetchUserMedication();
-            bloodworkTableData = await PatientService.FetchUserBloodwork();
+            PatientmedicationData = await PatientService.FetchUserMedication();
+
+            medicationTableData = PatientmedicationData.Medications;
+
+            foreach (PatientMedication med in medicationTableData)
+            {
+                int medid = med.Id;
+
+                PatientbloodworkData = await PatientService.FetchUserBloodwork(medid);
+                foreach (PatientBloodwork blood in PatientbloodworkData.PatientBloodworks)
+                {
+                    bloodworkTableData.Add(blood);
+                }
+            }
+
+
         }
         else
         {

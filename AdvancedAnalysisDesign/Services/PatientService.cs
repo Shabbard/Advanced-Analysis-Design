@@ -130,16 +130,15 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.Medications.ToListAsync();
         }
 
-        public async Task<List<Patient>> FetchUserMedication()
+        public async Task<Patient> FetchUserMedication()
         {
             var user = await _userService.GetCurrentUserAsync();
-            return await _context.Patients.Where(y => y.User.Id.Equals(user.Id)).Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Include(x => x.Medications).ToListAsync();
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).SingleOrDefaultAsync(x => x.User.Id == user.Id);
         }
 
-        public async Task<List<Patient>> FetchUserBloodwork()
+        public async Task<PatientMedication> FetchUserBloodwork(int medid)
         {
-            var user = await _userService.GetCurrentUserAsync();
-            return await _context.Patients.Where(y => y.User.Id.Equals(user.Id)).Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).ToListAsync();
+            return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == medid);
         }
     }
 }
