@@ -2,7 +2,9 @@
 @using AdvancedAnalysisDesign.Models.Database
 @using AdvancedAnalysisDesign.Pages.SystemPortal
 @using AdvancedAnalysisDesign.Models.Payloads
+@using AdvancedAnalysisDesign.Services
 @inject ISnackbar Snackbar
+@inject NonPatientService NonPatientService
 
 <EditForm Model="@registrationPayload" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
@@ -17,12 +19,12 @@
             </MudSelect>
         </MudItem>
         <MudItem xs="12">
-            @* <MudSelect Label="@(registrationPayload.UserRole == Role.Pharmacist ? "Pharmacy" : "Surgery")" OffsetY="true" @bind-Value="registrationPayload.MedicalInstitution" Placeholder="@(Role.GP)"> *@
-            @*    @foreach () *@
-            @*    { *@
-            @*     *@
-            @*    } *@
-            @* </MudSelect> *@
+            <MudSelect Label="@(registrationPayload.UserRole == Role.Pharmacist ? "Pharmacy" : "Surgery")" OffsetY="true" @bind-Value="registrationPayload.MedicalInstitution" Placeholder="@(Role.GP)">
+               @foreach (var medicalInstitution in medicalInstitutions)
+               {
+                   <MudSelectItem Value="medicalInstitution"></MudSelectItem>
+               }
+            </MudSelect>
         </MudItem>  
         <MudItem xs="12">
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width:100%">Register</MudButton>
@@ -36,12 +38,17 @@
     
     protected override async Task OnInitializedAsync()
     {
-        
+        medicalInstitutions = registrationPayload.UserRole == Role.GP ? await GetSurgeries() : await GetPharmacies();
     }
 
-    private async Task<List<MedicalInstitution>> GetMedicalInstitutions()
+    private async Task<List<MedicalInstitution>> GetSurgeries()
     {
-        
+        return await NonPatientService.GetSurgeries();
+    }
+    
+    private async Task<List<MedicalInstitution>> GetPharmacies()
+    {
+        return await NonPatientService.GetPharmacies();
     }
     
     private async void OnValidSubmit(EditContext context)
