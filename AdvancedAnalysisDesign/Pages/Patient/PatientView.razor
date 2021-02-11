@@ -67,8 +67,8 @@
                         </HeaderContent>
 
                         <RowTemplate Context="row">
-                            <MudTd DataLabel="ID">@row.Medications.</MudTd>
-                            <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                            <MudTd DataLabel="ID">@row.Medications.PatientBloodwork.Id</MudTd>
+                            <MudTd DataLabel="Date">@row.Medications.PatientBloodwork.DateOfResults</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -96,8 +96,8 @@
 
         if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
-            medicationTableData = await UserService.FetchAllMedication();
-            bloodworkTableData = await UserService.FetchAllBloodwork();
+            medicationTableData = await UserService.FetchUserMedication();
+            bloodworkTableData = await UserService.FetchUserBloodwork();
         }
         else
         {

@@ -338,15 +338,16 @@ namespace AdvancedAnalysisDesign.Services
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
 
-        public async Task<List<Patient>> FetchAllMedication()
+        public async Task<List<Patient>> FetchUserMedication()
         {
             var user = await GetCurrentUserAsync();
-            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Where(y => y.User.UserDetail.Id.Equals(user.Id)).ToListAsync();            
+            return await _context.Patients.Where(y => y.User.Id.Equals(user.Id)).Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Include(x => x.Medications).ToListAsync();            
         }
 
-        public async Task<List<Patient>> FetchAllBloodwork()
+        public async Task<List<Patient>> FetchUserBloodwork()
         {
-            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).Where(y => y.User.UserDetail.Id.Equals(user.Id)).ToListAsync();
+            var user = await GetCurrentUserAsync();
+            return await _context.Patients.Where(y => y.User.Id.Equals(user.Id)).Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).ToListAsync();
         }
 
         public async Task<List<PickupSchedulerPayload>> returnPickupScheduler(List<Patient> patients)
