@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace AdvancedAnalysisDesign.Models.Database
 {
     public class Patient
@@ -6,6 +8,7 @@ namespace AdvancedAnalysisDesign.Models.Database
         public string NhsNumber { get; set; }
         public User User { get; set; }
         public GeneralPractitioner GeneralPractitioner { get; set; }
-        public byte[] VerificationImage { get; set; }
+        public PatientImages PatientImages { get; set; }
+        public List<PatientMedication> Medications { get; set; }
     }
 }

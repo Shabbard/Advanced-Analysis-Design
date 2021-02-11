@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20210209112813_CreatePatientImagesTable")]
+    partial class CreatePatientImagesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,40 +49,14 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SurgeryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SurgeryId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("GeneralPractitioners");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MedicalInstitutions");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Medication", b =>
@@ -90,7 +66,10 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("MedicationName")
+                    b.Property<bool>("BloodworkRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -184,12 +163,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<byte[]>("IDPhoto")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<bool>("IsFlagged")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
                     b.Property<byte[]>("SelfiePhoto")
                         .HasColumnType("varbinary(max)");
 
@@ -205,9 +178,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<bool>("BloodworkRequired")
-                        .HasColumnType("bit");
-
                     b.Property<TimeSpan>("DateIntervalOfBloodworkRenewal")
                         .HasColumnType("time");
 
@@ -217,64 +187,13 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PickupId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MedicationId");
 
                     b.HasIndex("PatientId");
 
-                    b.HasIndex("PickupId");
-
                     b.ToTable("PatientMedications");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pharmacist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int?>("PharmacyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PharmacyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Pharmacists");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pickup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTimeOffset?>("DatePickedUp")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("DateScheduled")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsPickedUp")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPrepared")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Pickups");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>
@@ -504,15 +423,9 @@ namespace AdvancedAnalysisDesign.Migrations
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "Surgery")
-                        .WithMany()
-                        .HasForeignKey("SurgeryId");
-
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Surgery");
 
                     b.Navigation("User");
                 });
@@ -558,32 +471,13 @@ namespace AdvancedAnalysisDesign.Migrations
                         .WithMany()
                         .HasForeignKey("MedicationId");
 
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.Patient", null)
-                        .WithMany("Medications")
-                        .HasForeignKey("PatientId");
-
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.Pickup", "Pickup")
+                    b.HasOne("AdvancedAnalysisDesign.Models.Database.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("PickupId");
+                        .HasForeignKey("PatientId");
 
                     b.Navigation("Medication");
 
-                    b.Navigation("Pickup");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pharmacist", b =>
-                {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "Pharmacy")
-                        .WithMany()
-                        .HasForeignKey("PharmacyId");
-
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Pharmacy");
-
-                    b.Navigation("User");
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>
@@ -644,11 +538,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Patient", b =>
-                {
-                    b.Navigation("Medications");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", b =>

@@ -18,6 +18,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
+using Syncfusion.Blazor;
 
 namespace AdvancedAnalysisDesign
 {
@@ -39,24 +40,15 @@ namespace AdvancedAnalysisDesign
             services.AddServerSideBlazor();
             services.AddScoped<UserService>();
             services.AddScoped<BloodworkService>();
+            services.AddScoped<PatientService>();
+            services.AddScoped<NonPatientService>();
             services.AddSingleton<EmailService>();
             services.AddScoped<SignInService>();
-            services.AddMudBlazorDialog();
+            services.AddMudServices();
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
-            services.AddMudBlazorSnackbar(config =>
-            {
-                config.PositionClass = Defaults.Classes.Position.BottomLeft;
-
-                config.PreventDuplicates = false;
-                config.NewestOnTop = false;
-                config.ShowCloseIcon = true;
-                config.VisibleStateDuration = 10000;
-                config.HideTransitionDuration = 500;
-                config.ShowTransitionDuration = 500;
-            });
-            services.AddMudBlazorResizeListener();
-            
+            services.AddSyncfusionBlazor();
+            services.AddSingleton<Random>();
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));
 
@@ -94,6 +86,7 @@ namespace AdvancedAnalysisDesign
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Configuration["SyncFusionLicense"]);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -147,7 +140,7 @@ namespace AdvancedAnalysisDesign
             
             //Ensure you have these values in your appsettings.json file
             string userPWD = "P@ssword123";
-            var _user = await UserManager.FindByEmailAsync("admin@admin");
+            var _user = await UserManager.FindByEmailAsync("admin");
 
             if(_user == null)
             {

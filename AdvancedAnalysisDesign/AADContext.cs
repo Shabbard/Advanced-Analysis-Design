@@ -15,11 +15,15 @@ namespace AdvancedAnalysisDesign
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<PatientMedication> PatientMedications { get; set; }
-        public DbSet<Medication> Medications { get; set; }
         public DbSet<PatientBloodwork> PatientBloodworks { get; set; }
         public DbSet<PatientBloodworkTest> PatientBloodworkTests { get; set; }
         public DbSet<BloodworkTest> BloodworkTests { get; set; }
         public DbSet<GeneralPractitioner> GeneralPractitioners { get; set; }
+        public DbSet<PatientImages> PatientImages { get; set; }
+        public DbSet<Pickup> Pickups { get; set; }
+        public DbSet<Pharmacist> Pharmacists { get; set; }
+        public DbSet<MedicalInstitution> MedicalInstitutions { get; set; }
+        public DbSet<Medication> Medications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

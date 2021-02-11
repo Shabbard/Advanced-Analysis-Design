@@ -1,4 +1,4 @@
-﻿@page "/GpUploadSearch"
+﻿@page "/PharmacistPatientSearch"
 
 @using AdvancedAnalysisDesign.Services
 @using AdvancedAnalysisDesign.Models.Database
@@ -6,7 +6,7 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject UserService UserService 
+@inject PatientService PatientService 
 
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
@@ -20,8 +20,8 @@
                 <MudTable Height="700px" FixedHeader="true" Items="patientTableData" Hover="true" @bind-SelectedItem="patientSelected" SortLabel="Sort By" Filter="new Func<Patient,bool>(FilterFunc)">
                     <ToolBarContent>
                         <MudText Typo="Typo.h5" Style="font-weight:bold">Select A Patient</MudText>
-                        <MudToolBarSpacer/>
-                        <MudTextField @bind-Value="tableSearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        <MudToolBarSpacer />
+                        <MudTextField @bind-Value="tableSearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                     </ToolBarContent>
 
                     <HeaderContent>
@@ -34,7 +34,6 @@
                         <MudTd>@row.User.UserDetail.FirstName @row.User.UserDetail.LastName</MudTd>
                         <MudTd>@row.User.UserDetail.DateOfBirth.ToString("d")</MudTd> @*d = shortdate format (dd/mm/yyyy). Auto changes for US date too*@
                         <MudTd>@row.NhsNumber</MudTd>
-                        @*TODO: Add GP Surgery*@
                     </RowTemplate>
                 </MudTable>
 
@@ -47,12 +46,13 @@
 
 </MudContainer>
 
-@code {
 
+
+
+
+@code {
     private List<Patient> patientTableData = new List<Patient>();
     private string tableSearchString { get; set; }
-
-
     private Patient _value = new Patient(); // used for getter in patientSelected
     private Patient patientSelected { get { return _value; } set { _value = value; OnSelect(); } } // When a patient is selected setter runs OnSelect
 
@@ -61,9 +61,9 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.IsInRole("GP") || user.IsInRole("Admin"))
+        if (user.IsInRole("Pharmacist") || user.IsInRole("Admin"))
         {
-            patientTableData = await UserService.FetchAllPatients();
+            patientTableData = await PatientService.FetchAllPatients();
         }
         else
         {
@@ -84,11 +84,11 @@
         if ($"{patient.NhsNumber} {patient.User.UserDetail.FirstName} {patient.User.UserDetail.LastName}".Contains(tableSearchString))
             return true;
         return false;
-        //TODO: Add GP Surgery search
     }
 
-    private async Task OnSelect()
+    private void OnSelect()
     {
-        NavigationManager.NavigateTo("/GpUploadInput/" + patientSelected.Id, true);
+        var userId = patientSelected.User.Id;
+        NavigationManager.NavigateTo("/PharmacistPatientInfomation/" + userId, true);
     }
 }

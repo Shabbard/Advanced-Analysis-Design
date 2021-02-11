@@ -12,7 +12,7 @@
     @* ----- TopBar Begin   ----- *@
 
     <MudAppBar Color="Color.Primary" Fixed="true">
-        <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />  @*Drawer Button*@
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />  @*Drawer Button*@
         <MudText Typo="Typo.h5">Binary Beast - Bloodwork</MudText>     @*Application Title*@
         <MudAppBarSpacer/>
         <AuthorizeView>
@@ -27,7 +27,7 @@
     @* ----- Drawer Start   ----- *@
 
     @* ----- Drawer allows the side bar to be toggle   ----- *@
-    <MudDrawer @bind-Open="@open" Clipped="true" Elevation="1">
+    <MudDrawer @bind-Open="@open" ClipMode="DrawerClipMode.Docked" Elevation="1">
         <SideBarNav />
     </MudDrawer>
 
@@ -45,11 +45,9 @@
     @* ----- MainContent End   ----- *@
 </MudLayout>
 
-@code{
-
+@code {
     private string userName { get; set; }
-
-
+    
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -69,7 +67,7 @@
         StateHasChanged();
     }
     
-    bool open = true;
+    bool open = false;
 
     void ToggleDrawer()
     {

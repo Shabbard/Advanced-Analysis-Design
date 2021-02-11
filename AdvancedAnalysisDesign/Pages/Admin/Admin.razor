@@ -1,0 +1,56 @@
+@page "/Admin"
+@using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Services
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudCard>
+        <MudCardContent>
+            <MudTabs Color="@Color.Primary" Rounded="true" Centered="true">
+                <MudTabPanel Text="Users">
+                    <ViewUsers></ViewUsers>
+                </MudTabPanel>
+                <MudTabPanel Text="Register User">
+                    <RegisterUsers></RegisterUsers>
+                </MudTabPanel>
+                @if (user.IsInRole(Role.Admin.ToString()))
+                {
+                    <MudTabPanel Text="Medical Institutions">
+                        <ViewMedicalInstitutions></ViewMedicalInstitutions>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Add Medical Institution">
+                        <AddMedicalInstitution></AddMedicalInstitution>
+                    </MudTabPanel>
+                }
+                
+                <MudTabPanel Text="Fake Medication import">
+                    <FakeMedicationImport></FakeMedicationImport>
+                </MudTabPanel>
+            </MudTabs>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    ClaimsPrincipal user = new();
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (user.IsInRole(Role.Pharmacist.ToString()))
+        {
+        }
+        else if (user.IsInRole(Role.Admin.ToString()))
+        {
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
+}

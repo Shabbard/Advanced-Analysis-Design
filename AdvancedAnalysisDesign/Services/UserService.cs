@@ -1,27 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
+using AdvancedAnalysisDesign.Models.DataTransferObjects;
 using AdvancedAnalysisDesign.Models.Payloads;
 using BlazorDownloadFile;
-using Blazored.LocalStorage;
 using Flurl;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace AdvancedAnalysisDesign.Services
@@ -59,17 +54,6 @@ namespace AdvancedAnalysisDesign.Services
             _blazorDownloadFileService = blazorDownloadFileService;
         }
 
-        public async Task ForgotPasswordUpdate(ForgotPasswordPayload forgotPayload)
-        {
-            var result = await _context.Users.SingleOrDefaultAsync(u => u.Email == forgotPayload.EmailAddress);
-
-            if (result != null)
-            {
-                result.PasswordHash = forgotPayload.Password;
-                await _context.SaveChangesAsync();
-            }
-        }
-
         public UserDetail RegisterUserDetails(RegistrationPayload regPayload)
         {
             var userDetail = new UserDetail
@@ -92,7 +76,9 @@ namespace AdvancedAnalysisDesign.Services
                 Email = regPayload.EmailAddress,
                 UserName = regPayload.EmailAddress,
                 PhoneNumber = regPayload.PhoneNumber,
-                EmailConfirmed = true //TODO: Remove this later
+#if DEBUG
+                EmailConfirmed = true
+#endif
             };
             
             var result = await _userManager.CreateAsync(user, regPayload.Password);
@@ -105,26 +91,7 @@ namespace AdvancedAnalysisDesign.Services
                 }
             }
 
-            return user; // Depending other user types are implemented, this may need changing. Currently standalone users cannot be registered.
-        }
-
-        public async Task RegisterPatient(RegistrationPayload regPayload)
-        {
-            var user = await RegisterUser(regPayload);
-            
-            var patient = new Patient
-            {
-                User = user,
-                NhsNumber = regPayload.NhsNumber,
-                VerificationImage = regPayload.VerificationImage
-            };
-
-            await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
-
-            await _signInService.SignInAsync(user);
-
-            await _context.Patients.AddAsync(patient);
-            await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task Login(string email, string password)
@@ -134,6 +101,12 @@ namespace AdvancedAnalysisDesign.Services
             if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Success)
             {
                 _snackbar.Add("Login was unsuccessful. Please try again.", Severity.Error, config => { config.ShowCloseIcon = false; });
+                return;
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                _snackbar.Add("Account has not been confirmed.", Severity.Error, config => { config.ShowCloseIcon = false; });
                 return;
             }
 
@@ -177,15 +150,15 @@ namespace AdvancedAnalysisDesign.Services
             await _signInService.ResetUserLoginAsync(user);
         }
 
-        public async Task UpdatePhonenumberAsync(string phonenumber)
+        public async Task UpdatePhoneNumberAsync(string phoneNumber)
         {
             var user = await GetCurrentUserAsync();
 
-            var currentPhonenumber = await _userManager.GetPhoneNumberAsync(user);
+            var currentPhoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            if (currentPhonenumber != phonenumber)
+            if (currentPhoneNumber != phoneNumber)
             {
-                var changePasswordResult = await _userManager.SetPhoneNumberAsync(user, phonenumber);
+                var changePasswordResult = await _userManager.SetPhoneNumberAsync(user, phoneNumber);
                 if (!changePasswordResult.Succeeded)
                 {
                     foreach (var error in changePasswordResult.Errors)
@@ -196,7 +169,7 @@ namespace AdvancedAnalysisDesign.Services
                 await _signInService.ResetUserLoginAsync(user);
             }
         }
-        public async Task UpdateEmailaddressAsync(string newEmail)
+        public async Task UpdateEmailAddressAsync(string newEmail)
         {
             if (string.IsNullOrEmpty(newEmail))
             {
@@ -210,12 +183,14 @@ namespace AdvancedAnalysisDesign.Services
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
             
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            newEmail = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(newEmail));
+            userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(userId));
             
-            Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmEmail", userId, newEmail, code);
+            Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmEmailChange", userId, newEmail, code);
             
             var emailMessage = $"Hi {user.UserDetail.FirstName} {user.UserDetail.LastName}. \n\n" + 
                                "You have requested an email address change, to confirm this please follow the url. \n\n" + 
-                               $"Please confirm your account by {HtmlEncoder.Default.Encode(confirmationUrl)}\n\n" +
+                               $"{HtmlEncoder.Default.Encode(confirmationUrl)}\n\n" +
                                "If you did not request this change, please disregard this email.\n\n" +
                                "Have a nice day.\n" +
                                "Binary Beast Bloodwork";
@@ -303,9 +278,104 @@ namespace AdvancedAnalysisDesign.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Patient>> FetchAllPatients()
+        public async Task SubmitForgetPasswordAsync(string emailAddress)
         {
-            return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
+            if (string.IsNullOrEmpty(emailAddress))
+            {
+                throw new Exception("Please enter an email address.");
+            }
+            
+            var user = await _userManager.FindByEmailAsync(emailAddress);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return;
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id));
+            
+            Url passwordResetUrl = _navigationManager.BaseUri.AppendPathSegments("PasswordReset", userId, code);
+            
+            var emailMessage = "You have requested a password reset, to reset your password please follow the url. \n\n" + 
+                               $"{HtmlEncoder.Default.Encode(passwordResetUrl)}\n\n" +
+                               "If you did not request this change, please disregard this email.\n\n" +
+                               "Have a nice day.\n" +
+                               "Binary Beast Bloodwork";
+            
+            await _emailService.SendEmailAsync(
+                emailAddress,
+                "Reset your password",
+                emailMessage);
+        }
+
+        public async Task SendConfirmationEmail(string userEmail)
+        {
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            var userId = await _userManager.GetUserIdAsync(user);
+            
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(userId));
+            
+            Url confirmationUrl = _navigationManager.BaseUri.AppendPathSegments("ConfirmAccount", userId, code);
+            
+            var emailMessage = $"Hi {user.UserDetail.FirstName} {user.UserDetail.LastName}. \n\n" + 
+                               "You have created an account using our software, to confirm your account please follow the url. \n\n" + 
+                               $"{HtmlEncoder.Default.Encode(confirmationUrl)}\n\n" +
+                               "Have a nice day.\n" +
+                               "Binary Beast Bloodwork";
+            
+            await _emailService.SendEmailAsync(
+                userEmail,
+                "Confirm your account",
+                emailMessage);
+        }
+
+        public async Task<List<UserWithRoleDto>> FetchAllUsers(MedicalInstitution medicalInstitution = null)
+        {
+            // this monstrosity gets all users except the default admin, includes user details and includes the users role
+            var users = _context.Users
+                .Include(x => x.UserDetail)
+                .Where(x => x.UserName != "admin")
+                .Join(_context.UserRoles,
+                    user => user.Id,
+                    userRole => userRole.UserId,
+                    (user, userRole) => new
+                    {
+                        User = user,
+                        RoleId = userRole.RoleId
+                    })
+                .Join(_context.Roles,
+                    userRole => userRole.RoleId,
+                    role => role.Id,
+                    (userRole, role) => new UserWithRoleDto
+                    {
+                        Role = Enum.Parse<Role>(role.Name),
+                        User = userRole.User
+                    });
+
+            if (medicalInstitution == null)
+            {
+                return await users.ToListAsync();
+            }
+
+            var usersForInstitution = await GetUsersForInstitution(medicalInstitution);
+
+            return await users.Where(x => usersForInstitution.Contains(x.User)).ToListAsync();
+        }
+        
+        public async Task<List<User>> GetUsersForInstitution(MedicalInstitution medicalInstitution)
+        {
+            var pharmacists = _context.Pharmacists.Include(x => x.Pharmacy)
+                .Where(x => x.Pharmacy == medicalInstitution).Select(x => x.User);
+
+            var generalPractitioners = _context.GeneralPractitioners.Include(x => x.Surgery)
+                .Where(x => x.Surgery == medicalInstitution).Select(x => x.User);
+            
+            return await pharmacists.Union(generalPractitioners).ToListAsync();
         }
     }
 }
