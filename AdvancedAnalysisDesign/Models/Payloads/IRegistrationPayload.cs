@@ -13,6 +13,7 @@ namespace AdvancedAnalysisDesign.Models.Payloads
         [Required]
         public string LastName { get; set; }
         [Required]
+        [Phone]
         public string PhoneNumber { get; set; }
         [Required]
         [EmailAddress]
@@ -27,9 +28,5 @@ namespace AdvancedAnalysisDesign.Models.Payloads
         [Compare(nameof(Password))]
         public string PasswordComparison { get; set; }
         public Role UserRole { get; set; }
-        [Required]
-        public string NhsNumber { get; set; }
-        public IBrowserFile IDPhoto { get; set; }
-        public IBrowserFile SelfiePhoto { get; set; }
     }
 }

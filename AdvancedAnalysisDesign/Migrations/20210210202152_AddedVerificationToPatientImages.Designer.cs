@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20210210202152_AddedVerificationToPatientImages")]
+    partial class AddedVerificationToPatientImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,40 +49,14 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SurgeryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SurgeryId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("GeneralPractitioners");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MedicalInstitution");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Medication", b =>
@@ -229,28 +205,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.HasIndex("PickupId");
 
                     b.ToTable("PatientMedications");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pharmacist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int?>("PharmacyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PharmacyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Pharmacists");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pickup", b =>
@@ -504,15 +458,9 @@ namespace AdvancedAnalysisDesign.Migrations
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.GeneralPractitioner", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "Surgery")
-                        .WithMany()
-                        .HasForeignKey("SurgeryId");
-
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Surgery");
 
                     b.Navigation("User");
                 });
@@ -569,21 +517,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Navigation("Medication");
 
                     b.Navigation("Pickup");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pharmacist", b =>
-                {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "Pharmacy")
-                        .WithMany()
-                        .HasForeignKey("PharmacyId");
-
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Pharmacy");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>

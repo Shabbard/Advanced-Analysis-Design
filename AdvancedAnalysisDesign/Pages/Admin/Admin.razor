@@ -1,29 +1,29 @@
 @page "/Admin"
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Services
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject UserService UserService
+@inject ISnackbar Snackbar
 
 <MudContainer>
     <MudCard>
         <MudCardContent>
             <MudTabs Color="@Color.Primary" Rounded="true" Centered="true">
-                <MudTabPanel Text="Item One">
-                    <MudText>Item One</MudText>
+                <MudTabPanel Text="Users">
+                    <ViewUsers></ViewUsers>
                 </MudTabPanel>
-                <MudTabPanel Text="Item Two">
+                <MudTabPanel Text="Register User">
+                    <RegisterUsers></RegisterUsers>
+                </MudTabPanel>
+                <MudTabPanel Text="Surgeries">
                     <MudText>Item Two</MudText>
                 </MudTabPanel>
-                <MudTabPanel Text="Item Three">
+                <MudTabPanel Text="Pharmacies">
                     <MudText>Item Three</MudText>
                 </MudTabPanel>
-                <MudTabPanel Text="Item Four">
-                    <MudText>Item Four</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Item Five">
-                    <MudText>Item Five</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Item Six">
-                    <MudText>Item Six</MudText>
+                <MudTabPanel Text="Fake Medication import">
+                    <FakeMedicationImport></FakeMedicationImport>
                 </MudTabPanel>
             </MudTabs>
         </MudCardContent>
@@ -37,7 +37,10 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.IsInRole(Role.GP.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        if (user.IsInRole(Role.GP.ToString()))
+        {
+        }
+        else if (user.IsInRole(Role.Admin.ToString()))
         {
         }
         else
@@ -45,10 +48,4 @@
             NavigationManager.NavigateTo("/", true);
         }
     }
-
-    private async Task SystemPrescribe()
-    {
-
-    }
-
 }
