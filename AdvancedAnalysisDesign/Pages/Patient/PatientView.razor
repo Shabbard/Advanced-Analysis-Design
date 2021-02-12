@@ -101,19 +101,22 @@
         {
             PatientmedicationData = await PatientService.FetchUserMedication();
 
-            medicationTableData = PatientmedicationData.Medications;
-
-            foreach (PatientMedication med in medicationTableData)
+            if (medicationTableData.Any())
             {
-                int medid = med.Id;
 
-                PatientbloodworkData = await PatientService.FetchUserBloodwork(medid);
-                foreach (PatientBloodwork blood in PatientbloodworkData.PatientBloodworks)
+                medicationTableData = PatientmedicationData.Medications;
+
+                foreach (PatientMedication Med in medicationTableData)
                 {
-                    bloodworkTableData.Add(blood);
+                    int MedId = Med.Id;
+
+                    PatientbloodworkData = await PatientService.FetchUserBloodwork(MedId);
+                    foreach (PatientBloodwork blood in PatientbloodworkData.PatientBloodworks)
+                    {
+                        bloodworkTableData.Add(blood);
+                    }
                 }
             }
-
 
         }
         else
