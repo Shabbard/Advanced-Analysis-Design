@@ -7,7 +7,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-@inject UserService UserService
+@inject PatientService PatientService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
@@ -27,12 +27,10 @@
 
                         <HeaderContent>
                             <MudTh>Name</MudTh>
-                            <MudTh>Bloodwork Required</MudTh>
                         </HeaderContent>
 
                         <RowTemplate Context="row">
                             <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
-                            <MudTd DataLabel="Expiry">@row.BloodworkRequired</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -52,21 +50,23 @@
                 @* Data table for Bloodwork *@
                 @if (bloodworkTableData.Any()) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
                 {
-                    <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                        <ToolBarContent>
-                            <MudText Typo="Typo.h6">Bloodwork</MudText>
-                        </ToolBarContent>
 
-                        <HeaderContent>
-                            <MudTh>Id</MudTh>
-                            <MudTh>Date</MudTh>
-                        </HeaderContent>
+                 <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Bloodwork</MudText>
+                    </ToolBarContent>
 
-                        <RowTemplate Context="row">
-                            <MudTd DataLabel="Id">@row.Id</MudTd>
-                            <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
-                        </RowTemplate>
-                    </MudTable>
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Date</MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate Context="row">
+                        <MudTd DataLabel="ID">@row.Id</MudTd>
+                        <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                    </RowTemplate>
+                </MudTable>
+
                 }
                 else
                 {
@@ -82,9 +82,10 @@
 @code{
     private bool hover = true;
 
+    private Patient PatientmedicationData = new Patient();
+    private PatientMedication PatientbloodworkData = new PatientMedication();
     private List<PatientMedication> medicationTableData = new List<PatientMedication>();
     private List<PatientBloodwork> bloodworkTableData = new List<PatientBloodwork>();
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -92,6 +93,26 @@
 
         if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
+            PatientmedicationData = await PatientService.FetchUserMedication();
+
+            if (medicationTableData.Any())
+            {
+
+                medicationTableData = PatientmedicationData.Medications;
+
+                foreach (PatientMedication Med in medicationTableData)
+                {
+
+                    int MedId = Med.Id;
+                    PatientbloodworkData = await PatientService.FetchUserBloodwork(MedId);
+
+                    foreach (PatientBloodwork blood in PatientbloodworkData.PatientBloodworks)
+                    {
+                        bloodworkTableData.Add(blood);
+                    }
+                }
+            }
+
         }
         else
         {
