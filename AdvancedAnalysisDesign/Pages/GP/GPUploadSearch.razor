@@ -6,7 +6,7 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject UserService UserService 
+@inject PatientService PatientService 
 
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
@@ -63,7 +63,7 @@
 
         if (user.IsInRole("GP") || user.IsInRole("Admin"))
         {
-            patientTableData = await UserService.FetchAllPatients();
+            patientTableData = await PatientService.FetchAllPatients();
         }
         else
         {
@@ -87,9 +87,9 @@
         //TODO: Add GP Surgery search
     }
 
-    private async Task OnSelect()
+    private void OnSelect()
     {
-        var userID = patientSelected.User.Id;
-        NavigationManager.NavigateTo("/GpUploadInput/" + userID, true);
+        var userId = patientSelected.User.Id;
+        NavigationManager.NavigateTo("/GpUploadInput/" + userId, true);
     }
 }

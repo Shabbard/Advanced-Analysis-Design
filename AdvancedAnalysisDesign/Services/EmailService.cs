@@ -18,13 +18,15 @@ namespace AdvancedAnalysisDesign.Services
         {
             var emailPassword = Configuration["EmailPassword"];
             const string binaryBeastEmailAddress = "binarybeastbloodwork@gmail.com";
-            
-            var client = new SmtpClient("smtp.gmail.com",587)
+
+            var client = new SmtpClient("smtp.gmail.com", 587)
             {
+                UseDefaultCredentials = false,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
                 Credentials = new NetworkCredential(binaryBeastEmailAddress, emailPassword),
                 EnableSsl = true
+                
             };
-            
             await client.SendMailAsync(binaryBeastEmailAddress,email,subject,htmlMessage);
         }
     }

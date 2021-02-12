@@ -1,0 +1,53 @@
+@using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Payloads
+@using AdvancedAnalysisDesign.Services
+@using InputType = MudBlazor.InputType
+
+<MudGrid Justify="Justify.Center" Spacing="2">
+    <MudItem xs="6">
+        <MudTextField Label="First name" @bind-Value="RegistrationPayload.FirstName" For="@(() => RegistrationPayload.FirstName)" Required="true"/>
+    </MudItem>
+    <MudItem xs="6">
+        <MudTextField Label="Surname" @bind-Value="RegistrationPayload.LastName" For="@(() => RegistrationPayload.LastName)" Required="true"/>
+    </MudItem>
+    <MudItem xs="6">
+        <MudTextField Label="Email" @bind-Value="RegistrationPayload.EmailAddress" For="@(() => RegistrationPayload.EmailAddress)" Required="true"/>
+    </MudItem>
+    <MudItem xs="6">
+        <MudTextField Label="Phone Number" @bind-Value="RegistrationPayload.PhoneNumber" For="@(() => RegistrationPayload.PhoneNumber)" Required="true"/>
+    </MudItem>
+    <MudItem xs="12">
+        <MudDatePicker Label="Date of Birth" InputIcon="null" @bind-Date="@RegistrationPayload.DateOfBirth"/>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudSelect Label="Gender" OffsetY="true" @bind-Value="RegistrationPayload.Gender" Placeholder="Select culture">
+            <MudSelectItem T="Gender" Value="@(Gender.Male)">Male</MudSelectItem>
+            <MudSelectItem T="Gender" Value="@(Gender.Female)">Female</MudSelectItem>
+            <MudSelectItem T="Gender" Value="@(Gender.Other)">Other</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="6">
+        <MudTextField Label="Password" @bind-Value="RegistrationPayload.Password" For="@(() => RegistrationPayload.Password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+    </MudItem>
+    <MudItem xs="6">
+        <MudTextField Label="Password" HelperText="Repeat the password" @bind-Value="RegistrationPayload.PasswordComparison" For="@(() => RegistrationPayload.PasswordComparison)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Required="true"/>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public RegistrationPayload RegistrationPayload { get; set; }
+
+    bool isPasswordVisible;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    
+    void TogglePasswordVisibility()
+    {
+        isPasswordVisible = !isPasswordVisible;
+        PasswordInputIcon = PasswordInputIcon == Icons.Material.Filled.VisibilityOff ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+        PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
+    }
+}

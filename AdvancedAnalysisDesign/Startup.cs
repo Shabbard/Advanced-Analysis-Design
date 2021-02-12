@@ -39,12 +39,15 @@ namespace AdvancedAnalysisDesign
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<UserService>();
+            services.AddScoped<PatientService>();
+            services.AddScoped<NonPatientService>();
             services.AddSingleton<EmailService>();
             services.AddScoped<SignInService>();
             services.AddMudServices();
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
             services.AddSyncfusionBlazor();
+            services.AddSingleton<Random>();
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));
 
