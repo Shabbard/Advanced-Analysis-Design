@@ -136,9 +136,9 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).SingleOrDefaultAsync(x => x.User.Id == user.Id);
         }
 
-        public async Task<PatientMedication> FetchUserBloodwork(int medid)
+        public async Task<PatientMedication> FetchUserBloodwork(int MedId)
         {
-            return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == medid);
+            return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == MedId);
         }
     }
 }

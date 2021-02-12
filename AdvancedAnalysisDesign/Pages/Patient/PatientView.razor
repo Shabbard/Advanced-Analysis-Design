@@ -27,16 +27,10 @@
 
                         <HeaderContent>
                             <MudTh>Name</MudTh>
-                            <MudTh>Bloodwork Required</MudTh>
-                            <MudTh>Picked Up</MudTh>
-                            <MudTh>Pick Up Date</MudTh>
                         </HeaderContent>
 
                         <RowTemplate Context="row">
                             <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
-                            <MudTd DataLabel="Expiry">@row.BloodworkRequired</MudTd>
-                            <MudTd DataLabel="Picked Up">@row.Pickup.IsPickedUp</MudTd>
-                            <MudTd DataLabel="Pick Up Date">@row.Pickup.DateScheduled</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -108,9 +102,10 @@
 
                 foreach (PatientMedication Med in medicationTableData)
                 {
-                    int MedId = Med.Id;
 
+                    int MedId = Med.Id;
                     PatientbloodworkData = await PatientService.FetchUserBloodwork(MedId);
+
                     foreach (PatientBloodwork blood in PatientbloodworkData.PatientBloodworks)
                     {
                         bloodworkTableData.Add(blood);
