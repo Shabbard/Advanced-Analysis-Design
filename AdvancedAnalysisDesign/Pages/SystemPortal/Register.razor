@@ -8,9 +8,12 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
+
 <InputFile id="fileInputIDFile" OnChange="UploadFilesIDFile" hidden multiple accept=".jpg, .jpeg, .png, .gif" />
 <InputFile id="fileInputSelfieFile" OnChange="UploadFilesSelfieFile" hidden multiple accept=".jpg, .jpeg, .png, .gif" />
-<MudMainContent>
+@if (!isLoading)
+{
+    <MudMainContent>
     <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
         <MudGrid Justify="Justify.Center" Class="mt-16">
             <MudItem>
@@ -33,12 +36,10 @@
                                     <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload ID Image for Verification.</MudText>
                                 </MudItem>
                                 <MudItem xs="1">
-                                    <MudIconButton OnClick="TogglePopOverVisibility" Icon="@Icons.Material.Filled.Info"></MudIconButton>
-                                    <MudPopover Open="@isPopOverVisible" Style="width:250px; position:relative;" Class="px-4 pt-4">
-
+                                    <MudIconButton OnClick="ToggleIdFilePopOverVisibility" Icon="@Icons.Material.Filled.Info"></MudIconButton>
+                                    <MudPopover Open="@iDFilePopOverIsVisible" Style="width:250px; position:relative;" Class="px-4 pt-4">
                                         <MudText>Please upload an image of your photo ID, Passport or Driving license.</MudText>
-                                        <MudButton OnClick="TogglePopOverVisibility" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
-
+                                        <MudButton OnClick="ToggleIdFilePopOverVisibility" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
                                     </MudPopover>
                                 </MudItem>
                                 <MudItem xs="4">
@@ -50,7 +51,6 @@
                                         <MudGrid Justify="Justify.SpaceEvenly" Style="flex-direction:row; align-items:center">
                                             @foreach (var file in IDFile)
                                             {
-
                                                 <MudItem xs="1">
                                                     <MudIcon Icon="@Icons.Filled.AttachFile" />
                                                 </MudItem>
@@ -60,7 +60,6 @@
                                                 </MudItem>
                                                 <MudItem xs="8">
                                                     <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="@(() => RemoveImageIDFile(@file))"></MudIconButton>
-
                                                 </MudItem>
                                             }
                                         </MudGrid>
@@ -70,12 +69,10 @@
                                     <MudText Style="margin-top: 1rem" Typo="Typo.body1">Upload Selfie Image for Verification.</MudText>
                                 </MudItem>
                                 <MudItem xs="1">
-                                    <MudIconButton OnClick="TogglePopOverVisibility" Icon="@Icons.Material.Filled.Info"></MudIconButton>
-                                    <MudPopover Open="@isPopOverVisible" Style="width:250px; position:relative;" Class="px-4 pt-4">
-
+                                    <MudIconButton OnClick="ToggleSelfieFilePopOverVisibility" Icon="@Icons.Material.Filled.Info"></MudIconButton>
+                                    <MudPopover Open="@selfieFilePopOverIsVisible" Style="width:250px; position:relative;" Class="px-4 pt-4">
                                         <MudText>Please upload an image of yourself. E.g. a Selfie.</MudText>
-                                        <MudButton OnClick="TogglePopOverVisibility" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
-
+                                        <MudButton OnClick="ToggleSelfieFilePopOverVisibility" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
                                     </MudPopover>
                                 </MudItem>
                                 <MudItem xs="4">
@@ -87,7 +84,6 @@
                                         <MudGrid Justify="Justify.SpaceEvenly" Style="flex-direction:row; align-items:center">
                                             @foreach (var file in SelfieFile)
                                             {
-
                                                 <MudItem xs="1">
                                                     <MudIcon Icon="@Icons.Filled.AttachFile" />
                                                 </MudItem>
@@ -97,14 +93,12 @@
                                                 </MudItem>
                                                 <MudItem xs="8">
                                                     <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="@(() => RemoveImageSelfieFile(@file))"></MudIconButton>
-
                                                 </MudItem>
                                             }
                                         </MudGrid>
                                     </MudItem>
                                 }
                             </MudGrid>
-
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width:100%">Register</MudButton>
@@ -112,20 +106,26 @@
                         <MudGrid Justify="Justify.Center" Class="mt-1 pb-2">
                             <MudLink Href="/Login" Typo="Typo.body2">Back to Login</MudLink> @*Link to Login page*@
                         </MudGrid>
-
                     </MudCard>
                 </EditForm>
             </MudItem>
         </MudGrid>
     </MudContainer>
 </MudMainContent>
+}
+else
+{
+    <LoadingScreen></LoadingScreen>
+}
 
 @code{
     PatientRegistrationPayload registrationPayload = new();
     IList<IBrowserFile> IDFile = new List<IBrowserFile>();
     IList<IBrowserFile> SelfieFile = new List<IBrowserFile>();
-    bool isPopOverVisible;
+    bool selfieFilePopOverIsVisible;
+    bool iDFilePopOverIsVisible;
     bool isPasswordVisible;
+    bool isLoading;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
@@ -136,24 +136,29 @@
         PasswordInput = PasswordInput == InputType.Password ? InputType.Text : InputType.Password;
     }
 
-    public void TogglePopOverVisibility()
+    public void ToggleIdFilePopOverVisibility()
     {
-        isPopOverVisible = !isPopOverVisible;
+        iDFilePopOverIsVisible = !iDFilePopOverIsVisible;
+    }
+    public void ToggleSelfieFilePopOverVisibility()
+    {
+        selfieFilePopOverIsVisible = !selfieFilePopOverIsVisible;
     }
 
     private async void OnValidSubmit(EditContext context)
     {
+        isLoading = true;
         StateHasChanged();
         try
         {
-            registrationPayload.IDPhoto = IDFile[0];
-            registrationPayload.SelfiePhoto = SelfieFile[0];
             await PatientService.RegisterPatient(registrationPayload);
             Snackbar.Add("Registration successful!", Severity.Success, config => { config.ShowCloseIcon = false; });
             NavManager.NavigateTo("/");
         }
         catch (Exception e)
         {
+            isLoading = false;
+            StateHasChanged();
             Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
         }
     }
@@ -166,12 +171,12 @@
             if(IDFile.Count < maxFiles)
             {
                 IDFile.Add(file);
+                registrationPayload.IDPhoto = IDFile[0];
             }
             else
             {
                 Snackbar.Add("You are only allowed to upload one image.", Severity.Warning, config => { config.ShowCloseIcon = false; });
             }
-
         }
     }
     private void UploadFilesSelfieFile(InputFileChangeEventArgs e)
@@ -182,6 +187,7 @@
             if (SelfieFile.Count < maxFiles)
             {
                 SelfieFile.Add(file);
+                registrationPayload.SelfiePhoto = SelfieFile[0];
             }
             else
             {
@@ -193,9 +199,11 @@
     private void RemoveImageSelfieFile(IBrowserFile file)
     {
         SelfieFile.Remove(file);
+        registrationPayload.SelfiePhoto = null;
     }
     private void RemoveImageIDFile(IBrowserFile file)
     {
         IDFile.Remove(file);
+        registrationPayload.IDPhoto = null;
     }
 }
