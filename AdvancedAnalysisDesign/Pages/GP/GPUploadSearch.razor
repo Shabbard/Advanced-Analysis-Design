@@ -89,7 +89,6 @@
 
     private void OnSelect()
     {
-        var userId = patientSelected.User.Id;
-        NavigationManager.NavigateTo("/GpUploadInput/" + userId, true);
+        NavigationManager.NavigateTo("/GpUploadInput/" + patientSelected.User.Id, true);
     }
 }

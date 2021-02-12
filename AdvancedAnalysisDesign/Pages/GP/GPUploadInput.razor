@@ -1,4 +1,4 @@
-﻿@page "/GpUploadInput/{PatientId:int}"
+﻿@page "/GpUploadInput/{UserId}"
 @using AdvancedAnalysisDesign.Models
 @using AdvancedAnalysisDesign.Models.Database
 @using AdvancedAnalysisDesign.Services
@@ -6,41 +6,38 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject UserService UserService
+@inject PatientService PatientService
 @inject BloodworkService BloodworkService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
     <MudGrid>
         <MudItem xs="12">
             <MudPaper Class="pa-4">
-
-                <MudText>Input Patient Test Results</MudText>
-
+                @* @if (patientLoaded) *@
+                @* { *@
+                @* *@
+                @* } *@
+                <MudText>@patient.User.UserDetail.FirstName @patient.User.UserDetail.LastName</MudText>
                 <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
-
                     <MudItem xs="4">
-                        <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @Value="@bloodworkTest" ValueChanged="@SelectBloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined" />
+                        <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @Value="@bloodworkTest" ValueChanged="@SelectBloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/>
                     </MudItem>
-
                     <MudItem xs="4">
                         <MudTextField @bind-Value="resultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
                     </MudItem>
-
                     <MudItem xs="2">
                         @* <MudDatePicker Label="Date of Test" @bind-Date="date" /> *@
                     </MudItem>
-
                     <MudItem xs="2">
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.SaveAlt" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton>
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton>
                     </MudItem>
-
                 </MudGrid>
             </MudPaper>
         </MudItem>
 
         <MudItem xs="12">
             <MudPaper Class="pa-4">
-
-                <MudTable Items="patientBloodworkTests" Breakpoint="Breakpoint.Sm" FixedHeader="true" Height="600px">
+                <MudTable Elevation="0" Items="patientBloodworkTests" Breakpoint="Breakpoint.Sm" FixedHeader="true" Height="600px">
                     <HeaderContent>
                         <MudTh>Bloodwork Test</MudTh>
                         <MudTh>Result</MudTh>
@@ -54,15 +51,15 @@
                 </MudTable>
             </MudPaper>
         </MudItem>
-
     </MudGrid>
 </MudContainer>
 
 @code {
     [Parameter]
-    public int PatientId { get; set; }
+    public string UserId { get; set; }
     string bloodworkTest;
     string resultInput;
+    Patient patient = new();
     //DateTime date;
 
     List<PatientBloodworkTest> patientBloodworkTests = new();
@@ -92,7 +89,7 @@
 
     private async Task SelectBloodworkTest(string value)
     {
-        await BloodworkService.FetchPatientBloodwork(PatientId, value);
+        await BloodworkService.FetchPatientBloodwork(UserId, value);
     }
 
     protected override async Task OnInitializedAsync()
@@ -102,7 +99,8 @@
 
         if (user.IsInRole("GP") || user.IsInRole("Admin"))
         {
-            bloodWorkTests = (await BloodworkService.GetAllBloodworkTests()).Select(x => x.TestName).ToArray();
+            patient = await PatientService.FetchPatientFromUserId(UserId);
+    // bloodWorkTests = (await BloodworkService.GetAllBloodworkTests()).Select(x => x.TestName).ToArray();
         }
         else
         {

@@ -20,18 +20,18 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.BloodworkTests.ToListAsync();
         }
         
-        public async Task<List<BloodworkTest>> ReturnTestSearch(string userinput)
+        public async Task<List<BloodworkTest>> ReturnTestSearch(string userInput)
         {
-            return await _context.BloodworkTests.Where(test => test.TestName.Contains(userinput)).ToListAsync();
+            return await _context.BloodworkTests.Where(test => test.TestName.Contains(userInput)).ToListAsync();
         }
 
-        public async Task<PatientBloodwork> FetchPatientBloodwork(int patientID, string bloodworkTestName)
+        public async Task<PatientBloodwork> FetchPatientBloodwork(string patientId, string bloodworkTestName)
         {
-            var patientMedications = await _context.PatientMedications.Include(x => x.Patient).Where(y => y.Patient.Id == patientID).ToListAsync();
-
-            var medicationWithBloodwork = patientMedications.SingleOrDefault(x => x.PatientBloodworks.Any(y => y.BloodworkTest.TestName == bloodworkTestName));
-
-            return medicationWithBloodwork.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
+            var patient = await _context.Patients.Include(x => x.Medications).SingleOrDefaultAsync(y => y.User.Id == patientId);
+            
+            var medicationWithBloodwork = patient.Medications.SingleOrDefault(x => x.PatientBloodworks.Any(y => y.BloodworkTest.TestName == bloodworkTestName));
+            
+            return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
     }
 }
