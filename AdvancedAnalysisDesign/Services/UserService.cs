@@ -98,16 +98,31 @@ namespace AdvancedAnalysisDesign.Services
         {
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
 
+            if(user == null)
+            {
+                throw new Exception("Login was unsuccessful. Please try again.");
+            }
+
             if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Success)
             {
-                _snackbar.Add("Login was unsuccessful. Please try again.", Severity.Error, config => { config.ShowCloseIcon = false; });
-                return;
+                throw new Exception("Login was unsuccessful. Please try again.");
+            }
+
+            var patient = await _context.Patients.Include(x => x.PatientImages).SingleOrDefaultAsync(x => x.User.Id == user.Id);
+            if (patient != null)
+            {
+                if(patient.PatientImages != null)
+                {
+                    if (patient.PatientImages.IsFlagged.Equals(true))
+                    {
+                        throw new Exception("Your account is under manual review. Please try again later.");
+                    }
+                }
             }
 
             if (!user.EmailConfirmed)
             {
-                _snackbar.Add("Account has not been confirmed.", Severity.Error, config => { config.ShowCloseIcon = false; });
-                return;
+                throw new Exception("Account has not been confirmed.");
             }
 
             await _signInService.SignInAsync(user);
