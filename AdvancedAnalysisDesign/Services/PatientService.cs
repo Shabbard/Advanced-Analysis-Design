@@ -28,7 +28,7 @@ namespace AdvancedAnalysisDesign.Services
             _userService = userService;
             _random = random;
         }
-        
+
         public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
         {
             var maxByteSize = 10485760; // max of 10MB
@@ -36,7 +36,7 @@ namespace AdvancedAnalysisDesign.Services
             await browserFile.OpenReadStream(maxByteSize).ReadAsync(buffer);
             return buffer;
         }
-        
+
         public async Task RegisterPatient(PatientRegistrationPayload regPayload)
         {
             var user = await _userService.RegisterUser(regPayload);
@@ -60,13 +60,13 @@ namespace AdvancedAnalysisDesign.Services
 
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
-            
+
 #if RELEASE
             await _userService.SendConfirmationEmail(user.Email);
 #endif
         }
-        
-        public (int,int,int) ReturnPrescriptionCounters(List<Patient> patients)
+
+        public (int, int, int) ReturnPrescriptionCounters(List<Patient> patients)
         {
             int prescriptionsDue = patients.Select(x => x.Medications.Count).Sum();
             int prescriptionsPrepared = patients.Select(x => x.Medications.Count(y => y.Pickup.IsPrepared)).Sum();
@@ -79,23 +79,23 @@ namespace AdvancedAnalysisDesign.Services
         {
             var listOfPickups = patients.SelectMany(x => x.Medications.Select(y => y.Pickup)).ToList();
             return listOfPickups.Select(x => new PickupSchedulerPayload()
-                {
-                    StartTime = x.DateScheduled,
-                    EndTime = x.DateScheduled?.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
-                    Subject = "Medication Pickup",
-                    IsPickedUp = x.IsPickedUp,
-                    IsPrepared = x.IsPrepared
-                }
+            {
+                StartTime = x.DateScheduled,
+                EndTime = x.DateScheduled?.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
+                Subject = "Medication Pickup",
+                IsPickedUp = x.IsPickedUp,
+                IsPrepared = x.IsPrepared
+            }
             ).ToList();
         }
-        
+
         public PatientMedication CreateMedication(Medication medication, bool isBloodworkRequired)
         {
             return new()
             {
                 Medication = medication,
                 BloodworkRequired = isBloodworkRequired,
-                Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null }
+                Pickup = new() { IsPickedUp = false, IsPrepared = false, DateScheduled = null, DatePickedUp = null }
             };
         }
 
@@ -103,16 +103,16 @@ namespace AdvancedAnalysisDesign.Services
         {
             var patients = await FetchAllPatientMedicationAndPickups();
             var medications = await FetchAllMedications();
-            foreach(var patient in patients)
+            foreach (var patient in patients)
             {
                 patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true));
             }
             await _context.SaveChangesAsync();
         }
-        
+
         public async Task<List<Patient>> FetchAllPatients()
         {
-            return  await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
+            return await _context.Patients.Include(x => x.User).Include(x => x.User.UserDetail).Include(x => x.GeneralPractitioner).ToListAsync();
         }
 
         public async Task<List<Patient>> FetchAllPatientsWithPickups()
@@ -122,7 +122,7 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<Patient>> FetchAllPatientMedicationAndPickups()
         {
-            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x=>x.Medication).Include(x => x.Medications).ToListAsync();
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Include(x => x.Medications).ToListAsync();
         }
 
         public async Task<List<Medication>> FetchAllMedications()

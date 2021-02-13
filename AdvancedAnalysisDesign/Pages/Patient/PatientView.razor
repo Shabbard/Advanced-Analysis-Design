@@ -1,5 +1,6 @@
 ﻿@page "/PatientView"
 @using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.Payloads
 @using AdvancedAnalysisDesign.Services
 @using InputType = MudBlazor.InputType
 
@@ -12,7 +13,7 @@
 @inject NavigationManager NavManager
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
-    <MudGrid  Justify="Justify.Center">
+    <MudGrid Justify="Justify.Center">
         <MudItem xs="6">
             <MudPaper Elevation="5">
 
@@ -48,24 +49,24 @@
 
 
                 @* Data table for Bloodwork *@
-                @if (bloodworkTableData.Any()) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
+                @if (bloodworkTableData.Any())@*if statement to check if bloodwork is on the system. if not display a mudalert*@
                 {
 
-                 <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.h6">Bloodwork</MudText>
-                    </ToolBarContent>
+                    <MudTable Height="700px" FixedHeader="true" Items="bloodworkTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Bloodwork</MudText>
+                        </ToolBarContent>
 
-                    <HeaderContent>
-                        <MudTh>Name</MudTh>
-                        <MudTh>Date</MudTh>
-                    </HeaderContent>
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Date</MudTh>
+                        </HeaderContent>
 
-                    <RowTemplate Context="row">
-                        <MudTd DataLabel="ID">@row.Id</MudTd>
-                        <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
-                    </RowTemplate>
-                </MudTable>
+                        <RowTemplate Context="row">
+                            <MudTd DataLabel="ID">@row.Id</MudTd>
+                            <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                        </RowTemplate>
+                    </MudTable>
 
                 }
                 else
@@ -76,16 +77,60 @@
 
             </MudPaper>
         </MudItem>
+        <MudItem xs="6">
+            <MudPaper Elevation="5">
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.CalendarToday" class="mr-3"></MudIcon>
+                            <MudText Color="Color.Primary">Schedule Pickup</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        @if (pickupTableData.Any())
+                        {
+                            <MudTable Height="700px" FixedHeader="true" Items="pickupTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                                <ToolBarContent>
+                                    <MudText Typo="Typo.h6">Pickup</MudText>
+                                </ToolBarContent>
+
+                                <HeaderContent>
+                                    <MudTh>Name</MudTh>
+                                    <MudTh>Pickup Time</MudTh>
+                                </HeaderContent>
+
+                                <RowTemplate Context="row">
+                                    <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
+                                    <MudTd DataLabel="Pickup Time">@row.Pickup.DateScheduled</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+
+                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/Pickup", true))" Variant="Variant.Filled" Color="Color.Primary">Schedule</MudButton>
+                        }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Info">You currently have no medication to pickup. If this is an error please contact example@example.com</MudAlert>
+                        }
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6"></MudItem>
     </MudGrid>
 </MudContainer>
 
 @code{
     private bool hover = true;
+    private bool schedule = false;
 
     private Patient PatientmedicationData = new Patient();
     private PatientMedication PatientbloodworkData = new PatientMedication();
+
     private List<PatientMedication> medicationTableData = new List<PatientMedication>();
     private List<PatientBloodwork> bloodworkTableData = new List<PatientBloodwork>();
+    private List<PatientMedication> pickupTableData = new List<PatientMedication>();
+    private List<PickupSchedulerPayload> AvailableTimes = new();
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -95,11 +140,13 @@
         {
             PatientmedicationData = await PatientService.FetchUserMedication();
 
+            //Create medication and bloodwork data if any available
             if (medicationTableData.Any())
             {
 
                 medicationTableData = PatientmedicationData.Medications;
 
+                //Generate bloodwork data from user medication
                 foreach (PatientMedication Med in medicationTableData)
                 {
 
@@ -111,6 +158,15 @@
                         bloodworkTableData.Add(blood);
                     }
                 }
+
+                //generate pickup data from user medication
+                foreach (PatientMedication Med in medicationTableData)
+                {
+                    if (Med.BloodworkRequired == true && Med.Pickup.IsPickedUp == false)
+                    {
+                        pickupTableData.Add(Med);
+                    }
+                }
             }
 
         }
@@ -118,5 +174,11 @@
         {
             NavigationManager.NavigateTo("/", true);
         }
+    }
+
+    private void OpenScheduleData()
+    {
+        schedule = true;
+        StateHasChanged();
     }
 }
