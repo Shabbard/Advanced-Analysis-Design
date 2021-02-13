@@ -1,7 +1,9 @@
 ﻿@page "/GpUploadInput/{UserId}"
 @using AdvancedAnalysisDesign.Models
 @using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.DataTransferObjects
 @using AdvancedAnalysisDesign.Services
+@using Flurl.Util
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -9,61 +11,121 @@
 @inject PatientService PatientService
 @inject BloodworkService BloodworkService
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
+@if (isLoaded)
+{
+  <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
     <MudGrid>
         <MudItem xs="12">
             <MudPaper Class="pa-4">
-                @* @if (patientLoaded) *@
-                @* { *@
-                @* *@
-                @* } *@
+                
                 <MudText>@patient.User.UserDetail.FirstName @patient.User.UserDetail.LastName</MudText>
-                <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
-                    <MudItem xs="4">
-                        <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @Value="@bloodworkTest" ValueChanged="@SelectBloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/>
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudTextField @bind-Value="resultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
-                    </MudItem>
-                    <MudItem xs="2">
-                        @* <MudDatePicker Label="Date of Test" @bind-Date="date" /> *@
-                    </MudItem>
-                    <MudItem xs="2">
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton>
-                    </MudItem>
-                </MudGrid>
+                @* <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2"> *@
+                @*     <MudItem xs="4"> *@
+                @*         <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @Value="@bloodworkTest" ValueChanged="@SelectBloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/> *@
+                @*     </MudItem> *@
+                @*     <MudItem xs="4"> *@
+                @*         <MudTextField @bind-Value="resultInput" Label="Result" Variant="Variant.Outlined"></MudTextField> *@
+                @*     </MudItem> *@
+                @*     <MudItem xs="2"> *@
+                @*         $1$ <MudDatePicker Label="Date of Test" @bind-Date="date" /> #1# *@
+                @*     </MudItem> *@
+                @*     <MudItem xs="2"> *@
+                @*         $1$ <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults()">Add Test Results</MudButton> #1# *@
+                @*     </MudItem> *@
+                @* </MudGrid> *@
             </MudPaper>
         </MudItem>
 
         <MudItem xs="12">
             <MudPaper Class="pa-4">
-                <MudTable Elevation="0" Items="patientBloodworkTests" Breakpoint="Breakpoint.Sm" FixedHeader="true" Height="600px">
-                    <HeaderContent>
-                        <MudTh>Bloodwork Test</MudTh>
-                        <MudTh>Result</MudTh>
-                        <MudTh>Date of Upload</MudTh>
-                    </HeaderContent>
-                    <RowTemplate Context="Test">
-                        @* <MudTd DataLabel="Bloodwork Test">@Test.TestType</MudTd> *@
-                        <MudTd DataLabel="Result">@Test.Result</MudTd>
-                        <MudTd DataLabel="Date of Upload">@Test.Result</MudTd>
-                    </RowTemplate>
-                </MudTable>
+                <MudExpansionPanels MultiExpansion="true">
+                @foreach (var patientMedication in patientMedications)
+                {
+                    <MudExpansionPanel Text="@patientMedication.Medication.MedicationName">
+                        <MudTable Items="@patientMedication.PatientBloodworks" Context="Medication" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                            <HeaderContent>
+                                <MudTh>Id</MudTh>
+                                <MudTh>Bloodwork Test</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Id">@Medication.Id</MudTd>
+                                <MudTd DataLabel="Bloodwork Test">@Medication.BloodworkTest.TestName</MudTd>
+                                <MudTd DataLabel="YEET">
+                                    @* <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @Value="@bloodworkTest" ValueChanged="@SelectBloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/> *@
+                                    @* <MudTextField @bind-Value="resultInput" Label="Result" Variant="Variant.Outlined"></MudTextField> *@
+                                    @* <MudDatePicker Label="Date of Test" @bind-Date="date" /> *@
+                                    @* <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Large" OnClick="@InputTestResults">Add Test Results</MudButton> *@
+                                </MudTd>
+                            </RowTemplate>
+                            <ChildRowContent>
+                                <MudTr>
+                                    <td colspan="4">
+                                        <MudCard Elevation="0">
+                                            <MudCardHeader>
+                                                <CardHeaderContent>
+                                                    <MudText Typo="Typo.body1">Address Details for <strong>@Medication.BloodworkTest.TestName</strong></MudText>
+                                                </CardHeaderContent>
+                                            </MudCardHeader>
+                                            <MudCardContent Class="pa-0">
+                                                <MudTable Items="@Medication.PatientBloodworkTests" Context="AddressContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                    <ColGroup>
+                                                        <col />
+                                                        <col />
+                                                        <col style="width:200px;"/>
+                                                    </ColGroup>
+                                                    <HeaderContent>
+                                                        <MudTh>Address Line 1</MudTh>
+                                                        <MudTh>Address Line 2</MudTh>
+                                                        <MudTh>Postal Code</MudTh>
+                                                    </HeaderContent>
+                                                    <RowTemplate>
+                                                        <MudTd DataLabel="Address Line 1">@AddressContext.Result</MudTd>
+                                                        <MudTd DataLabel="Address Line 2">@AddressContext.DateOfUpload</MudTd>
+                                                    </RowTemplate>
+                                                </MudTable>
+                                            </MudCardContent>
+                                        </MudCard>
+                                    </td>
+                                </MudTr>}
+                            </ChildRowContent>
+                        </MudTable>
+                        <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
+                            <MudItem xs="4">
+                                <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @bind-Value="@patientMedication.BloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/>
+                                @* <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @Value="@patientMedication.BloodworkTest" ValueChanged="@SelectBloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/> *@
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudTextField @bind-Value="@patientMedication.ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
+                            </MudItem>
+                            <MudItem xs="2">
+                                @* <MudDatePicker Label="Date of Test" @bind-Date="date" /> *@
+                            </MudItem>
+                            <MudItem xs="2">
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Medium" OnClick="async () => await InputTestResults(patientMedication)">Add Test Results</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudExpansionPanel>
+                }
+                </MudExpansionPanels>
             </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
+}
+else
+{
+    <LoadingScreen></LoadingScreen>
+}
 
 @code {
     [Parameter]
     public string UserId { get; set; }
-    string bloodworkTest;
-    string resultInput;
     Patient patient = new();
+    bool isLoaded;
     //DateTime date;
 
-    List<PatientBloodworkTest> patientBloodworkTests = new();
-    string[] bloodWorkTests;
+    List<PatientMedicationsDto> patientMedications = new();
+    string[] bloodWorkTests = {};
 
     private async Task<IEnumerable<string>> Search(string value)
     {
@@ -72,18 +134,13 @@
         return bloodWorkTests.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    private async Task InputTestResults()
+    private async Task InputTestResults(PatientMedicationsDto medicationsDto)
     {
-        if (!string.IsNullOrEmpty(bloodworkTest) && !string.IsNullOrEmpty(resultInput))
+        if (!string.IsNullOrEmpty(medicationsDto.BloodworkTest) && !string.IsNullOrEmpty(medicationsDto.ResultInput))
         {
-            patientBloodworkTests.Add(new PatientBloodworkTest
-            {
-                // TestType = bloodworkTest,
-                Result = resultInput
-            });
-
-            bloodworkTest = "";
-            resultInput = "";
+            isLoaded = false;
+            await BloodworkService.AddPatientBloodwork(medicationsDto);
+            isLoaded = true;
         }
     }
 
@@ -99,12 +156,29 @@
 
         if (user.IsInRole("GP") || user.IsInRole("Admin"))
         {
-            patient = await PatientService.FetchPatientFromUserId(UserId);
-    // bloodWorkTests = (await BloodworkService.GetAllBloodworkTests()).Select(x => x.TestName).ToArray();
+            await LoadPatientData();
+            bloodWorkTests = (await BloodworkService.GetAllBloodworkTests()).Select(x => x.TestName).ToArray();
         }
         else
         {
             NavigationManager.NavigateTo("/", true);
         }
+        isLoaded = true;
+    }
+
+    private async Task LoadPatientData()
+    {
+        isLoaded = false;
+        patient = await PatientService.FetchPatientWithMedicationsFromUserId(UserId);
+        patientMedications = patient.Medications.Select(x => new PatientMedicationsDto
+        {
+            Id = x.Id,
+            Medication = x.Medication,
+            Pickup = x.Pickup,
+            BloodworkRequired = x.BloodworkRequired,
+            PatientBloodworks = x.PatientBloodworks,
+            DateIntervalOfBloodworkRenewal = x.DateIntervalOfBloodworkRenewal
+        }).ToList();
+        isLoaded = true;
     }
 }
