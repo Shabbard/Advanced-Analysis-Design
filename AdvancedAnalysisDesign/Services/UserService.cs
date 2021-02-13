@@ -109,12 +109,9 @@ namespace AdvancedAnalysisDesign.Services
             }
 
             var patient = await _context.Patients.Include(x => x.PatientImages).SingleOrDefaultAsync(x => x.User.Id == user.Id);
-            if (patient != null && patient.PatientImages != null)
+            if (patient != null && patient.PatientImages != null && patient.PatientImages.IsFlagged)
             {
-                if (patient.PatientImages.IsFlagged.Equals(true))
-                {
-                    throw new Exception("Your account is under manual review. Please try again later.");
-                }
+                throw new Exception("Your account is under manual review. Please try again later.");
             }
 
             if (!user.EmailConfirmed)
