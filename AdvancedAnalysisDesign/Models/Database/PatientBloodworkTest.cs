@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdvancedAnalysisDesign.Models.Database
 {
@@ -7,5 +8,11 @@ namespace AdvancedAnalysisDesign.Models.Database
         public int Id { get; set; }
         public string Result { get; set; }
         public DateTimeOffset DateOfUpload { get; set; }
+        public string TestType { get; set; }
+
+        public int PatientBloodworkId { get; set; }
+        [ForeignKey("PatientBloodworkId")]
+        [InverseProperty("PatientBloodworkTests")]
+        public virtual PatientBloodwork PatientBloodwork { get; set; }
     }
 }
