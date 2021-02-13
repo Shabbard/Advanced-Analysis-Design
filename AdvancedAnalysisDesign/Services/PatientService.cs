@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Models.Payloads;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 
 namespace AdvancedAnalysisDesign.Services
 {
@@ -17,18 +19,30 @@ namespace AdvancedAnalysisDesign.Services
         private readonly UserManager<User> _userManager;
         private readonly UserService _userService;
         private readonly Random _random;
+        private readonly FaceService _faceService;
+        private readonly EmailService _emailService;
+        private readonly NavigationManager _navigationManager;
+        private readonly ISnackbar _snackbar;
 
         public PatientService(AADContext context,
             UserManager<User> userManager,
             UserService userService,
-            Random random)
+            Random random,
+            FaceService faceService,
+            EmailService emailService,
+            NavigationManager navigationManager,
+            ISnackbar snackbar)
         {
             _context = context;
             _userManager = userManager;
             _userService = userService;
             _random = random;
+            _faceService = faceService;
+            _emailService = emailService;
+            _navigationManager = navigationManager;
+            _snackbar = snackbar;
         }
-        
+
         public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
         {
             var maxByteSize = 10485760; // max of 10MB
@@ -44,10 +58,9 @@ namespace AdvancedAnalysisDesign.Services
             PatientImages images = new PatientImages
             {
                 SelfiePhoto = await ConvertIBrowserFileToBytesAsync(regPayload.SelfiePhoto),
-                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto),
-                IsFlagged = false,
-                IsVerified = false
+                IDPhoto = await ConvertIBrowserFileToBytesAsync(regPayload.IDPhoto)
             };
+            (images.IsFlagged, images.IsVerified) = await _faceService.VerifyTwoImageFaceAsync(images);
 
             var patient = new Patient
             {
@@ -60,10 +73,23 @@ namespace AdvancedAnalysisDesign.Services
 
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
-            
+
 #if RELEASE
             await _userService.SendConfirmationEmail(user.Email);
 #endif
+            if (images.IsFlagged)
+            {
+                var subject = "Image verification failed";
+                var emailMessage = $"Hi {user.UserDetail.FirstName} {user.UserDetail.LastName}. \n\n" +
+                                   "Our automatic image verification system has flagged your uploaded images.\n" +
+                                   "A manual review is now in progress. Please be aware that this may take up to 3 working days.\n" +
+                                   "In the meantime please confirm your account.\n\n" +
+                                   "Have a nice day.\n" +
+                                   "Binary Beast Bloodwork";
+                await _emailService.SendEmailAsync(user.Email, subject, emailMessage);
+                _snackbar.Add("Automatic image verification failed. Please review the email sent to you.", Severity.Warning, config => { config.ShowCloseIcon = false; });
+                _navigationManager.NavigateTo("/", true);
+            }
         }
         
         public (int,int,int) ReturnPrescriptionCounters(List<Patient> patients)
@@ -125,9 +151,25 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x=>x.Medication).Include(x => x.Medications).ToListAsync();
         }
 
+        public async Task<List<Patient>> FetchAllPatientsForVerification()
+        {
+            return await _context.Patients.Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(false)).ToListAsync();
+        }
+
         public async Task<List<Medication>> FetchAllMedications()
         {
             return await _context.Medications.ToListAsync();
+        }
+
+        public async Task<Patient> FetchUserMedication()
+        {
+            var user = await _userService.GetCurrentUserAsync();
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).SingleOrDefaultAsync(x => x.User.Id == user.Id);
+        }
+
+        public async Task<PatientMedication> FetchUserBloodwork(int MedId)
+        {
+            return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == MedId);
         }
     }
 }

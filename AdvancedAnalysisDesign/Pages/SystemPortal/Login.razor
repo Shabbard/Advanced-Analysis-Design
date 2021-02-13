@@ -8,12 +8,18 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
-<MudMainContent>
-    <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+@if (isLoading)
+{
+    <LoadingScreen></LoadingScreen>
+}
+else
+{
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
             <MudGrid Justify="Justify.Center" Class="mt-16">
                 <MudItem xs="12">
-                    <EditForm Model="@model"> 
-                        <DataAnnotationsValidator/>
+                    <EditForm Model="@model">
+                        <DataAnnotationsValidator />
                         <MudCard Elevation="5" Class="LoginCard">
                             <MudCardHeader>
                                 <CardHeaderContent>
@@ -23,10 +29,10 @@
                             <MudCardContent>
                                 <MudGrid>
                                     <MudItem xs="12">
-                                        <MudTextField Label="Email" @bind-Value="model.Email" For="@(() => model.Email)"/>
+                                        <MudTextField Label="Email" @bind-Value="model.Email" For="@(() => model.Email)" />
                                     </MudItem>
                                     <MudItem xs="12">
-                                        <MudTextField Label="Password" @bind-Value="password" For="@(() => password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+                                        <MudTextField Label="Password" @bind-Value="password" For="@(() => password)" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
                                     </MudItem>
                                 </MudGrid>
                             </MudCardContent>
@@ -49,16 +55,30 @@
                     </EditForm>
                 </MudItem>
             </MudGrid>
-    </MudContainer>
-</MudMainContent>
+        </MudContainer>
+    </MudMainContent>
+}
 
 @code{
     User model = new User();
     string password;
-    
+    bool isLoading;
+
     public async void LoginRequest()
     {
-        await UserService.Login(model.Email, password);
+        isLoading = true;
+        try
+        {
+            await UserService.Login(model.Email, password);
+            isLoading = false;
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            isLoading = false;
+            Snackbar.Add(e.Message, Severity.Error);
+            StateHasChanged();
+        }
     }
 
     //Allows the user to toggle password visibility on & off using the show password icon
