@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20210213141418_parent-object-links")]
+    partial class parentobjectlinks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -272,12 +274,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<bool>("IsPrepared")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MedicalInstitutionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("MedicalInstitutionId");
 
                     b.ToTable("Pickups");
                 });
@@ -601,15 +598,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Navigation("Pharmacy");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pickup", b =>
-                {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "MedicalInstitution")
-                        .WithMany()
-                        .HasForeignKey("MedicalInstitutionId");
-
-                    b.Navigation("MedicalInstitution");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>
