@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20210213171033_PickupLocationAdded")]
+    partial class PickupLocationAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,15 +137,13 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("BloodworkTestId")
-                        .HasColumnType("int");
+                    b.Property<DateTimeOffset>("DateOfResults")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("PatientMedicationId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BloodworkTestId");
 
                     b.HasIndex("PatientMedicationId");
 
@@ -156,9 +156,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
-
-                    b.Property<DateTimeOffset>("DateOfUpload")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("PatientBloodworkId")
                         .HasColumnType("int");
@@ -550,17 +547,11 @@ namespace AdvancedAnalysisDesign.Migrations
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.PatientBloodwork", b =>
                 {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.BloodworkTest", "BloodworkTest")
-                        .WithMany()
-                        .HasForeignKey("BloodworkTestId");
-
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.PatientMedication", "PatientMedication")
                         .WithMany("PatientBloodworks")
                         .HasForeignKey("PatientMedicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BloodworkTest");
 
                     b.Navigation("PatientMedication");
                 });

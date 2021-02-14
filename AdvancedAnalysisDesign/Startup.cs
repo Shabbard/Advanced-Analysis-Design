@@ -44,6 +44,7 @@ namespace AdvancedAnalysisDesign
             services.AddScoped<NonPatientService>();
             services.AddSingleton<EmailService>();
             services.AddScoped<SignInService>();
+            services.AddScoped<FaceService>();
             services.AddMudServices();
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
