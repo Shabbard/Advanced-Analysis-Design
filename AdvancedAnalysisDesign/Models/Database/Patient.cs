@@ -8,6 +8,7 @@ namespace AdvancedAnalysisDesign.Models.Database
         public string NhsNumber { get; set; }
         public User User { get; set; }
         public GeneralPractitioner GeneralPractitioner { get; set; }
+        public MedicalInstitution MedicalInstitution { get; set; }
         public PatientImages PatientImages { get; set; }
         public List<PatientMedication> Medications { get; set; }
     }
