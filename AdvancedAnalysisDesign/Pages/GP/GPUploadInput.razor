@@ -17,10 +17,10 @@
 }
 else
 {
-    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
-  <MudGrid>
-      @if (user != null)
-      {
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
+      <MudGrid>
+          @if (user != null)
+          {
           <MudItem xs="12">
               <MudPaper Class="pa-4">
                   <MudGrid>
@@ -36,96 +36,112 @@ else
                   </MudGrid>
               </MudPaper>
           </MudItem>
-      }
-      <MudItem xs="12">
-          <MudPaper Class="pa-4">
-              <MudExpansionPanels MultiExpansion="true">
-                  @foreach (var patientMedication in patientMedicationsView)
-                  {
-                      <MudExpansionPanel Text="@patientMedication.Medication.MedicationName" IsExpandedChanged="async () => await ShowBloodworks(patientMedication)" IsExpanded="patientMedication.ShowBloodworks">
-                          <MudTable Items="@patientMedication.PatientBloodworks" Context="Bloodwork" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
-                              <HeaderContent>
-                              <MudTh>Id</MudTh>
-                              <MudTh>Bloodwork Test</MudTh>
-                              </HeaderContent>
-                              <RowTemplate>
-                              @if (patientMedication.ShowBloodworks)
-                              {
-                                  <MudTd DataLabel="Id">@patientMedication.Id</MudTd>
-                                  <MudTd DataLabel="Bloodwork Test">@Bloodwork.BloodworkTest.TestName</MudTd>
-                                  <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(async () => await ShowBloodworkTests(Bloodwork))">@((Bloodwork.ShowDetails) ? "Hide" : "Show") Test Results</MudButton></MudTd>
-                              }
-                              </RowTemplate>
-                                  <ChildRowContent>
-                                      @if (Bloodwork.ShowDetails)
-                                      {
-                                          <MudTr>
-                                              <td colspan="4">
-                                                  <MudCard Elevation="0">
-                                                      <MudCardHeader>
-                                                          <CardHeaderContent>
-                                                              <MudText Typo="Typo.body1">Test Results for <strong>@Bloodwork.BloodworkTest.TestName</strong></MudText>
-                                                          </CardHeaderContent>
-                                                      </MudCardHeader>
-                                                      <MudCardContent Class="pa-0">
-                                                          <MudTable Items="@Bloodwork.PatientBloodworkTests" Context="BloodworkTest" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
-                                                              <HeaderContent>
-                                                                  <MudTh>Date Of Result</MudTh>
-                                                                  <MudTh>Test Result</MudTh>
-                                                              </HeaderContent>
-                                                              <RowTemplate>
-                                                                  <MudTd DataLabel="Date Of Upload">@BloodworkTest.DateOfUpload</MudTd>
-                                                                  <MudTd DataLabel="Result">@BloodworkTest.Result</MudTd>
-                                                              </RowTemplate>
-                                                          </MudTable>
-                                                      </MudCardContent>
-                                                  </MudCard>
-                                              </td>
-                                          </MudTr>
-                                      }
-                                  </ChildRowContent>
+          }
+          <MudItem xs="12">
+              <MudPaper Class="pa-4">
+                <MudExpansionPanels MultiExpansion="true" Elevation="0">
+                @foreach (var patientMedication in patientMedicationsView)
+                {
+                    <MudExpansionPanel Text="@patientMedication.Medication.MedicationName" IsExpandedChanged="async () => await ShowBloodworks(patientMedication)" IsExpanded="patientMedication.ShowBloodworks">
+                        @if (bloodworksLoaded)
+                        {
+                            <MudTable Items="@patientMedication.PatientBloodworks" Context="Bloodwork" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Id</MudTh>
+                                    <MudTh>Bloodwork Test</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                @if (patientMedication.ShowBloodworks)
+                                {
+                                    <MudTd DataLabel="Id">@patientMedication.Id</MudTd>
+                                    <MudTd DataLabel="Bloodwork Test">@Bloodwork.BloodworkTest.TestName</MudTd>
+                                    <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(async () => await ShowBloodworkTests(Bloodwork))">@((Bloodwork.ShowDetails) ? "Hide" : "Show") Test Results</MudButton></MudTd>
+                                }
+                                </RowTemplate>
+                                <ChildRowContent>
+                                    @if (Bloodwork.ShowDetails)
+                                    {
+                                        @if (bloodworkTestsLoaded)
+                                        {
+                                            <MudTr>
+                                                <td colspan="4">
+                                                    <MudCard Elevation="0">
+                                                        <MudCardHeader>
+                                                            <CardHeaderContent>
+                                                                <MudText Typo="Typo.body1">Test Results for <strong>@Bloodwork.BloodworkTest.TestName</strong></MudText>
+                                                            </CardHeaderContent>
+                                                        </MudCardHeader>
+                                                        <MudCardContent Class="pa-0">
+                                                            <MudTable Items="@Bloodwork.PatientBloodworkTests" Context="BloodworkTest" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                                <HeaderContent>
+                                                                    <MudTh>Date Of Result</MudTh>
+                                                                    <MudTh>Test Result</MudTh>
+                                                                </HeaderContent>
+                                                                <RowTemplate>
+                                                                    <MudTd DataLabel="Date Of Upload">@BloodworkTest.DateOfUpload</MudTd>
+                                                                    <MudTd DataLabel="Result">@BloodworkTest.Result</MudTd>
+                                                                </RowTemplate>
+                                                            </MudTable>
+                                                        </MudCardContent>
+                                                    </MudCard>
+                                                </td>
+                                            </MudTr>
+                                        }
+                                        else
+                                        {
+                                            <LoadingScreen></LoadingScreen>
+                                        }
+                                    }
+                                </ChildRowContent>
                             </MudTable>
-                          <MudDivider/>
-                          <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
-                              <MudItem xs="4">
-                                  <MudAutocomplete MaxItems="@null" T="string" Label="Bloodwork Test" @bind-Value="@patientMedication.BloodworkTest" SearchFunc="@Search" Variant="Variant.Outlined"/>
-                              </MudItem>
-                              <MudItem xs="4">
-                                  <MudTextField @bind-Value="@patientMedication.ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
-                              </MudItem>
-                              @* <MudItem xs="2"> *@
-                              @*     <MudDatePicker Label="Date of Test" @bind-Date="date" />
-                        @* </MudItem> *@
-                              <MudItem xs="4">
-                                  <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Medium" OnClick="async () => await InputTestResults(patientMedication)">Add Test Results</MudButton>
-                              </MudItem>
-                          </MudGrid>
+                        }
+                        else
+                        {
+                            //<MudOverlay @bind-Visible="@bloodworksLoaded" DarkBackground="true">
+                                @* <LoadingScreen></LoadingScreen> *@
+                                <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary"></MudProgressCircular>
+                            //</MudOverlay>    
+                        }
+                      <MudDivider/>
+                      <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
+                          <MudItem xs="4">
+                              <MudAutocomplete MaxItems="@null" T="string" @bind-Value="@patientMedication.BloodworkTest" Label="Bloodwork Test" SearchFunc="@Search" Variant="Variant.Outlined"/> @*ValueChanged="async () => await SelectTest(value: UserId, patientMedication)"*@
+                          </MudItem>
+                          <MudItem xs="4">
+                              <MudTextField @bind-Value="@patientMedication.ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
+                          </MudItem>
+                          @* <MudItem xs="2"> *@
+                          @*     <MudDatePicker Label="Date of Test" @bind-Date="date" />
+                    @* </MudItem> *@
+                          <MudItem xs="4">
+                              <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Medium" OnClick="async () => await InputTestResults(patientMedication)">Add Test Results</MudButton>
+                          </MudItem>
+                      </MudGrid>
                       </MudExpansionPanel>
-                  }
-              </MudExpansionPanels>
-          </MudPaper>
-      </MudItem>
-  </MudGrid>
+                      }
+                  </MudExpansionPanels>
+              </MudPaper>
+          </MudItem>
+      </MudGrid>
 </MudContainer>
 }
-
-
 
 @code {
     [Parameter]
     public string UserId { get; set; }
     User user = new();
     bool isLoaded;
+    bool bloodworkTestsLoaded;
+    bool bloodworksLoaded;
     //DateTime date;
-
+    List<BloodworkTest> bloodWorkTests = new();
     List<PatientMedicationView> patientMedicationsView = new();
-    string[] bloodWorkTests = {};
 
     private async Task<IEnumerable<string>> Search(string value)
     {
         if (string.IsNullOrEmpty(value))
-            return bloodWorkTests;
-        return bloodWorkTests.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            return bloodWorkTests.Select(x => x.TestName);
+        return bloodWorkTests.Where(x => x.TestName.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(x => x.TestName);
     }
 
     private async Task InputTestResults(PatientMedicationView medicationView)
@@ -139,10 +155,16 @@ else
         }
     }
 
+    private async Task SelectTest(string value, PatientMedicationView medicationView)
+    {
+        
+    }
+
     private async Task ShowBloodworkTests(PatientBloodworkView bloodworkView)
     {
         bloodworkView.ShowDetails = !bloodworkView.ShowDetails;
-        bloodworkView.PatientBloodworkTests = Context.PatientBloodworkTests.
+        bloodworkTestsLoaded = false;
+        bloodworkView.PatientBloodworkTests = await Context.PatientBloodworkTests.
             Where(x => x.PatientBloodwork.Id == bloodworkView.Id)
             .Select(x => new PatientBloodworkTestView
             {
@@ -151,20 +173,23 @@ else
                 TestType = x.TestType,
                 DateOfUpload = x.DateOfUpload
             })
-            .ToList();
+            .ToListAsync();
+        bloodworkTestsLoaded = true;
     }
     
     private async Task ShowBloodworks(PatientMedicationView medicationView)
     {
+        bloodworksLoaded = false;
         if (medicationView.ShowBloodworks)
         {
-            medicationView.PatientBloodworks = new List<PatientBloodworkView>();
             medicationView.ShowBloodworks = !medicationView.ShowBloodworks;
+            medicationView.PatientBloodworks = new List<PatientBloodworkView>();
         }
         else
         {
-            medicationView.PatientBloodworks = Context.PatientBloodworks.
-                Where(x => x.Id == medicationView.Id)
+            medicationView.ShowBloodworks = !medicationView.ShowBloodworks;
+            medicationView.PatientBloodworks = await Context.PatientBloodworks
+                .Where(x => x.PatientMedicationId == medicationView.Id)
                 .Select(x => new PatientBloodworkView
                 {
                     Id = x.Id,
@@ -172,9 +197,9 @@ else
                     PatientMedication = x.PatientMedication,
                     PatientBloodworkTests = new List<PatientBloodworkTestView>()
                 })
-                .ToList();
-            medicationView.ShowBloodworks = !medicationView.ShowBloodworks;
+                .ToListAsync();
         }
+        bloodworksLoaded = true;
     }
 
     protected override async Task OnInitializedAsync()
@@ -187,7 +212,7 @@ else
             isLoaded = false;
             user = await Context.Users.Include(x => x.UserDetail).SingleOrDefaultAsync(x => x.Id == UserId);
             await LoadPatientData();
-            bloodWorkTests = (await BloodworkService.GetAllBloodworkTests()).Select(x => x.TestName).ToArray();
+            bloodWorkTests = await BloodworkService.GetAllBloodworkTests();
         }
         else
         {
