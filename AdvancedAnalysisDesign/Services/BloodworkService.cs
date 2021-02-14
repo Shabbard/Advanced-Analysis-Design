@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Models.DataTransferObjects;
+using AdvancedAnalysisDesign.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign.Services
@@ -36,34 +37,69 @@ namespace AdvancedAnalysisDesign.Services
             return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
 
-        public async Task AddPatientBloodwork(PatientMedicationsDto medicationsDto)
+        public async Task<List<PatientMedicationView>> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
         {
-            if (_context.PatientBloodworks.Where(x => x.) == null)
+            return patientMedicationsList.Select(x => new PatientMedicationView
             {
-                medicationsDto.PatientBloodworks = new List<PatientBloodwork>();
-            }
-
-            var bloodwork = await _context.PatientBloodworks.SingleOrDefaultAsync(x => x.BloodworkTest.TestName == medicationsDto.BloodworkTest);
-
-            if (bloodwork == null)
-            {
-                var bloodworkFromDb = await _context.BloodworkTests.SingleOrDefaultAsync(x => x.TestName == medicationsDto.BloodworkTest);
-                bloodwork = new PatientBloodwork
+                Medication = x.Medication,
+                Pickup = x.Pickup,
+                BloodworkRequired = x.BloodworkRequired,
+                PatientBloodworks = x.PatientBloodworks.Select(y => new PatientBloodworkView
                 {
-                    BloodworkTest = bloodworkFromDb,
-                    PatientBloodworkTests = new List<PatientBloodworkTest>()
-                };
-            }
+                    BloodworkTest = y.BloodworkTest,
+                    PatientMedication = y.PatientMedication,
+                    PatientBloodworkTests = y.PatientBloodworkTests.Select(z => new PatientBloodworkTestView
+                    {
+                        Result = z.Result,
+                        PatientBloodwork = z.PatientBloodwork,
+                        TestType = z.TestType,
+                        DateOfUpload = z.DateOfUpload
+                    }).ToList()
+                }).ToList(),
+                DateIntervalOfBloodworkRenewal = x.DateIntervalOfBloodworkRenewal,
+                Patient = x.Patient
+            }).ToList();
+        }
 
-            var bloodworkTest = new PatientBloodworkTest
-            {
-                Result = medicationsDto.ResultInput,
-                DateOfUpload = DateTimeOffset.Now
-            };
+        public async Task AddPatientBloodwork(PatientMedicationView medicationView)
+        {
+            // if ( == null)
+            // {
+            //     var newPatientMedication = new PatientMedication();
+            //     newPatientMedication.PatientBloodworks = new List<PatientBloodwork>();
+            //     await _context.PatientMedications.AddAsync(newPatientMedication);
+            //     await _context.SaveChangesAsync();
+            // }
 
-            bloodwork.PatientBloodworkTests.Add(bloodworkTest);
-
-            await _context.SaveChangesAsync();
+            // var patientMedication = await _context.PatientMedications.SingleOrDefaultAsync(x => x.Id == medicationView.Id);
+            //
+            // if (patientMedication.PatientBloodworks == null)
+            //     patientMedication.PatientBloodworks = new List<PatientBloodwork>();
+            //
+            //
+            // var bloodwork = patientMedication.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == medicationView.BloodworkTest);
+            //
+            // if (bloodwork == null)
+            // {
+            //     var bloodworkFromDb = await _context.BloodworkTests.SingleOrDefaultAsync(x => x.TestName == medicationView.BloodworkTest);
+            //     bloodwork = new PatientBloodwork
+            //     {
+            //         BloodworkTest = bloodworkFromDb,
+            //         PatientBloodworkTests = new List<PatientBloodworkTest>()
+            //     };
+            //     patientMedication.PatientBloodworks.Add(bloodwork);
+            //     // await _context.SaveChangesAsync();
+            // }
+            //
+            // var bloodworkTest = new PatientBloodworkTest
+            // {
+            //     Result = medicationView.ResultInput,
+            //     DateOfUpload = DateTimeOffset.Now
+            // };
+            //
+            // bloodwork.PatientBloodworkTests.Add(bloodworkTest);
+            //
+            // await _context.SaveChangesAsync();
         }
     }
 }

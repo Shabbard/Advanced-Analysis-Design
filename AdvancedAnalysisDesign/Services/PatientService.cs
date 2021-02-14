@@ -132,7 +132,7 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<Patient> FetchPatientWithMedicationsFromUserId(string userId)
         {
-            return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).SingleOrDefaultAsync(x => x.User.Id == userId);
+            return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).SingleOrDefaultAsync(x => x.User.Id == userId);
         }
         
         public async Task<Patient> FetchUserMedication()

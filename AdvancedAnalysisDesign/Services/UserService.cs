@@ -98,7 +98,7 @@ namespace AdvancedAnalysisDesign.Services
         {
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
 
-            if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Success)
+            if (_passwordHasher.VerifyHashedPassword(user, user?.PasswordHash, password) != PasswordVerificationResult.Success)
             {
                 _snackbar.Add("Login was unsuccessful. Please try again.", Severity.Error, config => { config.ShowCloseIcon = false; });
                 return;

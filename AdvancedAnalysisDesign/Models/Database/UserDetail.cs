@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using AdvancedAnalysisDesign.Enums;
 using Microsoft.AspNetCore.Identity;
 
