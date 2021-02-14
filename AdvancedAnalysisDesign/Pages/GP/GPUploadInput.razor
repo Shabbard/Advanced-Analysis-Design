@@ -97,10 +97,7 @@ else
                         }
                         else
                         {
-                            //<MudOverlay @bind-Visible="@bloodworksLoaded" DarkBackground="true">
-                                @* <LoadingScreen></LoadingScreen> *@
-                                <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary"></MudProgressCircular>
-                            //</MudOverlay>    
+                            <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary"></MudProgressCircular>
                         }
                       <MudDivider/>
                       <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
@@ -110,9 +107,6 @@ else
                           <MudItem xs="4">
                               <MudTextField @bind-Value="@patientMedication.ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
                           </MudItem>
-                          @* <MudItem xs="2"> *@
-                          @*     <MudDatePicker Label="Date of Test" @bind-Date="date" />
-                    @* </MudItem> *@
                           <MudItem xs="4">
                               <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Medium" OnClick="async () => await InputTestResults(patientMedication)">Add Test Results</MudButton>
                           </MudItem>
@@ -133,7 +127,6 @@ else
     bool isLoaded;
     bool bloodworkTestsLoaded;
     bool bloodworksLoaded;
-    //DateTime date;
     List<BloodworkTest> bloodWorkTests = new();
     List<PatientMedicationView> patientMedicationsView = new();
 
@@ -153,11 +146,6 @@ else
             await LoadPatientData();
             isLoaded = true;
         }
-    }
-
-    private async Task SelectTest(string value, PatientMedicationView medicationView)
-    {
-        
     }
 
     private async Task ShowBloodworkTests(PatientBloodworkView bloodworkView)
