@@ -1,13 +1,16 @@
 ﻿@page "/PrescriptionPreparation"
+@using AdvancedAnalysisDesign.Services
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Database
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject PatientService PatientService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
 
     <MudGrid Justify="Justify.Center">
 
-        @if (prescriptions == null)
+        @if (patientWithPickups == null)
         {
 
             <MudItem xs="12">
@@ -42,7 +45,7 @@
                 </MudItem>*@
 
 
-            foreach (var prescription in prescriptions)
+            foreach (var prescription in patientWithPickups)
             {
                 <MudItem xs="12">
                     <MudExpansionPanel>
@@ -51,15 +54,25 @@
                             <div class="d-flex">
                                 <MudGrid Class="pa-2">
 
-                                    <MudItem xs="6">
+                                    <MudItem xs="3">
                                         <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                            <MudText><strong>Name: </strong>   @prescription </MudText>
+                                            <MudText><strong>First Name: </strong>   @prescription.User.UserDetail.FirstName </MudText>
                                         </MudPaper>
                                     </MudItem>
 
-                                    <MudItem xs="6">
+                                    <MudItem xs="3">
                                         <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                            <MudText><strong>Time of Collection:</strong> 10:00am </MudText>
+                                            <MudText><strong>Last Name: </strong>   @prescription.User.UserDetail.LastName</MudText>
+                                        </MudPaper>
+                                    </MudItem>
+
+                                    <MudItem xs="3">
+
+                                    </MudItem>
+
+                                    <MudItem xs="3">
+                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                            <MudText><strong>Time of Collection:</strong> Error  </MudText>
                                         </MudPaper>
                                     </MudItem>
 
@@ -85,13 +98,13 @@
                                             </MudItem>
 
                                         </MudGrid>
-                                        @foreach (var medication in medications)
+                                        @foreach (var medication in prescription.Medications)
                                         {
                                             <MudGrid Class="pa-2">
                                                 <MudItem xs="10">
                                                     <MudPaper Elevation="1" Class="pa-4 pt-2">
                                                         <MudText>
-                                                            Medications: @medication 
+                                                            Medications: @medication.Medication.MedicationName
                                                         </MudText>
                                                     </MudPaper>
                                                 </MudItem>
@@ -99,7 +112,7 @@
                                                 <MudItem xs="2">
                                                     <MudPaper Elevation="1" Class="pa-4 pt-2">
                                                         <MudText>
-                                                            Amount:
+                                                            Amount: 1
                                                         </MudText>
                                                     </MudPaper>
                                                 </MudItem>
@@ -111,7 +124,7 @@
                                 <MudItem xs="12">
                                     <MudGrid Class="pa-2">
                                         <MudItem xs="12">
-                                            <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.CheckBox" Style=" width: 200px; height: 60px;" Color="Color.Success">
+                                            <MudButton Variant="Variant.Filled" Style=" width: 200px; height: 60px;" Color="Color.Success">
                                                 Prepared
                                             </MudButton>
                                         </MudItem>
@@ -136,6 +149,8 @@
     string ResultInput;
 
     public bool Collected { get; set; }
+    List<Patient> patientWithPickups = new();
+    int prescriptionsDue, prescriptionsPrepared, prescriptionsCollected;
 
     protected override async Task OnInitializedAsync()
     {
@@ -144,6 +159,9 @@
 
         if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
         {
+
+            //fetch medications for only this instition
+            patientWithPickups = await PatientService.FetchAllPatientsPrescriptions();
         }
         else
         {

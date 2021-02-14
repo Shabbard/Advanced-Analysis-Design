@@ -156,6 +156,16 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.Patients.Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(false)).ToListAsync();
         }
 
+        public async Task<List<Patient>> FetchAllPatientsPrescriptions()
+        {
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue)).ThenInclude(x => x.Pickup).Include(x=> x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+        }
+
+        public async Task<List<Patient>> GetAllMedicationsforInstitution(MedicalInstitution medicalInstitution)
+        {
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue).Where(x => x.Pickup.MedicalInstitution.Id == medicalInstitution.Id)).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+        }
+
         public async Task<List<Medication>> FetchAllMedications()
         {
             return await _context.Medications.ToListAsync();
