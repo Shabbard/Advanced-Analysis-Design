@@ -23,6 +23,7 @@ namespace AdvancedAnalysisDesign.Services
         private readonly EmailService _emailService;
         private readonly NavigationManager _navigationManager;
         private readonly ISnackbar _snackbar;
+        private readonly NonPatientService _nonPatientService;
 
         public PatientService(AADContext context,
             UserManager<User> userManager,
@@ -31,7 +32,8 @@ namespace AdvancedAnalysisDesign.Services
             FaceService faceService,
             EmailService emailService,
             NavigationManager navigationManager,
-            ISnackbar snackbar)
+            ISnackbar snackbar,
+            NonPatientService nonPatientService)
         {
             _context = context;
             _userManager = userManager;
@@ -41,6 +43,7 @@ namespace AdvancedAnalysisDesign.Services
             _emailService = emailService;
             _navigationManager = navigationManager;
             _snackbar = snackbar;
+            _nonPatientService = nonPatientService;
         }
 
         public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
@@ -50,7 +53,13 @@ namespace AdvancedAnalysisDesign.Services
             await browserFile.OpenReadStream(maxByteSize).ReadAsync(buffer);
             return buffer;
         }
-        
+
+        public async Task ApprovePatientImagesAsync(Patient patient)
+        {
+            patient.PatientImages.IsFlagged = false;
+            patient.PatientImages.IsVerified = true;
+            await _context.SaveChangesAsync();
+        }
         public async Task RegisterPatient(PatientRegistrationPayload regPayload)
         {
             var user = await _userService.RegisterUser(regPayload);
@@ -66,7 +75,8 @@ namespace AdvancedAnalysisDesign.Services
             {
                 User = user,
                 NhsNumber = regPayload.NhsNumber,
-                PatientImages = images
+                PatientImages = images,
+                MedicalInstitution = regPayload.MedicalInstitution
             };
 
             await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
@@ -153,7 +163,15 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<Patient>> FetchAllPatientsForVerification()
         {
-            return await _context.Patients.Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(false)).ToListAsync();
+            var role = await _userService.GetCurrentUserRoleAsync();
+            
+            if (role.ToLower() == "pharmacist")
+            {
+                var userInt = await _nonPatientService.GetMedicalInstitutionForUser();
+                return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(true) && x.MedicalInstitution == userInt).ToListAsync();
+            }
+            return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(true)).ToListAsync();
+
         }
 
         public async Task<List<Medication>> FetchAllMedications()

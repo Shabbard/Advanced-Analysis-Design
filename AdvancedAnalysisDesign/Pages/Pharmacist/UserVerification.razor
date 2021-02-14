@@ -1,13 +1,63 @@
-﻿@page "/PharmacyDashboard"
+﻿@page "/UserVerification"
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Services
+
+@inject PatientService PatientService
+
+@inject UserService UserService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject EmailService EmailService
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
 
-</MudContainer>
+@if (!isLoaded)
+{
+    <LoadingScreen></LoadingScreen>
+}
+else
+{
+
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+        <MudText Typo="Typo.h4">User Verification</MudText>
+        <MudGrid Style="flex-direction:column">
+            @if (patients.Any())
+            {
+                <MudExpansionPanels MultiExpansion="false" Class="mt-16">
+                    @foreach (var patient in patients)
+                    {
+                        <MudExpansionPanel Text="@(patient.User.UserDetail.FirstName + " " + patient.User.UserDetail.LastName)">
+                            <MudGrid Style="flex-direction:row; align-items:center;" Justify="Justify.SpaceEvenly">
+                                <MudItem xs="4">
+                                    <img src="data:image;base64,@System.Convert.ToBase64String(patient.PatientImages.IDPhoto)" width="300"/>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <img src="data:image;base64,@System.Convert.ToBase64String(patient.PatientImages.SelfiePhoto)" width="300"/>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudButton Variant="Variant.Filled" OnClick="() => ApproveAccount(patient)" Color="Color.Success">Accept User</MudButton>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudButton Variant="Variant.Filled" OnClick="() => DeclineAccount(patient)" Color="Color.Error">Decline User</MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            }
+            else
+            {
+                <MudAlert Class="mt-16" Severity="Severity.Info">There are currently no users to verify</MudAlert>
+            }
+        </MudGrid>
+    </MudContainer>
+}
+
 
 @code {
+    List<Patient> patients = new();
+    bool isLoaded;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -21,4 +71,39 @@
             NavigationManager.NavigateTo("/", true);
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            patients = await PatientService.FetchAllPatientsForVerification();
+            isLoaded = true;
+            StateHasChanged();
+        }
+    }
+    
+    async void DeclineAccount(Patient patient)
+    {
+        var message = $"Hi {patient.User.UserDetail.FirstName}, /n/n" +
+                            "A manual review has been conducted on your account and we found that the images you uploaded did not match /n" + 
+                            "If this was an error please make an account again using different images /n/n" +
+                            "Have a nice day.\n" +
+                            "Binary Beast Bloodwork";
+        await EmailService.SendEmailAsync(patient.User.Email, "Declined account", message);
+        await UserService.DeleteSpecificUserAsync(patient.User);
+        NavigationManager.NavigateTo(NavigationManager.Uri,true);
+    }
+
+    async void ApproveAccount(Patient patient)
+    {
+        var message = $"Hi {patient.User.UserDetail.FirstName}, /n/n" +
+                      "A manual review has been conducted on your account and we found that the images you uploaded did match /n" + 
+                      "You will now be able to access your account using your username and password /n/n" +
+                      "Have a nice day.\n" +
+                      "Binary Beast Bloodwork";
+        await EmailService.SendEmailAsync(patient.User.Email, "Approved account", message);
+        await PatientService.ApprovePatientImagesAsync(patient);
+        NavigationManager.NavigateTo(NavigationManager.Uri,true);
+    }
+    
 }
