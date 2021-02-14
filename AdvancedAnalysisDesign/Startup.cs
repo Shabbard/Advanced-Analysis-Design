@@ -39,6 +39,7 @@ namespace AdvancedAnalysisDesign
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<UserService>();
+            services.AddScoped<BloodworkService>();
             services.AddScoped<PatientService>();
             services.AddScoped<NonPatientService>();
             services.AddSingleton<EmailService>();
@@ -134,13 +135,13 @@ namespace AdvancedAnalysisDesign
             var poweruser = new User
             {
                 UserName = "admin",
-                Email = "admin@admin",
+                Email = "admin",
                 EmailConfirmed = true,
             };
             
             //Ensure you have these values in your appsettings.json file
             string userPWD = "P@ssword123";
-            var _user = await UserManager.FindByEmailAsync("admin@admin");
+            var _user = await UserManager.FindByEmailAsync("admin");
 
             if(_user == null)
             {
