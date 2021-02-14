@@ -161,6 +161,11 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.Medications.ToListAsync();
         }
 
+        public async Task<List<PatientMedication>> FetchPatientMedicationsFromUserId(string userId)
+        {
+            return await _context.PatientMedications.Include(x => x.Medication).Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).Where(x => x.Patient.User.Id == userId).ToListAsync();
+        }
+        
         public async Task<Patient> FetchUserMedication()
         {
             var user = await _userService.GetCurrentUserAsync();
