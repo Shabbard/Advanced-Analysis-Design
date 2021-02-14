@@ -1,0 +1,159 @@
+﻿@page "/PickupView"
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Services
+@using InputType = MudBlazor.InputType
+
+@using AdvancedAnalysisDesign.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@inject PatientService PatientService
+@inject NonPatientService NonPatientService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudGrid Justify="Justify.Center" Class="mt-16">
+        <MudItem xs="8"></MudItem>
+        <MudItem xs="4">
+            <MudAutocomplete Align="right" T="string" Label="Pharmacies" @bind-Value="pharmacy" SearchFunc="@PSearch" ResetValueOnEmptyText="true" CoerceText="true" />
+        </MudItem>
+        <MudItem xs="8"></MudItem>
+        <MudItem xs="4">
+            <MudAutocomplete Align="right" T="string" Label="Medicine" @bind-Value="medicine" SearchFunc="@MSearch" ResetValueOnEmptyText="true" CoerceText="true" />
+        </MudItem>
+        <MudItem xs="8"></MudItem>
+        <MudItem xs="4">
+            <MudButton Size="Size.Large" OnClick="@OpenScheduleData" Variant="Variant.Filled" Color="Color.Primary">Select</MudButton>
+        </MudItem>
+        <MudItem xs="6">
+            @if (AvailableTimes.Any())
+            {
+                <MudTable Height="700px" FixedHeader="true" Items="AvailableTimes" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Time Slots</MudText>
+                    </ToolBarContent>
+
+                    <HeaderContent>
+                        <MudTh>Start Time</MudTh>
+                        <MudTh>End Time</MudTh>
+                        <MudTh>Select</MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate Context="row">
+                        <MudTd DataLabel="StartTime"></MudTd>
+                        <MudTd DataLabel="EndTime"></MudTd>
+                        <MudButton OnClick="@(() => NavigationManager.NavigateTo("/Pickup", true))" Variant="Variant.Filled" Color="Color.Primary">Schedule</MudButton>
+                    </RowTemplate>
+                </MudTable>
+
+
+            }
+            else if (medicine != null && pharmacy != null)
+            {
+                <MudAlert Severity="Severity.Info">There are no time slots available. Please contact the Pharmacy.</MudAlert>
+            }
+        </MudItem>
+    </MudGrid>
+    
+</MudContainer>
+
+@code{
+
+    private bool hover = true;
+
+    private string pharmacy;
+    private string medicine;
+
+    private DateTimeOffset? Start;
+    private DateTimeOffset? End;
+
+    private DateTimeOffset? currentdatetime;
+    private List<DateTimeOffset?> AvailableTimes = new List<DateTimeOffset?>();
+    private List<DateTimeOffset?> UnavailableTimes = new List<DateTimeOffset?>();
+
+    private List<MedicalInstitution> Pharms = new List<MedicalInstitution>();
+    private List<PatientMedication> MedsList = new List<PatientMedication>();
+    private Patient Meds = new Patient();
+
+    private List<Pickup> CurrentPickups = new List<Pickup>();
+
+    private List<string> Institutions = new List<string>();
+    private List<string> Medications = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        {
+
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
+
+    private async Task<IEnumerable<string>> PSearch(string value)
+    {
+        Pharms = await NonPatientService.GetMedicalInstitutions();
+
+        foreach (MedicalInstitution val in Pharms)
+        {
+            Institutions.Add(val.Name);
+        }
+        if (string.IsNullOrEmpty(value))
+            return Institutions;
+        return Institutions.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> MSearch(string value)
+    {
+        Meds = await PatientService.FetchUserMedication();
+
+        if (Meds.Medications.Any())
+        {
+
+            MedsList = Meds.Medications;
+            foreach (PatientMedication med in MedsList)
+            {
+                Medications.Add(med.Medication.MedicationName);
+            }
+            if (string.IsNullOrEmpty(value))
+                return Medications;
+            return Medications.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+        else
+        {
+            return Medications;
+        }
+    }
+
+    private async void OpenScheduleData()
+    {
+        //Get current Pickup data for specific Pharmacy
+        CurrentPickups = await PatientService.FetchCurrentSchedule(pharmacy);
+        foreach (Pickup pick in CurrentPickups)
+        {
+            UnavailableTimes.Add(pick.DateScheduled);
+        }
+
+        //TODO round time to nearest 15 mins
+
+
+        //get all pickups with medical institution = 
+
+        //make pickups until created == 100 ??
+
+        //if pickup not in scheduled pickups
+        //add to table selection
+        //created += 1
+
+
+        StateHasChanged();
+    }
+
+    //set pickup function
+}

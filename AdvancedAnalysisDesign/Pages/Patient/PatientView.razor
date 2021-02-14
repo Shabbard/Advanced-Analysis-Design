@@ -77,44 +77,49 @@
 
             </MudPaper>
         </MudItem>
-        <MudItem xs="6">
-            <MudPaper Elevation="5">
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.CalendarToday" class="mr-3"></MudIcon>
-                            <MudText Color="Color.Primary">Schedule Pickup</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        @if (pickupTableData.Any())
-                        {
-                            <MudTable Height="700px" FixedHeader="true" Items="pickupTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
-                                <ToolBarContent>
-                                    <MudText Typo="Typo.h6">Pickup</MudText>
-                                </ToolBarContent>
+        @if (medicationTableData.Any())
+        {
+            <MudItem xs="6">
+                <MudPaper Elevation="5">
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <div class="d-flex">
+                                <MudIcon Icon="@Icons.Material.Filled.CalendarToday" class="mr-3"></MudIcon>
+                                <MudText Color="Color.Primary">Pickups</MudText>
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            @if (pickupTableData.Any())
+                            {
+                                <MudTable Height="700px" FixedHeader="true" Items="pickupTableData" Hover="@hover" Breakpoint="Breakpoint.Sm">
+                                    <ToolBarContent>
+                                        <MudText Typo="Typo.h6">Pickup</MudText>
+                                    </ToolBarContent>
 
-                                <HeaderContent>
-                                    <MudTh>Name</MudTh>
-                                    <MudTh>Pickup Time</MudTh>
-                                </HeaderContent>
+                                    <HeaderContent>
+                                        <MudTh>Name</MudTh>
+                                        <MudTh>Pickup Time</MudTh>
+                                        <MudTh>Location</MudTh>
+                                    </HeaderContent>
 
-                                <RowTemplate Context="row">
-                                    <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
-                                    <MudTd DataLabel="Pickup Time">@row.Pickup.DateScheduled</MudTd>
-                                </RowTemplate>
-                            </MudTable>
+                                    <RowTemplate Context="row">
+                                        <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
+                                        <MudTd DataLabel="Pickup Time">@row.Pickup.DateScheduled</MudTd>
+                                        <MudTd DataLabel="Pickup Time">@row.Pickup.MedicalInstitution</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
 
-                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/Pickup", true))" Variant="Variant.Filled" Color="Color.Primary">Schedule</MudButton>
-                        }
-                        else
-                        {
-                            <MudAlert Severity="Severity.Info">You currently have no medication to pickup. If this is an error please contact example@example.com</MudAlert>
-                        }
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudPaper>
-        </MudItem>
+                                <MudButton OnClick="@(() => NavigationManager.NavigateTo("/PickupView", true))" Variant="Variant.Filled" Color="Color.Primary">Schedule</MudButton>
+                            }
+                            else
+                            {
+                                <MudAlert Severity="Severity.Info">You currently have no medication to pickup. If this is an error please contact your pharmacy</MudAlert>
+                            }
+                        </ChildContent>
+                    </MudExpansionPanel>
+                </MudPaper>
+            </MudItem>
+        }
         <MudItem xs="6"></MudItem>
     </MudGrid>
 </MudContainer>
@@ -141,7 +146,7 @@
             PatientmedicationData = await PatientService.FetchUserMedication();
 
             //Create medication and bloodwork data if any available
-            if (medicationTableData.Any())
+            if (PatientmedicationData.Medications.Any())
             {
 
                 medicationTableData = PatientmedicationData.Medications;
@@ -176,9 +181,5 @@
         }
     }
 
-    private void OpenScheduleData()
-    {
-        schedule = true;
-        StateHasChanged();
-    }
+
 }

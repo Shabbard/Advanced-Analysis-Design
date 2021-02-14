@@ -171,5 +171,10 @@ namespace AdvancedAnalysisDesign.Services
         {
             return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == MedId);
         }
+
+        public async Task<List<Pickup>> FetchCurrentSchedule(String Institution)
+        {
+            return await _context.Pickups.Where(x => x.MedicalInstitution.Name == Institution).ToListAsync();
+        }
     }
 }
