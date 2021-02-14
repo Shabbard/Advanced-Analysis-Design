@@ -45,8 +45,6 @@
 
         <MudItem xs="6">
             <MudPaper Elevation="5">
-
-
                 @* Data table for Bloodwork *@
                 @if (bloodworkTableData.Any()) @*if statement to check if bloodwork is on the system. if not display a mudalert*@
                 {
@@ -63,7 +61,7 @@
 
                     <RowTemplate Context="row">
                         <MudTd DataLabel="ID">@row.Id</MudTd>
-                        <MudTd DataLabel="Date">@row.DateOfResults</MudTd>
+                        @* <MudTd DataLabel="Date">@row.DateOfResults</MudTd> *@
                     </RowTemplate>
                 </MudTable>
 
