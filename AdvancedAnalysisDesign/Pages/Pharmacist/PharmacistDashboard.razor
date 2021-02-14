@@ -91,7 +91,6 @@
         {
             MedicalInstitutionName = "Admin View";
 
-
             patientWithPickups = await PatientService.FetchAllPatientsWithPickups();
             (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
             pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
@@ -100,11 +99,11 @@
         else if (user.IsInRole(Role.Pharmacist.ToString()))
         {
             var currentMedicalSite = await NonPatientService.GetMedicalInstitutionForUser();
-
             MedicalInstitutionName = currentMedicalSite.Name;
-
             patientWithPickups = await PatientService.GetAllMedicationsforInstitution(currentMedicalSite);
 
+            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
+            pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
         }
         else
         {
