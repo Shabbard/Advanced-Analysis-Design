@@ -21,7 +21,7 @@
         @if (user.IsInRole(Role.Admin.ToString()))
         {
             <MudItem xs="12">
-                <MudSelect Label="Medical Institution" OffsetY="true" @bind-Value="registrationPayload.MedicalInstitution" Placeholder="@(Role.GP)">
+                <MudSelect Dense="true" MaxHeight="250" Label="Medical Institution" OffsetY="true" @bind-Value="registrationPayload.MedicalInstitution" Placeholder="@(Role.GP)">
                     @foreach (var medicalInstitution in medicalInstitutions)
                     {
                         <MudSelectItem Value="medicalInstitution">@medicalInstitution.Name</MudSelectItem>
