@@ -6,6 +6,8 @@ namespace AdvancedAnalysisDesign.Models.ViewModels
 {
     public class PatientMedicationView
     {
+        public int Id { get; set; }
+        public bool ShowBloodworks { get; set; }
         public string BloodworkTest { get; set; }
         public string ResultInput { get; set; }
         public Medication Medication { get; set; }
