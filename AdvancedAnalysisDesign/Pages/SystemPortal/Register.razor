@@ -3,8 +3,10 @@
 @using AdvancedAnalysisDesign.Models.Payloads
 @using InputType = MudBlazor.InputType
 @using AdvancedAnalysisDesign.Services
+@using AdvancedAnalysisDesign.Models.Database
 
 @inject PatientService PatientService
+@inject NonPatientService NonPatientService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 
@@ -29,6 +31,9 @@
                             <RegisterForm RegistrationPayload="@registrationPayload"></RegisterForm>
 
                             <MudGrid Spacing="1">
+                                <MudItem xs="12">
+                                    <MudAutocomplete T="string" Label="Select a Pharmacy" ValueChanged="@onSelect" SearchFunc="@medicalSearch"/>
+                                </MudItem>
                                 <MudItem xs="12">
                                     <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)" />
                                 </MudItem>
@@ -128,6 +133,7 @@ else
     bool isLoading;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    List<MedicalInstitution> MedicalInstitutions = new();
 
     void TogglePasswordVisibility()
     {
@@ -161,6 +167,11 @@ else
             StateHasChanged();
             Snackbar.Add(e.Message, Severity.Error, config => { config.ShowCloseIcon = false; });
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        MedicalInstitutions = await NonPatientService.GetMedicalInstitutions();
     }
 
     private void UploadFilesIDFile(InputFileChangeEventArgs e)
@@ -205,5 +216,20 @@ else
     {
         IDFile.Remove(file);
         registrationPayload.IDPhoto = null;
+    }
+    
+    private async Task<IEnumerable<string>> medicalSearch(string value)
+    {
+        if(string.IsNullOrEmpty(value))
+        {
+            return new string[0];
+        }
+        return MedicalInstitutions.Where(x => x.Name.ToLower().Contains(value.ToLower())).Select(x => x.Name);
+
+    }
+
+    private void onSelect(string value)
+    {
+        registrationPayload.MedicalInstitution = MedicalInstitutions.FirstOrDefault(x => x.Name == value);
     }
 }
