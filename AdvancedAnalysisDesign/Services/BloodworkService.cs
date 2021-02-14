@@ -53,13 +53,12 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task AddPatientBloodwork(PatientMedicationView medicationView)
         {
-            var patientMedication = await _context.PatientMedications.SingleOrDefaultAsync(x => x.Id == medicationView.Id);
+            var patientMedication = await _context.PatientMedications.Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).SingleOrDefaultAsync(x => x.Id == medicationView.Id);
             
             if (patientMedication.PatientBloodworks == null)
                 patientMedication.PatientBloodworks = new List<PatientBloodwork>();
             
-            
-            var bloodwork = patientMedication.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == medicationView.BloodworkTest);
+            var bloodwork = patientMedication.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName.Equals(medicationView.BloodworkTest));
             
             if (bloodwork == null)
             {
