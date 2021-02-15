@@ -17,7 +17,7 @@
 
             <MudPaper Elevation="5" Class="pa-4 pt-2">
 
-                <MudTable Height="700px" FixedHeader="true" Items="patientTableData" Hover="true" @bind-SelectedItem="patientSelected" SortLabel="Sort By" Filter="new Func<Patient,bool>(FilterFunc)">
+                <MudTable Height="700px" Elevation="0" FixedHeader="true" Items="patientTableData" Hover="true" @bind-SelectedItem="patientSelected" SortLabel="Sort By" Filter="new Func<Patient,bool>(FilterFunc)">
                     <ToolBarContent>
                         <MudText Typo="Typo.h5" Style="font-weight:bold">Select A Patient</MudText>
                         <MudToolBarSpacer/>
@@ -89,7 +89,6 @@
 
     private void OnSelect()
     {
-        var userId = patientSelected.User.Id;
-        NavigationManager.NavigateTo("/GpUploadInput/" + userId, true);
+        NavigationManager.NavigateTo("/GpUploadInput/" + patientSelected.User.Id, true);
     }
 }
