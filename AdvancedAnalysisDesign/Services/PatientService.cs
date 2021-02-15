@@ -217,5 +217,56 @@ namespace AdvancedAnalysisDesign.Services
         {
             return await _context.Pickups.Where(x => x.MedicalInstitution.Name == Institution).ToListAsync();
         }
+
+        public async Task UpdatePickup(Pickup pickup, DateTime? dateScheduled, MedicalInstitution institution)
+        {
+            if (pickup.DateScheduled.HasValue)
+            {
+                throw new Exception("A pickup time has already been made for this medication.");
+            }
+            if (dateScheduled == null)
+            {
+                throw new Exception("A date has not been entered");
+            }
+            if (institution == null)
+            {
+                throw new Exception("An pharmacy has not been selected.");
+            }
+            if (pickup == null)
+            {
+                throw new Exception("An error occurred. Please try again.");
+            }
+
+            try
+            {
+                pickup.DateScheduled = dateScheduled;
+                pickup.IsPrepared = false;
+                pickup.DatePickedUp = null;
+                pickup.MedicalInstitution = institution;
+                pickup.IsPickedUp = false;
+
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                throw new Exception("An error occurred. Please try again");
+            }
+        }
+
+        public async Task DeletePickup(Pickup pickup)
+        {
+            try
+            {
+                pickup.DateScheduled = null;
+                pickup.IsPrepared = false;
+                pickup.DatePickedUp = null;
+                pickup.MedicalInstitution = null;
+                pickup.IsPickedUp = false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("An error occurred. Please try again");
+            }
+        }
     }
 }
