@@ -37,19 +37,10 @@ namespace AdvancedAnalysisDesign.Services
             return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
 
-        public List<PatientMedicationViewModel> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
-        {
-            return patientMedicationsList.Select(x => new PatientMedicationViewModel
-            {
-                Id = x.Id,
-                Medication = x.Medication,
-                Pickup = x.Pickup,
-                BloodworkRequired = x.BloodworkRequired,
-                PatientBloodworks = new List<PatientBloodworkViewModel>(),
-                DateIntervalOfBloodworkRenewal = x.DayIntervalOfBloodworkRenewal,
-                Patient = x.Patient
-            }).ToList();
-        }
+        // public List<PatientMedicationViewModel> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
+        // {
+        //     return patientMedicationsList;
+        // }
 
         public async Task AddPatientBloodwork(PatientMedicationViewModel medicationViewModel)
         {
