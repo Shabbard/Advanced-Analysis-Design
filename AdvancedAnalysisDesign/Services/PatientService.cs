@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Models.Payloads;
+using AdvancedAnalysisDesign.Models.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +24,7 @@ namespace AdvancedAnalysisDesign.Services
         private readonly EmailService _emailService;
         private readonly NavigationManager _navigationManager;
         private readonly ISnackbar _snackbar;
+        private readonly NonPatientService _nonPatientService;
 
         public PatientService(AADContext context,
             UserManager<User> userManager,
@@ -31,7 +33,8 @@ namespace AdvancedAnalysisDesign.Services
             FaceService faceService,
             EmailService emailService,
             NavigationManager navigationManager,
-            ISnackbar snackbar)
+            ISnackbar snackbar,
+            NonPatientService nonPatientService)
         {
             _context = context;
             _userManager = userManager;
@@ -41,6 +44,7 @@ namespace AdvancedAnalysisDesign.Services
             _emailService = emailService;
             _navigationManager = navigationManager;
             _snackbar = snackbar;
+            _nonPatientService = nonPatientService;
         }
 
         public async Task<byte[]> ConvertIBrowserFileToBytesAsync(IBrowserFile browserFile)
@@ -50,7 +54,13 @@ namespace AdvancedAnalysisDesign.Services
             await browserFile.OpenReadStream(maxByteSize).ReadAsync(buffer);
             return buffer;
         }
-        
+
+        public async Task ApprovePatientImagesAsync(Patient patient)
+        {
+            patient.PatientImages.IsFlagged = false;
+            patient.PatientImages.IsVerified = true;
+            await _context.SaveChangesAsync();
+        }
         public async Task RegisterPatient(PatientRegistrationPayload regPayload)
         {
             var user = await _userService.RegisterUser(regPayload);
@@ -66,7 +76,8 @@ namespace AdvancedAnalysisDesign.Services
             {
                 User = user,
                 NhsNumber = regPayload.NhsNumber,
-                PatientImages = images
+                PatientImages = images,
+                MedicalInstitution = regPayload.MedicalInstitution
             };
 
             await _userManager.AddToRoleAsync(user, Role.Patient.ToString());
@@ -101,10 +112,10 @@ namespace AdvancedAnalysisDesign.Services
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
 
-        public List<PickupSchedulerPayload> ReturnPickupScheduler(List<Patient> patients)
+        public List<PickupSchedulerViewModel> ReturnPickupScheduler(List<Patient> patients)
         {
             var listOfPickups = patients.SelectMany(x => x.Medications.Select(y => y.Pickup)).ToList();
-            return listOfPickups.Select(x => new PickupSchedulerPayload()
+            return listOfPickups.Select(x => new PickupSchedulerViewModel()
                 {
                     StartTime = x.DateScheduled,
                     EndTime = x.DateScheduled?.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
@@ -115,13 +126,17 @@ namespace AdvancedAnalysisDesign.Services
             ).ToList();
         }
         
-        public PatientMedication CreateMedication(Medication medication, bool isBloodworkRequired)
+        public PatientMedication CreateMedication(Medication medication, bool isBloodworkRequired,DateTimeOffset dateOfStart, double pickupInterval, double bloodInterval)
         {
             return new()
             {
                 Medication = medication,
                 BloodworkRequired = isBloodworkRequired,
-                Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null }
+                Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null },
+                DayIntervalOfPickup = pickupInterval,
+                DateOfMedicationStart = dateOfStart,
+                DayIntervalOfBloodworkRenewal = bloodInterval,
+                DateOfMedicationLastPickedUp = dateOfStart
             };
         }
 
@@ -129,9 +144,12 @@ namespace AdvancedAnalysisDesign.Services
         {
             var patients = await FetchAllPatientMedicationAndPickups();
             var medications = await FetchAllMedications();
+            var dateNow = DateTimeOffset.Now;
+            var dateInFuture = dateNow.AddMonths(_random.Next(1, 3));
+            var timeInterval = (dateInFuture - dateNow).TotalDays;
             foreach(var patient in patients)
             {
-                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true));
+                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true, dateNow, timeInterval,timeInterval));
             }
             await _context.SaveChangesAsync();
         }
@@ -153,7 +171,25 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<Patient>> FetchAllPatientsForVerification()
         {
-            return await _context.Patients.Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(false)).ToListAsync();
+            var role = await _userService.GetCurrentUserRoleAsync();
+            
+            if (role.ToLower() == "pharmacist")
+            {
+                var userInt = await _nonPatientService.GetMedicalInstitutionForUser();
+                return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(true) && x.MedicalInstitution == userInt).ToListAsync();
+            }
+            return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(true)).ToListAsync();
+
+        }
+
+        public async Task<List<Patient>> FetchAllPatientsPrescriptions()
+        {
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue)).ThenInclude(x => x.Pickup).Include(x=> x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+        }
+
+        public async Task<List<Patient>> GetAllMedicationsforInstitution(MedicalInstitution medicalInstitution)
+        {
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue && x.Pickup.MedicalInstitution.Id == medicalInstitution.Id)).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
         }
 
         public async Task<List<Patient>> FetchAllPatientsPrescriptions()
@@ -171,6 +207,11 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.Medications.ToListAsync();
         }
 
+        public async Task<List<PatientMedication>> FetchPatientMedicationsFromUserId(string userId)
+        {
+            return await _context.PatientMedications.Include(x => x.Medication).Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).Where(x => x.Patient.User.Id == userId).ToListAsync();
+        }
+        
         public async Task<Patient> FetchUserMedication()
         {
             var user = await _userService.GetCurrentUserAsync();

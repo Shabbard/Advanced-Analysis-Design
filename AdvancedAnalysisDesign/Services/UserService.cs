@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -144,6 +145,13 @@ namespace AdvancedAnalysisDesign.Services
             return user;
         }
 
+        public async Task<string> GetCurrentUserRoleAsync()
+        {
+            var user = await GetCurrentUserAsync();
+            var userRoles = await _userManager.GetRolesAsync(user);
+            return userRoles[0];
+        }
+
         public async Task UpdatePasswordAsync(UpdatePasswordPayload updatePasswordPayload)
         {
             var user = await GetCurrentUserAsync();
@@ -248,21 +256,18 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task DeletePersonalDataAsync(string password)
         {
+            
             var user = await GetCurrentUserAsync();
             if (user == null)
             {
                 throw new Exception("User was not found.");
             }
-
-            var requirePassword = await _userManager.HasPasswordAsync(user);
-            if (requirePassword)
+            
+            if (!await _userManager.CheckPasswordAsync(user, password)) 
             {
-                if (!await _userManager.CheckPasswordAsync(user, password))
-                {
-                    throw new Exception("Incorrect Password.");
-                }
+                throw new Exception("Incorrect Password.");
             }
-
+            
             await DeleteUserAssociations(user);
                 
             var result = await _userManager.DeleteAsync(user);
@@ -280,11 +285,28 @@ namespace AdvancedAnalysisDesign.Services
             if (_context.Patients.Any(x => x.User == user))
             {
                 _context.Patients.Remove(await _context.Patients.SingleOrDefaultAsync(x => x.User == user));
+                
             }
             
             _context.UserDetails.Remove(user.UserDetail);
             
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteSpecificUserAsync(User user)
+        {
+            if (user == null)
+            {
+                throw new Exception("user could not be found.");
+            }
+
+            await DeleteUserAssociations(user);
+            var result = await _userManager.DeleteAsync(user);
+            var userId = await _userManager.GetUserIdAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Unexpected error occurred deleting user with ID '{userId}'.");
+            }
         }
 
         public async Task SubmitForgetPasswordAsync(string emailAddress)

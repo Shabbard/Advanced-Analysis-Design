@@ -1,0 +1,219 @@
+﻿@page "/GpUploadInput/{UserId}"
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.ViewModels
+@using AdvancedAnalysisDesign.Services
+@using Microsoft.EntityFrameworkCore
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@inject PatientService PatientService
+@inject BloodworkService BloodworkService
+@inject AADContext Context
+
+@if(!isLoaded)
+{
+    <LoadingScreen></LoadingScreen>
+}
+else
+{
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
+      <MudGrid>
+          @if (user != null)
+          {
+          <MudItem xs="12">
+              <MudPaper Class="pa-4">
+                  <MudGrid>
+                      <MudItem xs="12">
+                          <MudText>@user.UserDetail.FirstName @user.UserDetail.LastName</MudText>
+                      </MudItem>
+                      <MudItem xs="12">
+                          <MudText>@user.UserDetail.DateOfBirth</MudText>
+                      </MudItem>
+                      <MudItem xs="12">
+                          <MudText>@user.Email @user.PhoneNumber</MudText>
+                      </MudItem>
+                  </MudGrid>
+              </MudPaper>
+          </MudItem>
+          }
+          <MudItem xs="12">
+              <MudPaper Class="pa-4">
+                <MudExpansionPanels MultiExpansion="true" Elevation="0">
+                @foreach (var patientMedication in patientMedicationsView)
+                {
+                    <MudExpansionPanel Text="@patientMedication.Medication.MedicationName" IsExpandedChanged="async () => await ShowBloodworks(patientMedication)" IsExpanded="patientMedication.ShowBloodworks">
+                        @if (bloodworksLoaded)
+                        {
+                            <MudTable Items="@patientMedication.PatientBloodworks" Context="Bloodwork" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Id</MudTh>
+                                    <MudTh>Bloodwork Test</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                @if (patientMedication.ShowBloodworks)
+                                {
+                                    <MudTd DataLabel="Id">@patientMedication.Id</MudTd>
+                                    <MudTd DataLabel="Bloodwork Test">@Bloodwork.BloodworkTest.TestName</MudTd>
+                                    <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(async () => await ShowBloodworkTests(Bloodwork))">@((Bloodwork.ShowDetails) ? "Hide" : "Show") Test Results</MudButton></MudTd>
+                                }
+                                </RowTemplate>
+                                <ChildRowContent>
+                                    @if (Bloodwork.ShowDetails)
+                                    {
+                                        @if (bloodworkTestsLoaded)
+                                        {
+                                            <MudTr>
+                                                <td colspan="4">
+                                                    <MudCard Elevation="0">
+                                                        <MudCardHeader>
+                                                            <CardHeaderContent>
+                                                                <MudText Typo="Typo.body1">Test Results for <strong>@Bloodwork.BloodworkTest.TestName</strong></MudText>
+                                                            </CardHeaderContent>
+                                                        </MudCardHeader>
+                                                        <MudCardContent Class="pa-0">
+                                                            <MudTable Items="@Bloodwork.PatientBloodworkTests" Context="BloodworkTest" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                                <HeaderContent>
+                                                                    <MudTh>Date Of Result</MudTh>
+                                                                    <MudTh>Test Result</MudTh>
+                                                                </HeaderContent>
+                                                                <RowTemplate>
+                                                                    <MudTd DataLabel="Date Of Upload">@BloodworkTest.DateOfUpload</MudTd>
+                                                                    <MudTd DataLabel="Result">@BloodworkTest.Result</MudTd>
+                                                                </RowTemplate>
+                                                            </MudTable>
+                                                        </MudCardContent>
+                                                    </MudCard>
+                                                </td>
+                                            </MudTr>
+                                        }
+                                        else
+                                        {
+                                            <LoadingScreen></LoadingScreen>
+                                        }
+                                    }
+                                </ChildRowContent>
+                            </MudTable>
+                        }
+                        else
+                        {
+                            <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary"></MudProgressCircular>
+                        }
+                      <MudDivider/>
+                      <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2">
+                          <MudItem xs="4">
+                              <MudAutocomplete MaxItems="@null" T="string" @bind-Value="@patientMedication.BloodworkTest" Label="Bloodwork Test" SearchFunc="@Search" Variant="Variant.Outlined"/> @*ValueChanged="async () => await SelectTest(value: UserId, patientMedication)"*@
+                          </MudItem>
+                          <MudItem xs="4">
+                              <MudTextField @bind-Value="@patientMedication.ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
+                          </MudItem>
+                          <MudItem xs="4">
+                              <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Medium" OnClick="async () => await InputTestResults(patientMedication)">Add Test Results</MudButton>
+                          </MudItem>
+                      </MudGrid>
+                      </MudExpansionPanel>
+                      }
+                  </MudExpansionPanels>
+              </MudPaper>
+          </MudItem>
+      </MudGrid>
+</MudContainer>
+}
+
+@code {
+    [Parameter]
+    public string UserId { get; set; }
+    User user = new();
+    bool isLoaded;
+    bool bloodworkTestsLoaded;
+    bool bloodworksLoaded;
+    List<BloodworkTest> bloodWorkTests = new();
+    List<PatientMedicationViewModel> patientMedicationsView = new();
+
+    private async Task<IEnumerable<string>> Search(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return bloodWorkTests.Select(x => x.TestName);
+        return bloodWorkTests.Where(x => x.TestName.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(x => x.TestName);
+    }
+
+    private async Task InputTestResults(PatientMedicationViewModel medicationViewModel)
+    {
+        if (!string.IsNullOrEmpty(medicationViewModel.BloodworkTest) && !string.IsNullOrEmpty(medicationViewModel.ResultInput))
+        {
+            isLoaded = false;
+            await BloodworkService.AddPatientBloodwork(medicationViewModel);
+            await LoadPatientData();
+            isLoaded = true;
+        }
+    }
+
+    private async Task ShowBloodworkTests(PatientBloodworkViewModel bloodworkViewModel)
+    {
+        bloodworkViewModel.ShowDetails = !bloodworkViewModel.ShowDetails;
+        bloodworkTestsLoaded = false;
+        bloodworkViewModel.PatientBloodworkTests = await Context.PatientBloodworkTests.
+            Where(x => x.PatientBloodwork.Id == bloodworkViewModel.Id)
+            .Select(x => new PatientBloodworkTestViewModel
+            {
+                Result = x.Result,
+                PatientBloodwork = x.PatientBloodwork,
+                TestType = x.TestType,
+                DateOfUpload = x.DateOfUpload
+            })
+            .ToListAsync();
+        bloodworkTestsLoaded = true;
+    }
+    
+    private async Task ShowBloodworks(PatientMedicationViewModel medicationViewModel)
+    {
+        bloodworksLoaded = false;
+        if (medicationViewModel.ShowBloodworks)
+        {
+            medicationViewModel.ShowBloodworks = !medicationViewModel.ShowBloodworks;
+            medicationViewModel.PatientBloodworks = new List<PatientBloodworkViewModel>();
+        }
+        else
+        {
+            medicationViewModel.ShowBloodworks = !medicationViewModel.ShowBloodworks;
+            medicationViewModel.PatientBloodworks = await Context.PatientBloodworks
+                .Where(x => x.PatientMedicationId == medicationViewModel.Id)
+                .Select(x => new PatientBloodworkViewModel
+                {
+                    Id = x.Id,
+                    BloodworkTest = x.BloodworkTest,
+                    PatientMedication = x.PatientMedication,
+                    PatientBloodworkTests = new List<PatientBloodworkTestViewModel>()
+                })
+                .ToListAsync();
+        }
+        bloodworksLoaded = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authStateUser = authState.User;
+
+        if (authStateUser.IsInRole("GP") || authStateUser.IsInRole("Admin"))
+        {
+            isLoaded = false;
+            user = await Context.Users.Include(x => x.UserDetail).SingleOrDefaultAsync(x => x.Id == UserId);
+            await LoadPatientData();
+            bloodWorkTests = await BloodworkService.GetAllBloodworkTests();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        isLoaded = true;
+    }
+    
+    private async Task LoadPatientData()
+    {
+        isLoaded = false;
+        var patientMedications = await Context.PatientMedications.Include(x => x.Medication).Where(x => x.Patient.User.Id == UserId).ToListAsync();
+        patientMedicationsView = BloodworkService.ConvertPatientMedicationsToViewModel(patientMedications);
+        isLoaded = true;
+    }
+}
