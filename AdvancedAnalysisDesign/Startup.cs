@@ -49,6 +49,8 @@ namespace AdvancedAnalysisDesign
             services.AddBlazoredLocalStorage();
             services.AddBlazorDownloadFile();
             services.AddSyncfusionBlazor();
+            services.AddHostedService<BloodworkScheduler>();
+            services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
             services.AddSingleton<Random>();
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("AADDatabase"));
