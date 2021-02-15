@@ -13,6 +13,7 @@ namespace AdvancedAnalysisDesign.Models.Database
         public TimeSpan DateIntervalOfPickup { get; set; }
         public DateTimeOffset DateOfMedicationStart { get; set; }
         public TimeSpan DateIntervalOfBloodworkRenewal { get; set; }
+        public DateTimeOffset DateOfMedicationLastPickedUp { get; set; }
         public Pickup Pickup { get; set; }
         
         public int PatientId { get; set; }
