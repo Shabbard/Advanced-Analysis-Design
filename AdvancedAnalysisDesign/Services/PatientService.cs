@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AdvancedAnalysisDesign.Enums;
 using AdvancedAnalysisDesign.Models.Database;
 using AdvancedAnalysisDesign.Models.Payloads;
+using AdvancedAnalysisDesign.Models.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
@@ -111,10 +112,10 @@ namespace AdvancedAnalysisDesign.Services
             return (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected);
         }
 
-        public List<PickupSchedulerPayload> ReturnPickupScheduler(List<Patient> patients)
+        public List<PickupSchedulerViewModel> ReturnPickupScheduler(List<Patient> patients)
         {
             var listOfPickups = patients.SelectMany(x => x.Medications.Select(y => y.Pickup)).ToList();
-            return listOfPickups.Select(x => new PickupSchedulerPayload()
+            return listOfPickups.Select(x => new PickupSchedulerViewModel()
                 {
                     StartTime = x.DateScheduled,
                     EndTime = x.DateScheduled?.AddMinutes(15), // every pickup will takeup a 15 minutes slot.
@@ -172,6 +173,16 @@ namespace AdvancedAnalysisDesign.Services
             }
             return await _context.Patients.Include(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.PatientImages).Where(x => x.PatientImages.IsFlagged.Equals(true)).ToListAsync();
 
+        }
+
+        public async Task<List<Patient>> FetchAllPatientsPrescriptions()
+        {
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue)).ThenInclude(x => x.Pickup).Include(x=> x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+        }
+
+        public async Task<List<Patient>> GetAllMedicationsforInstitution(MedicalInstitution medicalInstitution)
+        {
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue && x.Pickup.MedicalInstitution.Id == medicalInstitution.Id)).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
         }
 
         public async Task<List<Medication>> FetchAllMedications()

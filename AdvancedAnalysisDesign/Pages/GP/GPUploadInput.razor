@@ -128,7 +128,7 @@ else
     bool bloodworkTestsLoaded;
     bool bloodworksLoaded;
     List<BloodworkTest> bloodWorkTests = new();
-    List<PatientMedicationView> patientMedicationsView = new();
+    List<PatientMedicationViewModel> patientMedicationsView = new();
 
     private async Task<IEnumerable<string>> Search(string value)
     {
@@ -137,24 +137,24 @@ else
         return bloodWorkTests.Where(x => x.TestName.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(x => x.TestName);
     }
 
-    private async Task InputTestResults(PatientMedicationView medicationView)
+    private async Task InputTestResults(PatientMedicationViewModel medicationViewModel)
     {
-        if (!string.IsNullOrEmpty(medicationView.BloodworkTest) && !string.IsNullOrEmpty(medicationView.ResultInput))
+        if (!string.IsNullOrEmpty(medicationViewModel.BloodworkTest) && !string.IsNullOrEmpty(medicationViewModel.ResultInput))
         {
             isLoaded = false;
-            await BloodworkService.AddPatientBloodwork(medicationView);
+            await BloodworkService.AddPatientBloodwork(medicationViewModel);
             await LoadPatientData();
             isLoaded = true;
         }
     }
 
-    private async Task ShowBloodworkTests(PatientBloodworkView bloodworkView)
+    private async Task ShowBloodworkTests(PatientBloodworkViewModel bloodworkViewModel)
     {
-        bloodworkView.ShowDetails = !bloodworkView.ShowDetails;
+        bloodworkViewModel.ShowDetails = !bloodworkViewModel.ShowDetails;
         bloodworkTestsLoaded = false;
-        bloodworkView.PatientBloodworkTests = await Context.PatientBloodworkTests.
-            Where(x => x.PatientBloodwork.Id == bloodworkView.Id)
-            .Select(x => new PatientBloodworkTestView
+        bloodworkViewModel.PatientBloodworkTests = await Context.PatientBloodworkTests.
+            Where(x => x.PatientBloodwork.Id == bloodworkViewModel.Id)
+            .Select(x => new PatientBloodworkTestViewModel
             {
                 Result = x.Result,
                 PatientBloodwork = x.PatientBloodwork,
@@ -165,25 +165,25 @@ else
         bloodworkTestsLoaded = true;
     }
     
-    private async Task ShowBloodworks(PatientMedicationView medicationView)
+    private async Task ShowBloodworks(PatientMedicationViewModel medicationViewModel)
     {
         bloodworksLoaded = false;
-        if (medicationView.ShowBloodworks)
+        if (medicationViewModel.ShowBloodworks)
         {
-            medicationView.ShowBloodworks = !medicationView.ShowBloodworks;
-            medicationView.PatientBloodworks = new List<PatientBloodworkView>();
+            medicationViewModel.ShowBloodworks = !medicationViewModel.ShowBloodworks;
+            medicationViewModel.PatientBloodworks = new List<PatientBloodworkViewModel>();
         }
         else
         {
-            medicationView.ShowBloodworks = !medicationView.ShowBloodworks;
-            medicationView.PatientBloodworks = await Context.PatientBloodworks
-                .Where(x => x.PatientMedicationId == medicationView.Id)
-                .Select(x => new PatientBloodworkView
+            medicationViewModel.ShowBloodworks = !medicationViewModel.ShowBloodworks;
+            medicationViewModel.PatientBloodworks = await Context.PatientBloodworks
+                .Where(x => x.PatientMedicationId == medicationViewModel.Id)
+                .Select(x => new PatientBloodworkViewModel
                 {
                     Id = x.Id,
                     BloodworkTest = x.BloodworkTest,
                     PatientMedication = x.PatientMedication,
-                    PatientBloodworkTests = new List<PatientBloodworkTestView>()
+                    PatientBloodworkTests = new List<PatientBloodworkTestViewModel>()
                 })
                 .ToListAsync();
         }
@@ -213,7 +213,7 @@ else
     {
         isLoaded = false;
         var patientMedications = await Context.PatientMedications.Include(x => x.Medication).Where(x => x.Patient.User.Id == UserId).ToListAsync();
-        patientMedicationsView = await BloodworkService.ConvertPatientMedicationsToViewModel(patientMedications);
+        patientMedicationsView = BloodworkService.ConvertPatientMedicationsToViewModel(patientMedications);
         isLoaded = true;
     }
 }

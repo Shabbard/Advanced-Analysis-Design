@@ -37,32 +37,32 @@ namespace AdvancedAnalysisDesign.Services
             return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
 
-        public async Task<List<PatientMedicationView>> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
+        public List<PatientMedicationViewModel> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
         {
-            return patientMedicationsList.Select(x => new PatientMedicationView
+            return patientMedicationsList.Select(x => new PatientMedicationViewModel
             {
                 Id = x.Id,
                 Medication = x.Medication,
                 Pickup = x.Pickup,
                 BloodworkRequired = x.BloodworkRequired,
-                PatientBloodworks = new List<PatientBloodworkView>(),
+                PatientBloodworks = new List<PatientBloodworkViewModel>(),
                 DateIntervalOfBloodworkRenewal = x.DateIntervalOfBloodworkRenewal,
                 Patient = x.Patient
             }).ToList();
         }
 
-        public async Task AddPatientBloodwork(PatientMedicationView medicationView)
+        public async Task AddPatientBloodwork(PatientMedicationViewModel medicationViewModel)
         {
-            var patientMedication = await _context.PatientMedications.Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).SingleOrDefaultAsync(x => x.Id == medicationView.Id);
+            var patientMedication = await _context.PatientMedications.Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).SingleOrDefaultAsync(x => x.Id == medicationViewModel.Id);
             
             if (patientMedication.PatientBloodworks == null)
                 patientMedication.PatientBloodworks = new List<PatientBloodwork>();
             
-            var bloodwork = patientMedication.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName.Equals(medicationView.BloodworkTest));
+            var bloodwork = patientMedication.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName.Equals(medicationViewModel.BloodworkTest));
             
             if (bloodwork == null)
             {
-                var bloodworkFromDb = await _context.BloodworkTests.SingleOrDefaultAsync(x => x.TestName == medicationView.BloodworkTest);
+                var bloodworkFromDb = await _context.BloodworkTests.SingleOrDefaultAsync(x => x.TestName == medicationViewModel.BloodworkTest);
                 bloodwork = new PatientBloodwork
                 {
                     BloodworkTest = bloodworkFromDb,
@@ -73,7 +73,7 @@ namespace AdvancedAnalysisDesign.Services
             
             var bloodworkTest = new PatientBloodworkTest
             {
-                Result = medicationView.ResultInput,
+                Result = medicationViewModel.ResultInput,
                 DateOfUpload = DateTimeOffset.Now
             };
             
