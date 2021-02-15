@@ -262,6 +262,8 @@ namespace AdvancedAnalysisDesign.Services
                 pickup.DatePickedUp = null;
                 pickup.MedicalInstitution = null;
                 pickup.IsPickedUp = false;
+
+                await _context.SaveChangesAsync();
             }
             catch (Exception e)
             {
