@@ -1,24 +1,185 @@
 ﻿@page "/PrescriptionList"
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Services
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.Payloads
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject NonPatientService NonPatientService
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
 
+    <MudGrid Justify="Justify.Center">
+
+        @if (patientWithPickups == null)
+        {
+
+            <MudItem xs="12">
+
+                <MudText Typo="Typo.h4">
+                    There are no prescriptions currently ready for collection
+                </MudText>
+
+            </MudItem>
+
+        }
+        else
+        {
+
+            <MudItem xs="12">
+
+                <MudText Typo="Typo.h4">
+                    Prescriptions for Collection.
+                </MudText>
+
+            </MudItem>
+
+            foreach (var prescription in patientWithPickups)
+            {
+                @foreach (var medication in prescription.Medications)
+                {
+                    if (medication.Pickup.DateScheduled == DateTime.Today)
+                    {
+                        <MudItem xs="12">
+                            <MudExpansionPanel>
+                                <TitleContent>
+                                    <div class="d-flex">
+                                        <MudGrid Class="pa-2">
+
+                                            <MudItem xs="4">
+                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                    <MudText><strong>First Name: </strong>   @prescription.User.UserDetail.FirstName </MudText>
+                                                </MudPaper>
+                                            </MudItem>
+
+                                            <MudItem xs="4">
+                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                    <MudText><strong>Last Name: </strong>   @prescription.User.UserDetail.LastName</MudText>
+                                                </MudPaper>
+                                            </MudItem>
+
+                                            <MudItem xs="2">
+                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center">
+
+                                                        <MudText>
+                                                            <strong>Prepared:</strong>
+                                                        </MudText>
+
+                                                        @if (medication.Pickup.IsPrepared == false)
+                                                        {
+                                                            <MudIcon Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudIcon Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" />
+                                                        }
+
+                                                    </MudGrid>
+                                                </MudPaper>
+                                            </MudItem>
+
+                                            <MudItem xs="2">
+
+                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center">
+
+                                                        <MudText>
+                                                            <strong>Collected:</strong>
+                                                        </MudText>
+
+                                                        @if (medication.Pickup.IsPickedUp == false)
+                                                        {
+                                                            <MudIcon Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudIcon Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" />
+                                                        }
+
+                                                    </MudGrid>
+                                                </MudPaper>
+                                            </MudItem>
+
+                                        </MudGrid>
+                                    </div>
+                                </TitleContent>
+
+                                <ChildContent>
+
+                                    <MudGrid Class="pa-2">
+                                        <MudItem xs="12">
+                                            <MudPaper Elevation="2" Class="pa-2">
+                                                <MudGrid Class="pa-2">
+
+                                                    <MudItem xs="12">
+                                                        <MudText>
+                                                            <strong>Prescribed Medications:</strong>
+                                                        </MudText>
+                                                    </MudItem>
+
+                                                    <MudItem xs="5">
+                                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                            <MudText>
+                                                                <strong>Medications:</strong>@medication.Medication.MedicationName
+                                                            </MudText>
+                                                        </MudPaper>
+                                                    </MudItem>
+
+                                                    <MudItem xs="3">
+                                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                            <MudText><strong>Time of Collection:</strong> @medication.Pickup.DateScheduled  </MudText>
+                                                        </MudPaper>
+                                                    </MudItem>
+
+                                                </MudGrid>
+                                            </MudPaper>
+                                        </MudItem>
+                                    </MudGrid>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        </MudItem>
+                    }
+                }
+            }
+        }
+
+    </MudGrid>
 </MudContainer>
 
 @code {
+    List<Patient> patientWithPickups = new();
+    private List<PickupSchedulerPayload> pickupDatasource = new();
+    private DateTime currentDate = DateTime.Now;
+
+    string MedicalInstitutionName;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        if (user.IsInRole(Role.Admin.ToString()))
         {
+            MedicalInstitutionName = "Admin View";
+
+            patientWithPickups = await PatientService.FetchAllPatientsPrescriptions();
+
+        }
+        else if (user.IsInRole(Role.Pharmacist.ToString()))
+        {
+            var currentMedicalSite = await NonPatientService.GetMedicalInstitutionForUser();
+
+            MedicalInstitutionName = currentMedicalSite.Name;
+
+            patientWithPickups = await PatientService.GetAllMedicationsforInstitution(currentMedicalSite);
         }
         else
         {
             NavigationManager.NavigateTo("/", true);
         }
     }
-}   
+
+
+}
