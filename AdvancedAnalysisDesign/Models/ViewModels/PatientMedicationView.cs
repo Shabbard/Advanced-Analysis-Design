@@ -13,7 +13,7 @@ namespace AdvancedAnalysisDesign.Models.ViewModels
         public Medication Medication { get; set; }
         public bool BloodworkRequired { get; set; }
         public List<PatientBloodworkView> PatientBloodworks { get; set; }
-        public TimeSpan DateIntervalOfBloodworkRenewal { get; set; }
+        public double DateIntervalOfBloodworkRenewal { get; set; }
         public Pickup Pickup { get; set; }
         public Patient Patient { get; set; }
     }
