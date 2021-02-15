@@ -80,17 +80,6 @@ else
                     <MudText Class="pt-5" Typo="Typo.h5" Align="Align.Center">There are a total of @patientWithFlagged.Count users to be verified.</MudText>
                     <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
                         <MudItem>
-                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionPreparation", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
-                        </MudItem>
-                    </MudGrid>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="4">
-                <MudPaper Elevation="4">
-                    <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Collected</MudText>
-                    <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
-                    <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
-                        <MudItem>
                             <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/UserVerification", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
                         </MudItem>
                     </MudGrid>

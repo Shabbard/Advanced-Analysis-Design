@@ -37,7 +37,7 @@ namespace AdvancedAnalysisDesign.Services
             return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
 
-        public async Task<List<PatientMedicationViewModel>> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
+        public List<PatientMedicationViewModel> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
         {
             return patientMedicationsList.Select(x => new PatientMedicationViewModel
             {

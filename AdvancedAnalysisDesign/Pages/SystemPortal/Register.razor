@@ -11,7 +11,7 @@
 @inject NavigationManager NavManager
 
 
-<InputFile id="fileInputIDFile" OnChange="UploadFilesIDFile" hidden multiple accept=".jpg, .jpeg, .png, .gif" />
+<InputFile id="fileInputIDFile" OnChange="UploadFilesIdFile" hidden multiple accept=".jpg, .jpeg, .png, .gif" />
 <InputFile id="fileInputSelfieFile" OnChange="UploadFilesSelfieFile" hidden multiple accept=".jpg, .jpeg, .png, .gif" />
 @if (!isLoading)
 {
@@ -32,7 +32,7 @@
 
                             <MudGrid Spacing="1">
                                 <MudItem xs="12">
-                                    <MudAutocomplete T="string" Label="Select a Pharmacy" ValueChanged="@onSelect" SearchFunc="@medicalSearch"/>
+                                    <MudAutocomplete T="string" Label="Select a Pharmacy" ValueChanged="@OnSelect" SearchFunc="@MedicalSearch"/>
                                 </MudItem>
                                 <MudItem xs="12">
                                     <MudTextField Label="NHS Number" @bind-Value="registrationPayload.NhsNumber" For="@(() => registrationPayload.NhsNumber)" />
@@ -64,7 +64,7 @@
                                                     <code>@file.Size Bytes</code>
                                                 </MudItem>
                                                 <MudItem xs="8">
-                                                    <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="@(() => RemoveImageIDFile(@file))"></MudIconButton>
+                                                    <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="@(() => RemoveImageIdFile(@file))"></MudIconButton>
                                                 </MudItem>
                                             }
                                         </MudGrid>
@@ -174,7 +174,7 @@ else
         MedicalInstitutions = await NonPatientService.GetMedicalInstitutions();
     }
 
-    private void UploadFilesIDFile(InputFileChangeEventArgs e)
+    private void UploadFilesIdFile(InputFileChangeEventArgs e)
     {
         int maxFiles = 1;
         foreach (var file in e.GetMultipleFiles(maxFiles))
@@ -212,13 +212,13 @@ else
         SelfieFile.Remove(file);
         registrationPayload.SelfiePhoto = null;
     }
-    private void RemoveImageIDFile(IBrowserFile file)
+    private void RemoveImageIdFile(IBrowserFile file)
     {
         IDFile.Remove(file);
         registrationPayload.IDPhoto = null;
     }
     
-    private async Task<IEnumerable<string>> medicalSearch(string value)
+    private async Task<IEnumerable<string>> MedicalSearch(string value)
     {
         if(string.IsNullOrEmpty(value))
         {
@@ -228,7 +228,7 @@ else
 
     }
 
-    private void onSelect(string value)
+    private void OnSelect(string value)
     {
         registrationPayload.MedicalInstitution = MedicalInstitutions.FirstOrDefault(x => x.Name == value);
     }

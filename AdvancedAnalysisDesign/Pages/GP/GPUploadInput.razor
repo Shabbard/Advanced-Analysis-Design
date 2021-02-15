@@ -213,7 +213,7 @@ else
     {
         isLoaded = false;
         var patientMedications = await Context.PatientMedications.Include(x => x.Medication).Where(x => x.Patient.User.Id == UserId).ToListAsync();
-        patientMedicationsView = await BloodworkService.ConvertPatientMedicationsToViewModel(patientMedications);
+        patientMedicationsView = BloodworkService.ConvertPatientMedicationsToViewModel(patientMedications);
         isLoaded = true;
     }
 }
