@@ -126,13 +126,17 @@ namespace AdvancedAnalysisDesign.Services
             ).ToList();
         }
         
-        public PatientMedication CreateMedication(Medication medication, bool isBloodworkRequired)
+        public PatientMedication CreateMedication(Medication medication, bool isBloodworkRequired,DateTimeOffset dateOfStart, double pickupInterval, double bloodInterval)
         {
             return new()
             {
                 Medication = medication,
                 BloodworkRequired = isBloodworkRequired,
-                Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null }
+                Pickup = new() { IsPickedUp = false , IsPrepared = false , DateScheduled = null , DatePickedUp = null },
+                DayIntervalOfPickup = pickupInterval,
+                DateOfMedicationStart = dateOfStart,
+                DayIntervalOfBloodworkRenewal = bloodInterval,
+                DateOfMedicationLastPickedUp = dateOfStart
             };
         }
 
@@ -140,9 +144,12 @@ namespace AdvancedAnalysisDesign.Services
         {
             var patients = await FetchAllPatientMedicationAndPickups();
             var medications = await FetchAllMedications();
+            var dateNow = DateTimeOffset.Now;
+            var dateInFuture = dateNow.AddMonths(_random.Next(1, 3));
+            var timeInterval = (dateInFuture - dateNow).TotalDays;
             foreach(var patient in patients)
             {
-                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true));
+                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true, dateNow, timeInterval,timeInterval));
             }
             await _context.SaveChangesAsync();
         }
