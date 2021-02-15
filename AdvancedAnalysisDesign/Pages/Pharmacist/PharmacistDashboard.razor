@@ -4,10 +4,13 @@
 @using AdvancedAnalysisDesign.Models.Database
 @using AdvancedAnalysisDesign.Models.Payloads
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.ViewModels
 @using Syncfusion.Blazor.Schedule
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject PatientService PatientService
+@inject NonPatientService NonPatientService
+@inject UserService UserService
 
 @if (isLoading)
 {
@@ -19,15 +22,14 @@ else
 
         <MudGrid Style="flex-direction:column">
 
-            <MudGrid Style="flex-direction:row" Justify="Justify.SpaceAround" Class="pb-10">
-                <MudItem xs="6">
-                    <MudText Typo="Typo.h4" Class="pl-10">Daily Tasks</MudText>
-                </MudItem>
-                <MudItem xs="6">
-                    <MudText Align="Align.Right" Class="pr-10" Typo="Typo.h4">Lloyds Pharmacy - Woodbourne Road</MudText>
-                </MudItem>
-            </MudGrid>
-
+        <MudGrid Style="flex-direction:row" Justify="Justify.SpaceAround" Class="pb-10">
+            <MudItem xs="6">
+                <MudText Typo="Typo.h4" Class="pl-10">Daily Tasks</MudText>
+            </MudItem>
+            <MudItem xs="6">
+                <MudText Align="Align.Right" Class="pr-10" Typo="Typo.h4">@MedicalInstitutionName</MudText>
+            </MudItem>
+        </MudGrid>
             <MudGrid Style="flex-direction:row" Justify="Justify.SpaceEvenly">
                 <MudItem xs="4">
                     <MudPaper Elevation="4">
@@ -66,7 +68,7 @@ else
         </MudGrid>
         <MudGrid Style="flex-direction:row">
             <MudItem xs="12" Class="mt-12">
-                <SfSchedule Readonly="true" TValue="Pickup" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
+                <SfSchedule Readonly="true" TValue="PickupSchedulerViewModel" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
                     <ScheduleEventSettings DataSource="@pickupDatasource"></ScheduleEventSettings>
                 </SfSchedule>
             </MudItem>
@@ -83,18 +85,18 @@ else
                 </MudPaper>
             </MudItem>
         </MudGrid>
-
     </MudContainer>
 }
-
 
 @code {
     List<Patient> patientWithPickups = new();
     List<Patient> patientWithFlagged = new();
     int prescriptionsDue, prescriptionsPrepared, prescriptionsCollected;
-    private List<PickupSchedulerPayload> pickupDatasource = new();
+    private List<PickupSchedulerViewModel> pickupDatasource = new();
     private DateTime currentDate = DateTime.Now;
     bool isLoading;
+
+    string MedicalInstitutionName;
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,10 +104,22 @@ else
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        if (user.IsInRole(Role.Admin.ToString()))
         {
+            MedicalInstitutionName = "Admin View";
+
             patientWithPickups = await PatientService.FetchAllPatientsWithPickups();
             patientWithFlagged = await PatientService.FetchAllPatientsForVerification();
+            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
+            pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
+
+        }
+        else if (user.IsInRole(Role.Pharmacist.ToString()))
+        {
+            var currentMedicalSite = await NonPatientService.GetMedicalInstitutionForUser();
+            MedicalInstitutionName = currentMedicalSite.Name;
+            patientWithPickups = await PatientService.GetAllMedicationsforInstitution(currentMedicalSite);
+
             (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
             pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
             StateHasChanged();
