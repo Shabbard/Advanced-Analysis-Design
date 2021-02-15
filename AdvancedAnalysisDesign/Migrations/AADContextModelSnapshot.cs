@@ -218,17 +218,17 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<bool>("BloodworkRequired")
                         .HasColumnType("bit");
 
-                    b.Property<double>("DateIntervalOfBloodworkRenewal")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DateIntervalOfPickup")
-                        .HasColumnType("float");
-
                     b.Property<DateTimeOffset>("DateOfMedicationLastPickedUp")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("DateOfMedicationStart")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<double>("DayIntervalOfBloodworkRenewal")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DayIntervalOfPickup")
+                        .HasColumnType("float");
 
                     b.Property<int?>("MedicationId")
                         .HasColumnType("int");
