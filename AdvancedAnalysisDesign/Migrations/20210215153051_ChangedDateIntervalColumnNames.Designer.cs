@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    [Migration("20210215150400_ChangeTimeSpanToDouble")]
-    partial class ChangeTimeSpanToDouble
+    [Migration("20210215153051_ChangedDateIntervalColumnNames")]
+    partial class ChangedDateIntervalColumnNames
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -220,17 +220,17 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<bool>("BloodworkRequired")
                         .HasColumnType("bit");
 
-                    b.Property<double>("DateIntervalOfBloodworkRenewal")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DateIntervalOfPickup")
-                        .HasColumnType("float");
-
                     b.Property<DateTimeOffset>("DateOfMedicationLastPickedUp")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("DateOfMedicationStart")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<double>("DayIntervalOfBloodworkRenewal")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DayIntervalOfPickup")
+                        .HasColumnType("float");
 
                     b.Property<int?>("MedicationId")
                         .HasColumnType("int");

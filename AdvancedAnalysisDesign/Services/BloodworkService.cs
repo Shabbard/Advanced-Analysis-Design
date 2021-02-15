@@ -46,7 +46,7 @@ namespace AdvancedAnalysisDesign.Services
                 Pickup = x.Pickup,
                 BloodworkRequired = x.BloodworkRequired,
                 PatientBloodworks = new List<PatientBloodworkViewModel>(),
-                DateIntervalOfBloodworkRenewal = x.DateIntervalOfBloodworkRenewal,
+                DateIntervalOfBloodworkRenewal = x.DayIntervalOfBloodworkRenewal,
                 Patient = x.Patient
             }).ToList();
         }
