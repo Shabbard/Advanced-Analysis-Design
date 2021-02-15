@@ -149,7 +149,7 @@ namespace AdvancedAnalysisDesign.Services
             var timeInterval = (dateInFuture - dateNow).TotalDays;
             foreach(var patient in patients)
             {
-                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true));
+                patient.Medications.Add(CreateMedication(medications[_random.Next(medications.Count)], true, dateNow, timeInterval,timeInterval));
             }
             await _context.SaveChangesAsync();
         }
