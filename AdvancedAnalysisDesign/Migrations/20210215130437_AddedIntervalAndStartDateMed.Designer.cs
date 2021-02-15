@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20210215130437_AddedIntervalAndStartDateMed")]
+    partial class AddedIntervalAndStartDateMed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,17 +220,14 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<bool>("BloodworkRequired")
                         .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset>("DateOfMedicationLastPickedUp")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<TimeSpan>("DateIntervalOfBloodworkRenewal")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("DateIntervalOfPickup")
+                        .HasColumnType("time");
 
                     b.Property<DateTimeOffset>("DateOfMedicationStart")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<double>("DayIntervalOfBloodworkRenewal")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DayIntervalOfPickup")
-                        .HasColumnType("float");
 
                     b.Property<int?>("MedicationId")
                         .HasColumnType("int");
@@ -282,8 +281,8 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<DateTimeOffset?>("DatePickedUp")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("DateScheduled")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DateScheduled")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsPickedUp")
                         .HasColumnType("bit");

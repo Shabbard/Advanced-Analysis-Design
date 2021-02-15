@@ -4,6 +4,7 @@
 @using AdvancedAnalysisDesign.Models.Database
 @using AdvancedAnalysisDesign.Models.Payloads
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.ViewModels
 @using Syncfusion.Blazor.Schedule
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -11,9 +12,15 @@
 @inject NonPatientService NonPatientService
 @inject UserService UserService
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+@if (isLoading)
+{
+    <LoadingScreen></LoadingScreen>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
 
-    <MudGrid Style="flex-direction:column">
+        <MudGrid Style="flex-direction:column">
 
         <MudGrid Style="flex-direction:row" Justify="Justify.SpaceAround" Class="pb-10">
             <MudItem xs="6">
@@ -23,23 +30,53 @@
                 <MudText Align="Align.Right" Class="pr-10" Typo="Typo.h4">@MedicalInstitutionName</MudText>
             </MudItem>
         </MudGrid>
-
-        <MudGrid Style="flex-direction:row" Justify="Justify.SpaceEvenly">
-            <MudItem xs="4">
-                <MudPaper Elevation="4">
-                    <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Due</MudText>
-                    <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsDue</MudText>
-                    <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
-                        <MudItem>
-                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionList", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
-                        </MudItem>
-                    </MudGrid>
-                </MudPaper>
+            <MudGrid Style="flex-direction:row" Justify="Justify.SpaceEvenly">
+                <MudItem xs="4">
+                    <MudPaper Elevation="4">
+                        <MudText Class="pb-7 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Due</MudText>
+                        <MudText Class="pb-7 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsDue</MudText>
+                        <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
+                            <MudItem>
+                                <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionList", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudPaper Elevation="4">
+                        <MudText Class="pb-7 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Prepared</MudText>
+                        <MudText Class="pb-7 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsPrepared / @prescriptionsDue</MudText>
+                        <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
+                            <MudItem>
+                                <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionPreparation", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudPaper Elevation="4">
+                        <MudText Class="pb-7 pt-5" Align="Align.Center" Typo="Typo.h5">Prescriptions Collected</MudText>
+                        <MudText Class="pb-7 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
+                        <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
+                            <MudItem>
+                                <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionCollection", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudGrid>
+        <MudGrid Style="flex-direction:row">
+            <MudItem xs="12" Class="mt-12">
+                <SfSchedule Readonly="true" TValue="PickupSchedulerViewModel" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
+                    <ScheduleEventSettings DataSource="@pickupDatasource"></ScheduleEventSettings>
+                </SfSchedule>
             </MudItem>
-            <MudItem xs="4">
-                <MudPaper Elevation="4">
-                    <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h5">Prescritions Prepared</MudText>
-                    <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsPrepared / @prescriptionsDue</MudText>
+        </MudGrid>
+        <MudGrid Style="flex-direction:row">
+            <MudItem xs="12" Class="mt-7">
+                <MudPaper Elevation="5" Class="pt-2">
+                    <MudText Class="pt-5" Typo="Typo.h5" Align="Align.Center">There are a total of @patientWithFlagged.Count users to be verified.</MudText>
                     <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
                         <MudItem>
                             <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionPreparation", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
@@ -53,37 +90,28 @@
                     <MudText Class="pb-10 pt-5" Align="Align.Center" Typo="Typo.h2" Color="Color.Primary">@prescriptionsCollected / @prescriptionsDue</MudText>
                     <MudGrid Justify="Justify.FlexEnd" Class="pr-1">
                         <MudItem>
-                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/PrescriptionCollection", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
+                            <MudButton OnClick="@(() =>  NavigationManager.NavigateTo("/UserVerification", true))" Variant="Variant.Text" EndIcon="@Icons.Material.Outlined.KeyboardArrowRight" IconColor="Color.Info" Color="Color.Info" Class="p-1" Style="text-transform:unset;"> Click to View </MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
             </MudItem>
         </MudGrid>
-    </MudGrid>
-    <MudGrid Style="flex-direction:row">
-        <MudItem xs="12" Class="mt-16">
-            <MudPaper Elevation="5" Class="pt-2">
-
-                <SfSchedule Readonly="true" TValue="Pickup" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
-                    <ScheduleEventSettings DataSource="@pickupDatasource"></ScheduleEventSettings>
-                </SfSchedule>
-
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-
-</MudContainer>
+    </MudContainer>
+}
 
 @code {
     List<Patient> patientWithPickups = new();
+    List<Patient> patientWithFlagged = new();
     int prescriptionsDue, prescriptionsPrepared, prescriptionsCollected;
-    private List<PickupSchedulerPayload> pickupDatasource = new();
+    private List<PickupSchedulerViewModel> pickupDatasource = new();
     private DateTime currentDate = DateTime.Now;
+    bool isLoading;
 
     string MedicalInstitutionName;
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -91,8 +119,8 @@
         {
             MedicalInstitutionName = "Admin View";
 
-
             patientWithPickups = await PatientService.FetchAllPatientsWithPickups();
+            patientWithFlagged = await PatientService.FetchAllPatientsForVerification();
             (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
             pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
 
@@ -100,17 +128,18 @@
         else if (user.IsInRole(Role.Pharmacist.ToString()))
         {
             var currentMedicalSite = await NonPatientService.GetMedicalInstitutionForUser();
-
             MedicalInstitutionName = currentMedicalSite.Name;
-
             patientWithPickups = await PatientService.GetAllMedicationsforInstitution(currentMedicalSite);
 
+            (prescriptionsDue, prescriptionsPrepared, prescriptionsCollected) = PatientService.ReturnPrescriptionCounters(patientWithPickups);
+            pickupDatasource = PatientService.ReturnPickupScheduler(patientWithPickups);
+            StateHasChanged();
         }
         else
         {
             NavigationManager.NavigateTo("/", true);
         }
+
+        isLoading = false;
     }
-
-
 }

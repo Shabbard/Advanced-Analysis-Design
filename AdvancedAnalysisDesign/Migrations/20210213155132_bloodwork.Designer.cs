@@ -4,14 +4,16 @@ using AdvancedAnalysisDesign;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdvancedAnalysisDesign.Migrations
 {
     [DbContext(typeof(AADContext))]
-    partial class AADContextModelSnapshot : ModelSnapshot
+    [Migration("20210213155132_bloodwork")]
+    partial class bloodwork
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,9 +110,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<int?>("GeneralPractitionerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MedicalInstitutionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("NhsNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -123,8 +122,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GeneralPractitionerId");
-
-                    b.HasIndex("MedicalInstitutionId");
 
                     b.HasIndex("PatientImagesId");
 
@@ -218,17 +215,8 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<bool>("BloodworkRequired")
                         .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset>("DateOfMedicationLastPickedUp")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("DateOfMedicationStart")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<double>("DayIntervalOfBloodworkRenewal")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DayIntervalOfPickup")
-                        .HasColumnType("float");
+                    b.Property<TimeSpan>("DateIntervalOfBloodworkRenewal")
+                        .HasColumnType("time");
 
                     b.Property<int?>("MedicationId")
                         .HasColumnType("int");
@@ -282,8 +270,8 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<DateTimeOffset?>("DatePickedUp")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("DateScheduled")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DateScheduled")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsPickedUp")
                         .HasColumnType("bit");
@@ -291,12 +279,7 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Property<bool>("IsPrepared")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MedicalInstitutionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("MedicalInstitutionId");
 
                     b.ToTable("Pickups");
                 });
@@ -547,10 +530,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .WithMany()
                         .HasForeignKey("GeneralPractitionerId");
 
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "MedicalInstitution")
-                        .WithMany()
-                        .HasForeignKey("MedicalInstitutionId");
-
                     b.HasOne("AdvancedAnalysisDesign.Models.Database.PatientImages", "PatientImages")
                         .WithMany()
                         .HasForeignKey("PatientImagesId");
@@ -560,8 +539,6 @@ namespace AdvancedAnalysisDesign.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("GeneralPractitioner");
-
-                    b.Navigation("MedicalInstitution");
 
                     b.Navigation("PatientImages");
 
@@ -632,15 +609,6 @@ namespace AdvancedAnalysisDesign.Migrations
                     b.Navigation("Pharmacy");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.Pickup", b =>
-                {
-                    b.HasOne("AdvancedAnalysisDesign.Models.Database.MedicalInstitution", "MedicalInstitution")
-                        .WithMany()
-                        .HasForeignKey("MedicalInstitutionId");
-
-                    b.Navigation("MedicalInstitution");
                 });
 
             modelBuilder.Entity("AdvancedAnalysisDesign.Models.Database.User", b =>
