@@ -1,169 +1,162 @@
 ﻿@page "/PrescriptionCollection"
+@using AdvancedAnalysisDesign.Services
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Models.Database
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject NonPatientService NonPatientService
+
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
 
     <MudGrid Justify="Justify.Center">
 
-        @if (prescriptions == null)
+        <MudItem xs="12">
+
+            <MudText Typo="Typo.h4">
+                Prescriptions for Collection
+            </MudText>
+
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudDivider />
+        </MudItem>
+
+        @foreach (var prescription in patientWithPickups)
         {
-
-            <MudItem xs="12">
-
-                <MudText Typo="Typo.h4">
-                    There are no prescriptions currently ready for collection
-                </MudText>
-
-            </MudItem>
-
-        }
-        else
-        {
-
-            <MudItem xs="12">
-
-                <MudText Typo="Typo.h4">
-                    Prescriptions for Collection 
-                </MudText>
-
-            </MudItem>
-
-            @*<MudItem xs="5">
-
-                <MudPaper Elevation="1" Class="pa-5">
-                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center">
-                        <MudText Class="px-3"><strong>Patient Search</strong></MudText>
-                        <MudTextField @bind-Value="ResultInput" Label="Patient" Variant="Variant.Outlined"></MudTextField>
-                    </MudGrid>
-                </MudPaper>
-
-            </MudItem>*@
-
-
-            foreach (var prescription in prescriptions)
+            @foreach (var medication in prescription.Medications)
             {
-                <MudItem xs="12">
-                    <MudExpansionPanel>
+                if (medication.Pickup.DateScheduled == DateTime.Today && medication.Pickup.IsPrepared == true)
+                {
 
-                        <TitleContent>
-                            <div class="d-flex">
+
+                    <MudItem xs="12">
+                        <MudExpansionPanel>
+
+                            <TitleContent>
+                                <div class="d-flex">
+                                    <MudGrid Class="pa-2">
+
+                                        <MudItem xs="3">
+                                            <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                <MudText><strong>First Name: </strong>   @prescription.User.UserDetail.FirstName </MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="3">
+                                            <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                <MudText><strong>Last Name: </strong>   @prescription.User.UserDetail.LastName</MudText>
+                                            </MudPaper>
+                                        </MudItem>
+
+                                        <MudItem xs="3">
+
+                                        </MudItem>
+
+                                    </MudGrid>
+                                </div>
+                            </TitleContent>
+
+                            <ChildContent>
+
                                 <MudGrid Class="pa-2">
+                                    <MudItem xs="12">
+                                        <MudPaper Elevation="2" Class="pa-2">
+                                            <MudGrid Class="pa-2">
 
-                                    <MudItem xs="5">
-                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                            <MudText><strong>Name: </strong>   @prescription </MudText>
+                                                <MudItem xs="12">
+                                                    <MudText>
+                                                        <strong>Prescribed Medications:</strong>
+                                                    </MudText>
+                                                </MudItem>
+
+                                            </MudGrid>
                                         </MudPaper>
                                     </MudItem>
 
-                                    <MudItem xs="5">
+                                    <MudItem xs="7">
                                         <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                            <MudText><strong>Time of Collection:</strong> 10:00am </MudText>
+                                            <MudText>
+                                                Medications: @medication.Medication.MedicationName
+                                            </MudText>
+                                        </MudPaper>
+                                    </MudItem>
+
+                                    <MudItem xs="3">
+                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                            <MudText><strong>Time of Collection:</strong> @medication.Pickup.DateScheduled</MudText>
                                         </MudPaper>
                                     </MudItem>
 
                                     <MudItem xs="2">
                                         <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                            <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center">
-
-                                                <MudText>
-                                                    <strong>Collected:</strong>
-                                                </MudText>
-
-                                                <MudToggleIconButton @bind-Toggled="@Collected"
-                                                                     Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" Size="Size.Medium"
-                                                                     ToggledIcon="@Icons.Material.Filled.CheckBox" ToggledColor="@Color.Success" ToggledSize="Size.Medium" />
-                                            </MudGrid>
+                                            <MudText>
+                                                Amount: 1
+                                            </MudText>
                                         </MudPaper>
                                     </MudItem>
-
                                 </MudGrid>
-                            </div>
-                        </TitleContent>
-                        <ChildContent>
-                            <MudGrid Class="pa-2">
-                                <MudItem xs="12">
-                                    <MudPaper Elevation="2" Class="pa-2">
-                                        <MudGrid Class="pa-2">
-
-                                            <MudItem xs="10">
-                                                <MudText>
-                                                    <strong>Prescribed Medications:</strong>
-                                                </MudText>
-                                            </MudItem>
-
-                                            <MudItem xs="2">
-                                                <MudText>
-                                                    <strong>Amounts:</strong>
-                                                </MudText>
-                                            </MudItem>
-
-                                        </MudGrid>
-                                        @foreach (var medication in medications)
-                                        {
-                                            <MudGrid Class="pa-2">
-                                                <MudItem xs="10">
-                                                    <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                        <MudText>
-                                                            Medications: @medication
-                                                        </MudText>
-                                                    </MudPaper>
-                                                </MudItem>
-
-                                                <MudItem xs="2">
-                                                    <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                        <MudText>
-                                                            Amount:
-                                                        </MudText>
-                                                    </MudPaper>
-                                                </MudItem>
-                                            </MudGrid>
-                                        }
-                                    </MudPaper>
-                                </MudItem>
 
                                 <MudItem xs="12">
                                     <MudGrid Class="pa-2">
                                         <MudItem xs="12">
-                                            <MudButton Variant="Variant.Filled" Style=" width: 200px; height: 60px;" Color="Color.Success">
+                                            <MudButton Variant="Variant.Filled" Style=" width: 200px; height: 60px;" Color="Color.Success" OnClick="@(() => PrescriptionCollected(medication.Pickup))">
                                                 Collected
                                             </MudButton>
                                         </MudItem>
                                     </MudGrid>
                                 </MudItem>
-                            </MudGrid>
-                        </ChildContent>
-                    </MudExpansionPanel>
-                </MudItem>
 
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    </MudItem>
+                }
+                else
+                {
+                    <MudItem xs="12">
+
+                        <MudText Typo="Typo.h4">
+                            There are no prescriptions currently needing or ready for collection
+                        </MudText>
+
+                    </MudItem>
+
+                    return;
+                }
             }
         }
-
     </MudGrid>
-
-
 </MudContainer>
 
 @code {
 
-    string[] prescriptions = { "Alexander Cain", "Matt", "Jack", "TY" };
-    string[] medications = { "Coke", "MDA"};
-    string ResultInput;
-
-    public bool Collected { get; set; }
+    List<Patient> patientWithPickups = new();
+    int prescriptionsDue, prescriptionsPrepared, prescriptionsCollected;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        if (user.IsInRole(Role.Admin.ToString()))
         {
+            patientWithPickups = await PatientService.FetchAllPatientsWithPickups();
+        }
+        else if (user.IsInRole(Role.Pharmacist.ToString()))
+        {
+            var currentMedicalSite = await NonPatientService.GetMedicalInstitutionForUser();
+            patientWithPickups = await PatientService.GetAllMedicationsforInstitution(currentMedicalSite);
         }
         else
         {
             NavigationManager.NavigateTo("/", true);
         }
+    }
+
+    public async Task PrescriptionCollected(Pickup PickUpID)
+    {
+        await PatientService.PrescriptionCollected(PickUpID);
     }
 }

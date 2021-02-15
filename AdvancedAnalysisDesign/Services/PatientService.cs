@@ -189,7 +189,7 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<Patient>> GetAllMedicationsforInstitution(MedicalInstitution medicalInstitution)
         {
-            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.DateScheduled.HasValue && x.Pickup.MedicalInstitution.Id == medicalInstitution.Id)).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.MedicalInstitution.Id == medicalInstitution.Id)).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
         }
 
         public async Task<List<Medication>> FetchAllMedications()
@@ -213,9 +213,18 @@ namespace AdvancedAnalysisDesign.Services
             return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == MedId);
         }
 
-        public async Task PrescriptionPrepared(Pickup PickUpID)
+        public async Task PrescriptionPrepared(Pickup PickUp)
         {
-            PickUpID.IsPrepared = true;
+            PickUp.IsPrepared = true;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task PrescriptionCollected(Pickup PickUp)
+        {
+            PickUp.IsPickedUp = true;
+            PickUp.DatePickedUp = DateTimeOffset.Now;
+            PickUp.DateScheduled = null;
+
             await _context.SaveChangesAsync();
         }
     }

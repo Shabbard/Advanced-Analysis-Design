@@ -10,61 +10,89 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
 
+
     <MudGrid Justify="Justify.Center">
 
-        @if (patientWithPickups == null)
-        {
+        <MudItem xs="12">
 
-            <MudItem xs="12">
+            <MudText Typo="Typo.h4">
+                Prescriptions Due
+            </MudText>
 
-                <MudText Typo="Typo.h4">
-                    There are no prescriptions currently ready for collection
-                </MudText>
+        </MudItem>
 
-            </MudItem>
+        <MudItem xs="12">
+            <MudDivider />
+        </MudItem>
 
-        }
-        else
-        {
+        <MudTable Items="@patientWithPickups" Hover="true" Breakpoint="Breakpoint.Sm">
+            @*<ColGroup>
+        <col style="width:300px;" />
+        <col style="width:100px;" />
+        <col />
+        <col style="width:100px;" />
+        </ColGroup>*@
 
-            <MudItem xs="12">
+            <HeaderContent>
 
-                <MudText Typo="Typo.h4">
-                    Prescriptions for Collection.
-                </MudText>
+                <MudTh>First Name</MudTh>
+                <MudTh>Last Name</MudTh>
+                <MudTh>Prescriptions</MudTh>
 
-            </MudItem>
+            </HeaderContent>
 
-            foreach (var prescription in patientWithPickups)
+            <RowTemplate>
+
+                <MudTd DataLabel="First Name">@context.User.UserDetail.FirstName</MudTd>
+                <MudTd DataLabel="First Name">@context.User.UserDetail.LastName</MudTd>
+                <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.))">@((context.ShowDetails == true)? "Hide" : "Show") View Prescription</MudButton></MudTd>
+
+            </RowTemplate>
+
+
+
+        </MudTable>
+
+            @foreach (var patient in patientWithPickups)
             {
-                @foreach (var medication in prescription.Medications)
-                {
-                    if (medication.Pickup.DateScheduled == DateTime.Today)
-                    {
-                        <MudItem xs="12">
-                            <MudExpansionPanel>
-                                <TitleContent>
-                                    <div class="d-flex">
-                                        <MudGrid Class="pa-2">
+                //for each patient that has a prescription today (Have a search function)
+                //Have column in table
+                //Display Info
+                //for each prescription (in sub table)
+                //display medication
+                // is prepared
+                // is collected
 
-                                            <MudItem xs="4">
-                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                    <MudText><strong>First Name: </strong>   @prescription.User.UserDetail.FirstName </MudText>
-                                                </MudPaper>
-                                            </MudItem>
+                <MudItem xs="12">
+                    <MudExpansionPanels MultiExpansion="false">
+                        @foreach (var medication in patient.Medications)
+                        {
 
-                                            <MudItem xs="4">
-                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                    <MudText><strong>Last Name: </strong>   @prescription.User.UserDetail.LastName</MudText>
-                                                </MudPaper>
-                                            </MudItem>
+                            @if (medication.Pickup.DateScheduled == DateTime.Today || medication.Pickup.DatePickedUp?.ToString("d") == DateTimeOffset.Now.ToString("d"))
+                            {
+                                <MudExpansionPanel>
+                                    <TitleContent>
+                                        <div class="d-flex">
+                                            <MudGrid Class="pa-2" Style="align-items: center">
 
-                                            <MudItem xs="2">
-                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center">
+                                                <MudItem xs="2">
+
+                                                    <MudText><strong>First Name: </strong>   @patient.User.UserDetail.FirstName </MudText>
+
+                                                </MudItem>
+
+                                                <MudItem xs="6">
+
+                                                    <MudText><strong>Last Name: </strong>   @patient.User.UserDetail.LastName</MudText>
+
+                                                </MudItem>
+
+                                                <MudItem xs="2">
+
+                                                    <MudGrid Style="flex-direction: row;" Justify="Justify.Center">
 
                                                         <MudText>
-                                                            <strong>Prepared:</strong>
+                                                            <strong>Prepared: </strong>
                                                         </MudText>
 
                                                         @if (medication.Pickup.IsPrepared == false)
@@ -77,16 +105,16 @@
                                                         }
 
                                                     </MudGrid>
-                                                </MudPaper>
-                                            </MudItem>
 
-                                            <MudItem xs="2">
+                                                </MudItem>
 
-                                                <MudPaper Elevation="1" Class="pa-4 pt-2">
+                                                <MudItem xs="2">
+
+
                                                     <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center">
 
                                                         <MudText>
-                                                            <strong>Collected:</strong>
+                                                            <strong>Collected: </strong>
                                                         </MudText>
 
                                                         @if (medication.Pickup.IsPickedUp == false)
@@ -99,58 +127,73 @@
                                                         }
 
                                                     </MudGrid>
-                                                </MudPaper>
-                                            </MudItem>
 
-                                        </MudGrid>
-                                    </div>
-                                </TitleContent>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </div>
+                                    </TitleContent>
 
-                                <ChildContent>
+                                    <ChildContent>
 
-                                    <MudGrid Class="pa-2">
-                                        <MudItem xs="12">
-                                            <MudPaper Elevation="2" Class="pa-2">
+                                        <MudGrid Class="pa-2">
+                                            <MudItem xs="12">
+
                                                 <MudGrid Class="pa-2">
 
                                                     <MudItem xs="12">
                                                         <MudText>
-                                                            <strong>Prescribed Medications:</strong>
+                                                            <strong>Prescribed Medication</strong>
                                                         </MudText>
                                                     </MudItem>
 
-                                                    <MudItem xs="5">
-                                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                            <MudText>
-                                                                <strong>Medications:</strong>@medication.Medication.MedicationName
-                                                            </MudText>
-                                                        </MudPaper>
+                                                    <MudItem xs="12">
+                                                        <MudDivider />
                                                     </MudItem>
 
-                                                    <MudItem xs="3">
-                                                        <MudPaper Elevation="1" Class="pa-4 pt-2">
-                                                            <MudText><strong>Time of Collection:</strong> @medication.Pickup.DateScheduled  </MudText>
-                                                        </MudPaper>
+                                                    <MudItem xs="6">
+
+                                                        <MudText>
+                                                            <strong>Medications:</strong>@medication.Medication.MedicationName
+                                                        </MudText>
+
                                                     </MudItem>
+
+                                                    @if (medication.Pickup.DateScheduled != null)
+                                                    {
+                                                        <MudItem xs="6">
+
+                                                            <MudText><strong>Time of Collection:</strong> @medication.Pickup.DateScheduled  </MudText>
+
+                                                        </MudItem>
+                                                    }
+                                                    else if (medication.Pickup.DatePickedUp != null)
+                                                    {
+
+                                                        <MudItem xs="6">
+
+                                                            <MudText><strong>Time Collected:</strong> @medication.Pickup.DatePickedUp  </MudText>
+
+                                                        </MudItem>
+                                                    }
 
                                                 </MudGrid>
-                                            </MudPaper>
-                                        </MudItem>
-                                    </MudGrid>
-                                </ChildContent>
-                            </MudExpansionPanel>
-                        </MudItem>
-                    }
-                }
-            }
-        }
+                                            </MudItem>
+                                        </MudGrid>
+                                    </ChildContent>
+                                </MudExpansionPanel>
 
+                            }
+
+                        }
+                    </MudExpansionPanels>
+                </MudItem>
+            }
     </MudGrid>
 </MudContainer>
 
 @code {
     List<Patient> patientWithPickups = new();
-    
+
     private DateTime currentDate = DateTime.Now;
 
     string MedicalInstitutionName;
@@ -180,6 +223,4 @@
             NavigationManager.NavigateTo("/", true);
         }
     }
-
-
 }
