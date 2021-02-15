@@ -110,7 +110,7 @@
                                     <MudItem xs="12">
                                         <MudGrid Class="pa-2">
                                             <MudItem xs="12">
-                                                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => PrescriptionPrepared(medication.Pickup.Id))">
+                                                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => PrescriptionPrepared(medication.Pickup))">
                                                     Prepared
                                                 </MudButton>
                                             </MudItem>
@@ -120,7 +120,7 @@
                                 </ChildContent>
                             </MudExpansionPanel>
                         </MudItem>
-                    }
+                    
                 }
             }
         }
@@ -158,10 +158,8 @@
         }
     }
 
-    public void PrescriptionPrepared(int MedicationID)
+    public async Task PrescriptionPrepared(Pickup PickUpID)
     {
-        
-        //update pickup
-
+        await PatientService.PrescriptionPrepared(PickUpID);
     }
 }
