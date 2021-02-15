@@ -68,7 +68,7 @@ else
         </MudGrid>
         <MudGrid Style="flex-direction:row">
             <MudItem xs="12" Class="mt-12">
-                <SfSchedule Readonly="true" TValue="PickupSchedulerViewModel" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
+                <SfSchedule CssClass="" Readonly="true" TValue="PickupSchedulerViewModel" Width="100%" Height="650px" @bind-SelectedDate="@currentDate">
                     <ScheduleEventSettings DataSource="@pickupDatasource"></ScheduleEventSettings>
                 </SfSchedule>
             </MudItem>
