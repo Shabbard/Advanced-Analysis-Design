@@ -140,34 +140,6 @@ else
         }
     }
 
-    // private async Task ShowBloodworkTests(PatientBloodworkViewModel bloodworkViewModel)
-    // {
-    //     bloodworkViewModel.ShowDetails = !bloodworkViewModel.ShowDetails;
-    //     bloodworkTestsLoaded = false;
-    //     bloodworkViewModel.PatientBloodworkTests = await Context.PatientBloodworkTests.
-    //         Where(x => x.PatientBloodwork.Id == bloodworkViewModel.Id)
-    //         Async();
-    //     bloodworkTestsLoaded = true;
-    // }
-    
-    // private async Task ShowBloodworks(PatientMedicationViewModel medicationViewModel)
-    // {
-    //     bloodworksLoaded = false;
-    //     if (medicationViewModel.ShowBloodworks)
-    //     {
-    //         medicationViewModel.ShowBloodworks = !medicationViewModel.ShowBloodworks;
-    //         medicationViewModel.PatientBloodworks = new List<PatientBloodworkViewModel>();
-    //     }
-    //     else
-    //     {
-    //         medicationViewModel.ShowBloodworks = !medicationViewModel.ShowBloodworks;
-    //         medicationViewModel.PatientBloodworks = await Context.PatientBloodworks
-    //             .Where(x => x.PatientMedicationId == medicationViewModel.Id)
-    //             ;
-    //     }
-    //     bloodworksLoaded = true;
-    // }
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -197,28 +169,32 @@ else
     private async Task LoadPatientData()
     {
         isLoaded = false;
-        patientMedicationsView = await Context.PatientMedications.Include(x => x.Medication).Where(x => x.Patient.User.Id == UserId).Select(x => new PatientMedicationViewModel
-        {
-            Id = x.Id,
-            Medication = x.Medication,
-            Pickup = x.Pickup,
-            BloodworkRequired = x.BloodworkRequired,
-            PatientBloodworks = x.PatientBloodworks.Select(y => new PatientBloodworkViewModel
+        patientMedicationsView = await Context.PatientMedications
+            .Include(x => x.Medication)
+            .Where(x => x.Patient.User.Id == UserId)
+            .Select(x => new PatientMedicationViewModel
             {
                 Id = x.Id,
-                BloodworkTest = y.BloodworkTest,
-                PatientMedication = y.PatientMedication,
-                PatientBloodworkTests = y.PatientBloodworkTests.Select(z => new PatientBloodworkTestViewModel
+                Medication = x.Medication,
+                Pickup = x.Pickup,
+                BloodworkRequired = x.BloodworkRequired,
+                PatientBloodworks = x.PatientBloodworks.Select(y => new PatientBloodworkViewModel
                 {
-                    Result = z.Result,
-                    PatientBloodwork = z.PatientBloodwork,
-                    TestType = z.TestType,
-                    DateOfUpload = z.DateOfUpload
-                }).ToList()
-            }).ToList(),
-            DateIntervalOfBloodworkRenewal = x.DayIntervalOfBloodworkRenewal,
-            Patient = x.Patient
-        }).ToListAsync();
+                    Id = x.Id,
+                    BloodworkTest = y.BloodworkTest,
+                    PatientMedication = y.PatientMedication,
+                    PatientBloodworkTests = y.PatientBloodworkTests.Select(z => new PatientBloodworkTestViewModel
+                    {
+                        Result = z.Result,
+                        PatientBloodwork = z.PatientBloodwork,
+                        TestType = z.TestType,
+                        DateOfUpload = z.DateOfUpload
+                    }).ToList()
+                }).ToList(),
+                DateIntervalOfBloodworkRenewal = x.DayIntervalOfBloodworkRenewal,
+                Patient = x.Patient
+            })
+            .ToListAsync();
         isLoaded = true;
         StateHasChanged();
     }
