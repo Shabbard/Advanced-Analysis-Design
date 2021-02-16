@@ -1,0 +1,206 @@
+﻿@page "/PatientDashboard"
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.Payloads
+@using AdvancedAnalysisDesign.Services
+@using InputType = MudBlazor.InputType
+
+@using AdvancedAnalysisDesign.Enums
+@using System.Diagnostics.Eventing.Reader
+@using AdvancedAnalysisDesign.Migrations
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@inject PatientService PatientService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@inject UserService UserService
+@inject NonPatientService NonPatientService
+@inject BloodworkService BloodworkService
+
+@if (!isLoaded)
+{
+    <LoadingScreen></LoadingScreen>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
+        <MudGrid Justify="Justify.Center">
+
+            <MudItem xs="12">
+                <MudPaper Class="pa-4">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText>Name:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.UserDetail.FirstName @patientUser.UserDetail.LastName</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText>Date Of Birth:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.UserDetail.DateOfBirth.ToString("d")</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText>Email Address:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.Email</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText>Phone Number:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.PhoneNumber</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        
+        
+            <MudItem xs="12">
+                <MudPaper Class="pa-4">
+                    <MudExpansionPanels MultiExpansion="false" Elevation="0">
+                        @foreach (var medication in patient.Medications)
+                        {
+                            @if (medication != null)
+                            {
+                                <MudExpansionPanel Text="@medication.Medication.MedicationName" IsExpandedChanged="@( () => PopulatePatientMedications(medication))">
+                                    <MudTable Items="patientMedications" Hover="true" Elevation="0" Context="row">
+                                        <HeaderContent>
+                                            <MudTh>Name</MudTh>
+                                            <MudTh>Date Started</MudTh>
+                                            <MudTh>Next Possible Pickup Date</MudTh>
+                                            <MudTh>Booked Pickup Time</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate >
+                                            <MudTd DataLabel="Name">@row.Medication.MedicationName</MudTd>
+                                            <MudTd DataLabel="DateStarted">@row.DateOfMedicationStart.ToString("d")</MudTd>
+                                            <MudTd DataLabel="Interval">@row.DateOfMedicationLastPickedUp.AddDays(row.DayIntervalOfPickup).ToString("d")</MudTd>
+                                            <MudTd DataLabel="BookedSlot">@(row.Pickup.DateScheduled != null ? row.Pickup.DateScheduled?.ToString("d") : "Not Booked")</MudTd>
+                                        </RowTemplate>
+                                        
+                                    </MudTable>
+                                    
+                                    <MudDivider/>
+                                    <MudGrid Style="flex-direction: row; align-items:center" Justify="Justify.Center" Class="py-2 pt-4">
+                                        <MudItem xs="12">
+                                            <MudText Align="Align.Center" Typo="Typo.h5"> Schedule a pickup</MudText>
+                                        </MudItem>
+                                        @if (!BloodworkService.CheckIfBloodWorkVaild(medication))
+                                        {
+                                            <MudAlert Severity="Severity.Warning">You are not able to schedule a pickup for this medication due to bloodwork requirements not being met. If you are unaware of this please contact your general practitioner </MudAlert>
+                                        }
+                                        else
+                                        {
+                                            @if (!medication.Pickup.DateScheduled.HasValue)
+                                            {
+                                                <MudItem>
+                                                    <MudDatePicker @bind-Date="@datePicker" Label="Please select a date"></MudDatePicker>
+                                                </MudItem>
+                                                <MudItem>
+                                                    <MudTimePicker @bind-Time="@timePicker" Label="Please select a time"></MudTimePicker>
+                                                </MudItem>
+                                                <MudItem>
+                                                    <MudAutocomplete T="string" Label="Select a Pharmacy" ValueChanged="@OnSelect" SearchFunc="@MedicalSearch"/>
+                                                </MudItem>
+                                                <MudItem Class="mt-5">
+                                                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" OnClick="async () => await SchedulePickup(medication)" Size="Size.Medium">Schedule Pickup</MudButton>
+                                                </MudItem>
+                                            }
+                                            else
+                                            {
+                                                <MudItem>
+                                                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" OnClick="async () => await DeletePickup(medication)" Size="Size.Medium">Delete Current Pickup</MudButton>
+                                                </MudItem>
+                                            }
+                                        }
+                                    </MudGrid>
+                                </MudExpansionPanel>
+                            }
+                        }
+                    </MudExpansionPanels>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
+
+@code{
+    private User patientUser = new();
+    private Patient patient = new();
+    private List<PatientMedication> patientMedications= new ();
+    private bool isLoaded;
+    private DateTime? datePicker;
+    private TimeSpan? timePicker;
+    private List<MedicalInstitution> MedicalInstitutions = new();
+    private MedicalInstitution medicalInstitution = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole(Role.Patient.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        {
+            patientUser = await UserService.GetCurrentUserAsync();
+            patient = await PatientService.FetchUserMedication();
+            MedicalInstitutions = await NonPatientService.GetMedicalInstitutions();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        isLoaded = true;
+    }
+
+    private async Task PopulatePatientMedications(PatientMedication medication)
+    {
+        medicalInstitution = null;
+        datePicker = null;
+        timePicker = null;
+        patientMedications.Clear();
+        patientMedications.Add(medication);
+    }
+
+    private async Task SchedulePickup(PatientMedication medication)
+    {
+        try
+        {
+            var date = datePicker + timePicker;
+            if (medication.DateOfMedicationLastPickedUp.AddDays(medication.DayIntervalOfPickup) < date)
+            {
+                await PatientService.UpdatePickup(medication.Pickup, date, medicalInstitution);
+                Snackbar.Add("Your pickup has been scheduled.", Severity.Success);
+            }
+            else
+            {
+                throw new Exception("You must pick a date after the renewal date.");
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
+
+    private async Task DeletePickup(PatientMedication medication)
+    {
+        try
+        {
+            await PatientService.DeletePickup(medication.Pickup);
+            Snackbar.Add("Your pickup has been deleted.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
+    
+    private async Task<IEnumerable<string>> MedicalSearch(string value)
+    {
+        if(string.IsNullOrEmpty(value))
+        {
+            return MedicalInstitutions.Select(x => x.Name);
+        }
+        return MedicalInstitutions.Where(x => x.Name.ToLower().Contains(value.ToLower())).Select(x => x.Name);
+    }
+    
+    private void OnSelect(string value)
+    {
+        medicalInstitution = MedicalInstitutions.FirstOrDefault(x => x.Name == value);
+    }
+}

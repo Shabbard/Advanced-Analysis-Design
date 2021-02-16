@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class BloodworkService
+    public class BloodworkService : IBloodworkService
     {
         private readonly AADContext _context;
         
@@ -37,20 +37,6 @@ namespace AdvancedAnalysisDesign.Services
             return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
 
-        public List<PatientMedicationViewModel> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
-        {
-            return patientMedicationsList.Select(x => new PatientMedicationViewModel
-            {
-                Id = x.Id,
-                Medication = x.Medication,
-                Pickup = x.Pickup,
-                BloodworkRequired = x.BloodworkRequired,
-                PatientBloodworks = new List<PatientBloodworkViewModel>(),
-                DateIntervalOfBloodworkRenewal = x.DayIntervalOfBloodworkRenewal,
-                Patient = x.Patient
-            }).ToList();
-        }
-
         public async Task AddPatientBloodwork(PatientMedicationViewModel medicationViewModel)
         {
             var patientMedication = await _context.PatientMedications.Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).SingleOrDefaultAsync(x => x.Id == medicationViewModel.Id);
@@ -73,13 +59,40 @@ namespace AdvancedAnalysisDesign.Services
             
             var bloodworkTest = new PatientBloodworkTest
             {
-                Result = medicationViewModel.ResultInput,
+                Result = medicationViewModel.Result,
                 DateOfUpload = DateTimeOffset.Now
             };
             
             bloodwork.PatientBloodworkTests.Add(bloodworkTest);
             
             await _context.SaveChangesAsync();
+        }
+        
+        public bool CheckIfBloodWorkVaild(PatientMedication patientMedication)
+        {
+            try
+            {
+                var today = DateTimeOffset.Now;
+                if (!patientMedication.BloodworkRequired)
+                {
+                    return true;
+                }
+                foreach (var bloodwork in patientMedication.PatientBloodworks)
+                {
+                    foreach (var bloodworkTest in bloodwork.PatientBloodworkTests)
+                    {
+                        if (bloodworkTest.Result && bloodworkTest.DateOfUpload.AddDays(patientMedication.DayIntervalOfBloodworkRenewal) > today)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("An error occurred. Please try again.");
+            }
         }
     }
 }

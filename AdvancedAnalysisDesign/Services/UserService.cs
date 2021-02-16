@@ -23,7 +23,7 @@ using MudBlazor;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly AADContext _context;
         private readonly EmailService _emailService;
@@ -322,6 +322,7 @@ namespace AdvancedAnalysisDesign.Services
             {
                 // Don't reveal that the user does not exist or is not confirmed
                 return;
+
             }
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -409,6 +410,5 @@ namespace AdvancedAnalysisDesign.Services
             
             return await pharmacists.Union(generalPractitioners).ToListAsync();
         }
-
     }
 }

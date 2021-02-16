@@ -14,7 +14,7 @@ using MudBlazor;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class PatientService
+    public class PatientService : IPatientService
     {
         private readonly AADContext _context;
         private readonly UserManager<User> _userManager;
@@ -206,12 +206,70 @@ namespace AdvancedAnalysisDesign.Services
         public async Task<Patient> FetchUserMedication()
         {
             var user = await _userService.GetCurrentUserAsync();
-            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).SingleOrDefaultAsync(x => x.User.Id == user.Id);
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).ThenInclude(x => x.PatientBloodwork).SingleOrDefaultAsync(x => x.User.Id == user.Id);
         }
 
         public async Task<PatientMedication> FetchUserBloodwork(int MedId)
         {
             return await _context.PatientMedications.Include(x => x.PatientBloodworks).SingleOrDefaultAsync(x => x.Id == MedId);
+        }
+
+        public async Task<List<Pickup>> FetchCurrentSchedule(String Institution)
+        {
+            return await _context.Pickups.Where(x => x.MedicalInstitution.Name == Institution).ToListAsync();
+        }
+
+        public async Task UpdatePickup(Pickup pickup, DateTime? dateScheduled, MedicalInstitution institution)
+        {
+            if (pickup.DateScheduled.HasValue)
+            {
+                throw new Exception("A pickup time has already been made for this medication.");
+            }
+            if (dateScheduled == null)
+            {
+                throw new Exception("A date has not been entered");
+            }
+            if (institution == null)
+            {
+                throw new Exception("An pharmacy has not been selected.");
+            }
+            if (pickup == null)
+            {
+                throw new Exception("An error occurred. Please try again.");
+            }
+
+            try
+            {
+                pickup.DateScheduled = dateScheduled;
+                pickup.IsPrepared = false;
+                pickup.DatePickedUp = null;
+                pickup.MedicalInstitution = institution;
+                pickup.IsPickedUp = false;
+
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                throw new Exception("An error occurred. Please try again");
+            }
+        }
+
+        public async Task DeletePickup(Pickup pickup)
+        {
+            try
+            {
+                pickup.DateScheduled = null;
+                pickup.IsPrepared = false;
+                pickup.DatePickedUp = null;
+                pickup.MedicalInstitution = null;
+                pickup.IsPickedUp = false;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("An error occurred. Please try again.");
+            }
         }
 
         public async Task PrescriptionPrepared(Pickup PickUp)
