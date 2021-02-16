@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign.Services
 {
@@ -27,7 +29,13 @@ namespace AdvancedAnalysisDesign.Services
         {
             while(!stoppingToken.IsCancellationRequested)
             {
-                foreach (var patientMedication in _context.PatientMedications)
+                var patientMedications = await _context.PatientMedications.Include(x => x.Patient)
+                    .ThenInclude(x => x.User).ThenInclude(x => x.UserDetail).Include(x => x.Patient)
+                    .ThenInclude(x => x.GeneralPractitioner).ThenInclude(x => x.User).ThenInclude(x => x.UserDetail)
+                    .Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests)
+                    .Where(x => x.PatientBloodworks.Any()).ToListAsync(cancellationToken: stoppingToken);
+                
+                foreach (var patientMedication in patientMedications)
                 {
                     foreach (var patientBloodwork in patientMedication.PatientBloodworks)
                     {

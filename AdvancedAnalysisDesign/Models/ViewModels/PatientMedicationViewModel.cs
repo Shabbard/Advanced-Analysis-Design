@@ -9,7 +9,7 @@ namespace AdvancedAnalysisDesign.Models.ViewModels
         public int Id { get; set; }
         public bool ShowBloodworks { get; set; }
         public string BloodworkTest { get; set; }
-        public string ResultInput { get; set; }
+        public bool Result { get; set; }
         public Medication Medication { get; set; }
         public bool BloodworkRequired { get; set; }
         public List<PatientBloodworkViewModel> PatientBloodworks { get; set; }
