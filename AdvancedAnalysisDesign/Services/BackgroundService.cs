@@ -28,7 +28,7 @@ namespace AdvancedAnalysisDesign.Services
                     scope.ServiceProvider
                         .GetRequiredService<IScopedProcessingService>();
 
-                await scopedProcessingService.CheckIfBloodworkIsRequired(stoppingToken);
+                await scopedProcessingService.DoWorkAsync(stoppingToken);
             }
         }
     }
