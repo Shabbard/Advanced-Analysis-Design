@@ -6,7 +6,7 @@ namespace AdvancedAnalysisDesign.Models.Database
     public class PatientBloodworkTest
     {
         public int Id { get; set; }
-        public string Result { get; set; }
+        public bool Result { get; set; }
         public DateTimeOffset DateOfUpload { get; set; }
         public string TestType { get; set; }
 

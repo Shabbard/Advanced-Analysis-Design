@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         public EmailService(IConfiguration configuration)
         {

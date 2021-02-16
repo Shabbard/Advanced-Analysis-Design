@@ -81,7 +81,7 @@ else
                                                             </HeaderContent>
                                                             <RowTemplate>
                                                                 <MudTd DataLabel="Date Of Upload">@BloodworkTest.DateOfUpload</MudTd>
-                                                                <MudTd DataLabel="Result">@BloodworkTest.Result</MudTd>
+                                                                <MudTd DataLabel="Result">@(BloodworkTest.Result ? "Pass" : "Fail")</MudTd>
                                                             </RowTemplate>
                                                         </MudTable>
                                                     </MudCardContent>
@@ -97,7 +97,10 @@ else
                                 <MudAutocomplete MaxItems="@null" T="string" @bind-Value="@patientMedication.BloodworkTest" Label="Bloodwork Test" SearchFunc="@Search" Variant="Variant.Outlined"/> @*ValueChanged="async () => await SelectTest(value: UserId, patientMedication)"*@
                             </MudItem>
                             <MudItem xs="4">
-                                <MudTextField @bind-Value="@patientMedication.ResultInput" Label="Result" Variant="Variant.Outlined"></MudTextField>
+                                <MudSelect @bind-Value="@patientMedication.Result" Label="Result" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="@(false)">Fail</MudSelectItem>
+                                    <MudSelectItem Value="@(true)">Pass</MudSelectItem>
+                                </MudSelect>
                             </MudItem>
                             <MudItem xs="4">
                                 <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" Size="Size.Medium" OnClick="async () => await InputTestResults(patientMedication)">Add Test Results</MudButton>
@@ -131,7 +134,7 @@ else
 
     private async Task InputTestResults(PatientMedicationViewModel medicationViewModel)
     {
-        if (!string.IsNullOrEmpty(medicationViewModel.BloodworkTest) && !string.IsNullOrEmpty(medicationViewModel.ResultInput))
+        if (!string.IsNullOrEmpty(medicationViewModel.BloodworkTest))
         {
             isLoaded = false;
             await BloodworkService.AddPatientBloodwork(medicationViewModel);
