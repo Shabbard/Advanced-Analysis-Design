@@ -67,5 +67,32 @@ namespace AdvancedAnalysisDesign.Services
             
             await _context.SaveChangesAsync();
         }
+        
+        public bool CheckIfBloodWorkVaild(PatientMedication patientMedication)
+        {
+            try
+            {
+                var today = DateTimeOffset.Now;
+                if (!patientMedication.BloodworkRequired)
+                {
+                    return true;
+                }
+                foreach (var bloodwork in patientMedication.PatientBloodworks)
+                {
+                    foreach (var bloodworkTest in bloodwork.PatientBloodworkTests)
+                    {
+                        if (bloodworkTest.Result && bloodworkTest.DateOfUpload.AddDays(patientMedication.DayIntervalOfBloodworkRenewal) > today)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("An error occurred. Please try again.");
+            }
+        }
     }
 }

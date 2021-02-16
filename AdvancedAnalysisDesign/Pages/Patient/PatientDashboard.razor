@@ -15,6 +15,7 @@
 @inject NavigationManager NavManager
 @inject UserService UserService
 @inject NonPatientService NonPatientService
+@inject BloodworkService BloodworkService
 
 @if (!isLoaded)
 {
@@ -22,20 +23,27 @@
 }
 else
 {
-    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
         <MudGrid Justify="Justify.Center">
 
             <MudItem xs="12">
                 <MudPaper Class="pa-4">
                     <MudGrid>
-                        <MudItem xs="12">
-                            <MudText>@patientUser.UserDetail.FirstName @patientUser.UserDetail.LastName</MudText>
+                        <MudItem xs="6">
+                            <MudText>Name:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.UserDetail.FirstName @patientUser.UserDetail.LastName</MudText>
                         </MudItem>
-                        <MudItem xs="12">
-                            <MudText>@patientUser.UserDetail.DateOfBirth.ToString("d")</MudText>
+                        <MudItem xs="6">
+                            <MudText>Date Of Birth:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.UserDetail.DateOfBirth.ToString("d")</MudText>
                         </MudItem>
-                        <MudItem xs="12">
-                            <MudText>@patientUser.Email @patientUser.PhoneNumber</MudText>
+                        <MudItem xs="6">
+                            <MudText>Email Address:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.Email</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText>Phone Number:</MudText>
+                            <MudText Typo="Typo.h6">@patientUser.PhoneNumber</MudText>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
@@ -71,26 +79,33 @@ else
                                         <MudItem xs="12">
                                             <MudText Align="Align.Center" Typo="Typo.h5"> Schedule a pickup</MudText>
                                         </MudItem>
-                                        @if (!medication.Pickup.DateScheduled.HasValue)
+                                        @if (!BloodworkService.CheckIfBloodWorkVaild(medication))
                                         {
-                                            <MudItem>
-                                                <MudDatePicker @bind-Date="@datePicker" Label="Please select a date"></MudDatePicker>
-                                            </MudItem>
-                                            <MudItem>
-                                                <MudTimePicker @bind-Time="@timePicker" Label="Please select a time"></MudTimePicker>
-                                            </MudItem>
-                                            <MudItem>
-                                                <MudAutocomplete T="string" Label="Select a Pharmacy" ValueChanged="@OnSelect" SearchFunc="@MedicalSearch"/>
-                                            </MudItem>
-                                            <MudItem Class="mt-5">
-                                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" OnClick="async () => await SchedulePickup(medication)" Size="Size.Medium">Schedule Pickup</MudButton>
-                                            </MudItem>
+                                            <MudAlert Severity="Severity.Warning">You are not able to schedule a pickup for this medication due to bloodwork requirements not being met. If you are unaware of this please contact your general practitioner </MudAlert>
                                         }
                                         else
                                         {
-                                            <MudItem>
-                                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" OnClick="async () => await DeletePickup(medication)" Size="Size.Medium">Delete Current Pickup</MudButton>
-                                            </MudItem>
+                                            @if (!medication.Pickup.DateScheduled.HasValue)
+                                            {
+                                                <MudItem>
+                                                    <MudDatePicker @bind-Date="@datePicker" Label="Please select a date"></MudDatePicker>
+                                                </MudItem>
+                                                <MudItem>
+                                                    <MudTimePicker @bind-Time="@timePicker" Label="Please select a time"></MudTimePicker>
+                                                </MudItem>
+                                                <MudItem>
+                                                    <MudAutocomplete T="string" Label="Select a Pharmacy" ValueChanged="@OnSelect" SearchFunc="@MedicalSearch"/>
+                                                </MudItem>
+                                                <MudItem Class="mt-5">
+                                                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" OnClick="async () => await SchedulePickup(medication)" Size="Size.Medium">Schedule Pickup</MudButton>
+                                                </MudItem>
+                                            }
+                                            else
+                                            {
+                                                <MudItem>
+                                                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.SaveAlt" IconColor="Color.Primary" OnClick="async () => await DeletePickup(medication)" Size="Size.Medium">Delete Current Pickup</MudButton>
+                                                </MudItem>
+                                            }
                                         }
                                     </MudGrid>
                                 </MudExpansionPanel>
