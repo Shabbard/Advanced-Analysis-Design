@@ -205,7 +205,7 @@ namespace AdvancedAnalysisDesign.Services
         public async Task<Patient> FetchUserMedication()
         {
             var user = await _userService.GetCurrentUserAsync();
-            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).SingleOrDefaultAsync(x => x.User.Id == user.Id);
+            return await _context.Patients.Include(x => x.Medications).ThenInclude(x => x.Pickup).Include(x => x.Medications).ThenInclude(x => x.Medication).Include(x => x.Medications).ThenInclude(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).ThenInclude(x => x.PatientBloodwork).SingleOrDefaultAsync(x => x.User.Id == user.Id);
         }
 
         public async Task<PatientMedication> FetchUserBloodwork(int MedId)
@@ -267,7 +267,7 @@ namespace AdvancedAnalysisDesign.Services
             }
             catch (Exception e)
             {
-                throw new Exception("An error occurred. Please try again");
+                throw new Exception("An error occurred. Please try again.");
             }
         }
     }
