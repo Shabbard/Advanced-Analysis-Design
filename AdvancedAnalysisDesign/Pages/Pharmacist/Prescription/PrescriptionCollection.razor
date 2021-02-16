@@ -66,7 +66,7 @@
                                             </HeaderContent>
                                             <RowTemplate>
                                                 <MudTd DataLabel="Medication">@PatientMeds.Medication.MedicationName</MudTd>
-                                                <MudTd><MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Success" OnClick="@(() => PrescriptionCollected(@PatientMeds.Pickup))"> Collected</MudButton></MudTd>
+                                                <MudTd><MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Success" OnClick="@(() => PrescriptionCollected(PatientMeds))"> Collected</MudButton></MudTd>
                                             </RowTemplate>
                                         </MudTable>
                                     </MudCardContent>
@@ -111,9 +111,9 @@
         }
     }
 
-    public async Task PrescriptionCollected(Pickup PickUpID)
+    public async Task PrescriptionCollected(PatientMedication PatientMedication)
     {
-        await PatientService.PrescriptionCollected(PickUpID);
+        await PatientService.PrescriptionCollected(PatientMedication);
 
         Snackbar.Add("Prescription has been prepared", Severity.Success);
 

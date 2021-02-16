@@ -278,11 +278,13 @@ namespace AdvancedAnalysisDesign.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task PrescriptionCollected(Pickup PickUp)
+        public async Task PrescriptionCollected(PatientMedication PatientMedication)
         {
-            PickUp.IsPickedUp = true;
-            PickUp.DatePickedUp = DateTimeOffset.Now;
-            PickUp.DateScheduled = null;
+
+            PatientMedication.Pickup.IsPickedUp = true;
+            PatientMedication.Pickup.DatePickedUp = DateTimeOffset.Now;
+            PatientMedication.Pickup.DateScheduled = null;
+            PatientMedication.DateOfMedicationLastPickedUp = DateTimeOffset.Now;
 
             await _context.SaveChangesAsync();
         }
