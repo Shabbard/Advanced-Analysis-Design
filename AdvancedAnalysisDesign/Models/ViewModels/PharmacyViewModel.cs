@@ -7,6 +7,7 @@ namespace AdvancedAnalysisDesign.Models.ViewModels
     {
         public int Id { get; set; }
         public bool ShowDetails { get; set; }
-        public List<Patient> PatientBloodworkTests { get; set; }
+        public UserDetail UserDetail { get; set; }
+        public List<PatientMedication> PatientMedication { get; set; }
     }
 }

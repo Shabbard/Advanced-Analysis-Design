@@ -189,7 +189,8 @@ namespace AdvancedAnalysisDesign.Services
 
         public async Task<List<Patient>> GetAllMedicationsforInstitution(MedicalInstitution medicalInstitution)
         {
-            return await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.MedicalInstitution.Id == medicalInstitution.Id)).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+            var x = await _context.Patients.Include(x => x.Medications.Where(x => x.Pickup.MedicalInstitution.Id == medicalInstitution.Id && (x.Pickup.DateScheduled == DateTime.Today || x.Pickup.DatePickedUp.Value.Date == DateTimeOffset.Now.Date))).ThenInclude(x => x.Pickup).Include(x => x.User.UserDetail).Include(x => x.Medications).ThenInclude(x => x.Medication).ToListAsync();
+            return x.Where(y => y.Medications.Any()).ToList();
         }
 
         public async Task<List<Medication>> FetchAllMedications()
@@ -227,5 +228,17 @@ namespace AdvancedAnalysisDesign.Services
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<PharmacyViewModel>> ConvertPharmacyView(List<Patient> patient_model)
+        {
+            return patient_model.Select(x => new PharmacyViewModel
+            {
+                Id = x.Id,
+                UserDetail = x.User.UserDetail,
+                PatientMedication = x.Medications
+
+            }).ToList();
+        }
     }
 }
+
