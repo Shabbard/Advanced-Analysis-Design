@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class BloodworkService
+    public class BloodworkService : IBloodworkService
     {
         private readonly AADContext _context;
         
@@ -37,11 +37,6 @@ namespace AdvancedAnalysisDesign.Services
             return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
         }
 
-        // public List<PatientMedicationViewModel> ConvertPatientMedicationsToViewModel(List<PatientMedication> patientMedicationsList)
-        // {
-        //     return patientMedicationsList;
-        // }
-
         public async Task AddPatientBloodwork(PatientMedicationViewModel medicationViewModel)
         {
             var patientMedication = await _context.PatientMedications.Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests).SingleOrDefaultAsync(x => x.Id == medicationViewModel.Id);
@@ -64,7 +59,7 @@ namespace AdvancedAnalysisDesign.Services
             
             var bloodworkTest = new PatientBloodworkTest
             {
-                Result = medicationViewModel.ResultInput,
+                Result = medicationViewModel.Result,
                 DateOfUpload = DateTimeOffset.Now
             };
             

@@ -14,7 +14,7 @@ using MudBlazor;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class PatientService
+    public class PatientService : IPatientService
     {
         private readonly AADContext _context;
         private readonly UserManager<User> _userManager;

@@ -11,7 +11,7 @@ using AdvancedAnalysisDesign.Models.Database;
 namespace AdvancedAnalysisDesign.Services
 {
 
-    public class FaceService
+    public class FaceService : IFaceService
     {
         private readonly IConfiguration _configuration;
 

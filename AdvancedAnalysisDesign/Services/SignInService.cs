@@ -10,7 +10,7 @@ using Microsoft.JSInterop;
 
 namespace AdvancedAnalysisDesign.Services
 {
-    public class SignInService
+    public class SignInService : ISignInService
     {
         private readonly CookieAuthenticationOptions _cookieAuthenticationOptions;
         private readonly IHostEnvironmentAuthenticationStateProvider _hostAuthentication;
