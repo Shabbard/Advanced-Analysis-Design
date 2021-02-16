@@ -73,11 +73,15 @@ namespace AdvancedAnalysisDesign.Services
             try
             {
                 var today = DateTimeOffset.Now;
+                if (!patientMedication.BloodworkRequired)
+                {
+                    return true;
+                }
                 foreach (var bloodwork in patientMedication.PatientBloodworks)
                 {
                     foreach (var bloodworkTest in bloodwork.PatientBloodworkTests)
                     {
-                        if (bloodworkTest.Result == true && bloodworkTest.DateOfUpload.AddDays(patientMedication.DayIntervalOfBloodworkRenewal) > today)
+                        if (bloodworkTest.Result && bloodworkTest.DateOfUpload.AddDays(patientMedication.DayIntervalOfBloodworkRenewal) > today)
                         {
                             return true;
                         }
