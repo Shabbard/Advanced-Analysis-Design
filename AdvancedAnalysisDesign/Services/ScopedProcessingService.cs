@@ -14,13 +14,13 @@ namespace AdvancedAnalysisDesign.Services
     
     internal class ScopedProcessingService : IScopedProcessingService
     {
-        private readonly NonPatientService _nonPatientService;
+        private readonly BloodworkService _bloodworkService;
         private readonly AADContext _context;
         private readonly EmailService _emailService;
     
-        public ScopedProcessingService(NonPatientService nonPatientService, AADContext context, EmailService emailService)
+        public ScopedProcessingService(BloodworkService bloodworkService, AADContext context, EmailService emailService)
         {
-            _nonPatientService = nonPatientService;
+            _bloodworkService = bloodworkService;
             _context = context;
             _emailService = emailService;
         }
@@ -39,9 +39,12 @@ namespace AdvancedAnalysisDesign.Services
         {
             var patientMedications = await _context.PatientMedications.Include(x => x.Patient)
                 .ThenInclude(x => x.User).ThenInclude(x => x.UserDetail)
+                .Include(x => x.PatientBloodworks).ThenInclude(x => x.PatientBloodworkTests)
                 .Where(x => x.Pickup.DateScheduled == null)
                 .ToListAsync();
             
+            patientMedications = patientMedications.Where(x => _bloodworkService.CheckIfBloodWorkVaild(x)).ToList();
+
             foreach (var patientMedication in patientMedications)
             {
                 if (patientMedication.DateOfMedicationLastPickedUp.AddDays(patientMedication.DayIntervalOfBloodworkRenewal) == DateTimeOffset.Now.AddDays(-7))
