@@ -38,7 +38,7 @@ namespace AdvancedAnalysisDesign.Tests
         [Test]
         [TestCase("1", "Test 1")]
         [TestCase("2","Test 2")]
-        public async Task CheckPatientBloodwork(string patientId, string bloodworkTestName)
+        public async Task CheckPatientBloodwork(string PatientId, string BloodworkTestName)
         {
             var bloodworks = new List<PatientBloodwork>
             {
@@ -65,23 +65,21 @@ namespace AdvancedAnalysisDesign.Tests
                 },
             };
             
-            PatientBloodwork FetchPatientBloodwork()
+            var mock = patients.AsQueryable().BuildMock();
+            var _context = mock.Object;
+
+            async Task<PatientBloodwork> FetchPatientBloodwork(string patientId, string bloodworkTestName) // this is the function being tested from the bloodwork service
             {
-                var patient = patients.SingleOrDefault(y => y.User.Id == patientId);
+                var patient = await _context.SingleOrDefaultAsync(y => y.User.Id == patientId);
             
                 var medicationWithBloodwork = patient?.Medications.SingleOrDefault(x => x.PatientBloodworks.Any(y => y.BloodworkTest.TestName == bloodworkTestName));
             
                 return medicationWithBloodwork?.PatientBloodworks.SingleOrDefault(x => x.BloodworkTest.TestName == bloodworkTestName);
             }
 
-            var mock = bloodworks.AsQueryable().BuildMock();
-
-            _bloodworkService.Setup(x => x.FetchPatientBloodwork(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync((string id, string testName) => (FetchPatientBloodwork()));
-                    
-            var t = await _bloodworkService.Object.FetchPatientBloodwork(patientId, bloodworkTestName);
+            var t = await FetchPatientBloodwork(PatientId, BloodworkTestName);
             
-            Assert.True(t.BloodworkTest.TestName == bloodworkTestName);
+            Assert.True(t.BloodworkTest.TestName == BloodworkTestName);
         }
         
         [Test]
