@@ -1,24 +1,164 @@
 ﻿@page "/PrescriptionList"
 @using AdvancedAnalysisDesign.Enums
+@using AdvancedAnalysisDesign.Services
+@using AdvancedAnalysisDesign.Models.Database
+@using AdvancedAnalysisDesign.Models.Payloads
+@using AdvancedAnalysisDesign.Models.ViewModels 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject PatientService PatientService
+@inject NonPatientService NonPatientService
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
 
+
+    <MudGrid Justify="Justify.Center">
+
+        <MudItem xs="12">
+
+            <MudText Typo="Typo.h4">
+                Prescriptions Due
+            </MudText>
+
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+
+            <MudTable Items="@PharmacyView" Hover="true" Breakpoint="Breakpoint.Sm">
+
+                <HeaderContent>
+
+                    <MudTh>First Name</MudTh>
+                    <MudTh>Last Name</MudTh>
+                    <MudTh>DOB</MudTh>
+                    <MudTh>Prescriptions</MudTh>
+
+                </HeaderContent>
+
+                <RowTemplate>
+
+                    <MudTd DataLabel="First Name">@context.UserDetail.FirstName</MudTd>
+                    <MudTd DataLabel="Second Name">@context.UserDetail.LastName</MudTd>
+                    <MudTd DataLabel="DOB">@context.UserDetail.DateOfBirth.ToString("d")</MudTd>
+                    <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowPrescriptions(context.Id))">@((context.ShowDetails == true)? "Hide" : "Show") Prescription</MudButton></MudTd>
+
+                </RowTemplate>
+
+                <ChildRowContent>
+                    @if (context.ShowDetails)
+                    {
+                        <MudTr>
+                            <td colspan="4">
+                                <MudCard Elevation="0">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.body1"><strong> Prescription Details </strong></MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent Class="pa-0">
+                                        <MudTable Items="@context.PatientMedication" Context="PatientMeds" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                            <HeaderContent>
+                                                <MudTh>Medication</MudTh>
+                                                <MudTh>Prepared</MudTh>
+                                                <MudTh>Collected</MudTh>
+                                                <MudTh>Time of Collection</MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="Medication">@PatientMeds.Medication.MedicationName</MudTd>
+                                                <MudTd DataLabel="Prepared">
+                                                    @if (PatientMeds.Pickup.IsPrepared == false)
+                                                        {
+                                                        <MudIcon Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" />
+                                                        }
+                                                        else
+                                                        {
+                                                        <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="@Color.Success" />
+                                                        }
+                                                </MudTd>
+                                                <MudTd DataLabel="Collected">
+                                                    @if (PatientMeds.Pickup.IsPickedUp == false)
+                                                        {
+                                                        <MudIcon Icon="@Icons.Material.Filled.IndeterminateCheckBox" Color="@Color.Error" />
+                                                        }
+                                                        else
+                                                        {
+                                                        <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="@Color.Success" />
+                                                        }
+                                                </MudTd>
+
+                                                  
+                                                <MudTd DataLabel="Time of Collection">
+
+                                                    @if (PatientMeds.Pickup.IsPickedUp == false)
+                                                        {
+                                                           <MudText> @PatientMeds.Pickup.DateScheduled </MudText>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudText> <strong>(Collected at)</strong> @PatientMeds.Pickup.DatePickedUp?.ToString("g") </MudText>
+                                                        }
+
+                                                </MudTd>
+                                                  
+                                            </RowTemplate>
+                                        </MudTable>
+                                    </MudCardContent>
+                                </MudCard>
+                            </td>
+                        </MudTr>}
+                </ChildRowContent>
+
+            </MudTable>
+        </MudItem>
+
+    </MudGrid>
 </MudContainer>
 
 @code {
+    List<Patient> patientWithPickups = new();
+    List<PharmacyViewModel> PharmacyView = new();
+
+    private DateTime currentDate = DateTime.Now;
+
+    string MedicalInstitutionName;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.IsInRole(Role.Pharmacist.ToString()) || user.IsInRole(Role.Admin.ToString()))
+        if (user.IsInRole(Role.Admin.ToString()))
         {
+            MedicalInstitutionName = "Admin View";
+
+            patientWithPickups = await PatientService.FetchAllPatientsPrescriptions();
+
+            PharmacyView = await PatientService.ConvertPharmacyView(patientWithPickups);
+        }
+        else if (user.IsInRole(Role.Pharmacist.ToString()))
+        {
+            var currentMedicalSite = await NonPatientService.GetMedicalInstitutionForUser();
+
+            MedicalInstitutionName = currentMedicalSite.Name;
+
+            patientWithPickups = await PatientService.GetAllMedicationsforInstitution(currentMedicalSite); 
+
+            PharmacyView = await PatientService.ConvertPharmacyView(patientWithPickups);
         }
         else
         {
             NavigationManager.NavigateTo("/", true);
         }
     }
-}   
+
+    private async Task ShowPrescriptions(int ID)
+    {
+        PharmacyViewModel patient = PharmacyView.First(x => x.Id == ID);
+
+        patient.ShowDetails = !patient.ShowDetails;
+    }
+}
